@@ -108,7 +108,7 @@ export default function ExplorePage() {
           </div>
 
           {/* Tag Filter Pills */}
-          <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none pb-1">
             {['All', 'Waterfalls', 'Heritage', 'Wildlife', 'Markets'].map((t) => (
               <button
                 key={t}

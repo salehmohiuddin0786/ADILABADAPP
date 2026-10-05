@@ -219,7 +219,7 @@ export default function HomePage({
                 className="pt-2 space-y-3"
               >
                 {/* Search Mode Pill Tabs */}
-                <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-slate-900/70 border border-white/10 backdrop-blur-xl w-fit">
+                <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-900/70 border border-white/10 backdrop-blur-xl overflow-x-auto no-scrollbar scrollbar-none max-w-full">
                   {SEARCH_TABS.map((tab) => {
                     const TabIcon = tab.icon;
                     const isActive = activeTab === tab.id;
@@ -603,7 +603,7 @@ export default function HomePage({
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {categories.slice(0, 8).map((category) => (
               <CategoryCard key={category.id} category={category} />
             ))}

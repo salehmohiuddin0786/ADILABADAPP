@@ -164,7 +164,7 @@ export default function SearchPage() {
           ) : results ? (
             <div>
               {/* Category Filter Tabs */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 border-b border-slate-200">
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none pb-4 mb-8 border-b border-slate-200">
                 <button
                   onClick={() => setActiveTab('all')}
                   className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition shrink-0 ${

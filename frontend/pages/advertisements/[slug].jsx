@@ -456,6 +456,45 @@ export default function AdvertisementDetailPage({ ad }) {
         advertisementId={ad.id}
         advertisementTitle={ad.title}
       />
+
+      {/* MOBILE STICKY CONTACT ACTION BAR (PHONE ONLY) */}
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/90 p-3 sm:hidden shadow-[0_-4px_25px_rgba(0,0,0,0.12)] flex items-center gap-2">
+        <button
+          onClick={() => toggleFavorite('advertisement', ad.id)}
+          aria-label={favorited ? 'Saved' : 'Save'}
+          className={`p-3 rounded-2xl border transition shrink-0 ${
+            favorited
+              ? 'bg-brand-50 border-brand-300 text-brand-600'
+              : 'bg-slate-100 border-slate-200 text-slate-700'
+          }`}
+        >
+          <Bookmark className={`w-5 h-5 ${favorited ? 'fill-current text-brand-600' : ''}`} />
+        </button>
+
+        {ad.phone && (
+          <a
+            href={`tel:${ad.phone}`}
+            onClick={() => trackInteraction('call')}
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-2xl bg-emerald-600 text-white font-bold text-sm shadow-md active:scale-95 transition"
+          >
+            <Phone className="w-4 h-4" />
+            <span>Call Now</span>
+          </a>
+        )}
+
+        {ad.whatsapp && (
+          <a
+            href={`https://wa.me/${ad.whatsapp.replace(/[^0-9]/g, '')}?text=Hi,%20I%20am%20interested%20in%20your%20advertisement%20"${encodeURIComponent(ad.title)}"%20listed%20on%20Adilabad%20App.`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackInteraction('whatsapp')}
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-2xl bg-green-600 text-white font-bold text-sm shadow-md active:scale-95 transition"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>WhatsApp</span>
+          </a>
+        )}
+      </div>
     </>
   );
 }
