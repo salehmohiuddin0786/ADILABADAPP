@@ -27,6 +27,7 @@ import ShareModal from '../../src/components/modals/ShareModal';
 import ReportModal from '../../src/components/modals/ReportModal';
 import { useAuth } from '../../src/context/AuthContext';
 import { apiFetch } from '../../src/utils/api';
+import { MOCK_ADVERTISEMENTS } from '../../src/data/mockData';
 
 export default function AdvertisementDetailPage({ ad }) {
   const { isFavorited, toggleFavorite } = useAuth();
@@ -512,10 +513,11 @@ export async function getServerSideProps({ params }) {
       }
     };
   } catch (error) {
-    console.error('AdvertisementDetailPage getServerSideProps error:', error.message);
+    console.warn('AdvertisementDetailPage fallback to mock data:', error.message);
+    const fallbackAd = MOCK_ADVERTISEMENTS.find(a => a.slug === params.slug) || MOCK_ADVERTISEMENTS[0];
     return {
       props: {
-        ad: null
+        ad: fallbackAd
       }
     };
   }

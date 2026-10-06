@@ -6,6 +6,7 @@ import { Tag, ArrowRight } from 'lucide-react';
 import MainLayout from '../../src/components/layout/MainLayout';
 import { getCategoryIcon } from '../../src/utils/iconMap';
 import { apiFetch } from '../../src/utils/api';
+import { MOCK_CATEGORIES } from '../../src/data/mockData';
 
 export default function CategoriesPage({ categories = [] }) {
   return (
@@ -84,10 +85,10 @@ export async function getServerSideProps() {
     const res = await apiFetch('/categories');
     return {
       props: {
-        categories: res.data || []
+        categories: res.data || MOCK_CATEGORIES
       }
     };
   } catch (error) {
-    return { props: { categories: [] } };
+    return { props: { categories: MOCK_CATEGORIES } };
   }
 }

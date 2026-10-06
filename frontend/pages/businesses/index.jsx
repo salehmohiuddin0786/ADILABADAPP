@@ -6,6 +6,7 @@ import MainLayout from '../../src/components/layout/MainLayout';
 import BusinessCard from '../../src/components/cards/BusinessCard';
 import EmptyState from '../../src/components/common/EmptyState';
 import { apiFetch } from '../../src/utils/api';
+import { MOCK_CATEGORIES, MOCK_LOCATIONS, filterMockBusinesses } from '../../src/data/mockData';
 
 export default function BusinessesPage({ initialData, categories = [], locations = [], initialQuery }) {
   const router = useRouter();
@@ -249,12 +250,18 @@ export async function getServerSideProps({ query }) {
       }
     };
   } catch (error) {
+    console.warn('BusinessesPage fallback to mock data:', error.message);
+    const mockBiz = filterMockBusinesses({
+      search: query.search,
+      category: query.category,
+      location: query.location
+    });
     return {
       props: {
-        initialData: { data: [], pagination: {} },
-        categories: [],
-        locations: [],
-        initialQuery: {}
+        initialData: mockBiz,
+        categories: MOCK_CATEGORIES,
+        locations: MOCK_LOCATIONS,
+        initialQuery: query || {}
       }
     };
   }

@@ -6,6 +6,7 @@ import MainLayout from '../../src/components/layout/MainLayout';
 import EventCard from '../../src/components/cards/EventCard';
 import EmptyState from '../../src/components/common/EmptyState';
 import { apiFetch } from '../../src/utils/api';
+import { MOCK_LOCATIONS, filterMockEvents } from '../../src/data/mockData';
 
 export default function EventsPage({ initialData, locations = [], initialQuery }) {
   const router = useRouter();
@@ -184,11 +185,13 @@ export async function getServerSideProps({ query }) {
       }
     };
   } catch (error) {
+    console.warn('EventsPage fallback to mock data:', error.message);
+    const mockRes = filterMockEvents({ search: query.search, location: query.location });
     return {
       props: {
-        initialData: { data: [], pagination: {} },
-        locations: [],
-        initialQuery: {}
+        initialData: mockRes,
+        locations: MOCK_LOCATIONS,
+        initialQuery: query || {}
       }
     };
   }

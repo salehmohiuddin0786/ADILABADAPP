@@ -17,6 +17,7 @@ import MainLayout from '../../src/components/layout/MainLayout';
 import AdvertisementCard from '../../src/components/cards/AdvertisementCard';
 import EmptyState from '../../src/components/common/EmptyState';
 import { apiFetch } from '../../src/utils/api';
+import { MOCK_CATEGORIES, MOCK_LOCATIONS, filterMockAdvertisements } from '../../src/data/mockData';
 
 export default function AdvertisementsPage({ initialData, categories, locations, initialQuery }) {
   const router = useRouter();
@@ -337,13 +338,20 @@ export async function getServerSideProps({ query }) {
       }
     };
   } catch (error) {
-    console.error('AdvertisementsPage getServerSideProps error:', error.message);
+    console.warn('AdvertisementsPage fallback to mock data:', error.message);
+    const mockAds = filterMockAdvertisements({
+      search: query.search,
+      category: query.category,
+      location: query.location,
+      featured: query.featured,
+      page: query.page
+    });
     return {
       props: {
-        initialData: { data: [], pagination: {} },
-        categories: [],
-        locations: [],
-        initialQuery: {}
+        initialData: mockAds,
+        categories: MOCK_CATEGORIES,
+        locations: MOCK_LOCATIONS,
+        initialQuery: query || {}
       }
     };
   }

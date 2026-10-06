@@ -21,6 +21,7 @@ import AdvertisementCard from '../../src/components/cards/AdvertisementCard';
 import ShareModal from '../../src/components/modals/ShareModal';
 import { useAuth } from '../../src/context/AuthContext';
 import { apiFetch } from '../../src/utils/api';
+import { MOCK_BUSINESSES } from '../../src/data/mockData';
 
 export default function BusinessDetailPage({ business }) {
   const { isFavorited, toggleFavorite } = useAuth();
@@ -314,6 +315,12 @@ export async function getServerSideProps({ params }) {
       }
     };
   } catch (error) {
-    return { props: { business: null } };
+    console.warn('BusinessDetailPage fallback to mock data:', error.message);
+    const fallbackBiz = MOCK_BUSINESSES.find(b => b.slug === params.slug) || MOCK_BUSINESSES[0];
+    return {
+      props: {
+        business: fallbackBiz
+      }
+    };
   }
 }

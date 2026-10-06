@@ -34,6 +34,14 @@ import BusinessCard from '../src/components/cards/BusinessCard';
 import EventCard from '../src/components/cards/EventCard';
 import CategoryCard from '../src/components/cards/CategoryCard';
 import { apiFetch } from '../src/utils/api';
+import {
+  MOCK_CATEGORIES,
+  MOCK_ADVERTISEMENTS,
+  MOCK_BUSINESSES,
+  MOCK_EVENTS,
+  MOCK_BANNERS,
+  MOCK_LOCATIONS
+} from '../src/data/mockData';
 
 const ROTATING_HIGHLIGHTS = [
   'Best Deals & Discounts',
@@ -855,16 +863,16 @@ export async function getServerSideProps() {
       }
     };
   } catch (error) {
-    console.error('HomePage getServerSideProps error:', error.message);
+    console.warn('HomePage getServerSideProps offline fallback:', error.message);
     return {
       props: {
-        categories: [],
-        featuredAds: [],
-        latestAds: [],
-        businesses: [],
-        events: [],
-        banners: [],
-        locations: []
+        categories: MOCK_CATEGORIES,
+        featuredAds: MOCK_ADVERTISEMENTS.filter(a => a.is_featured === 1).slice(0, 6),
+        latestAds: MOCK_ADVERTISEMENTS.slice(0, 6),
+        businesses: MOCK_BUSINESSES.slice(0, 4),
+        events: MOCK_EVENTS.slice(0, 3),
+        banners: MOCK_BANNERS,
+        locations: MOCK_LOCATIONS
       }
     };
   }

@@ -8,6 +8,7 @@ import AdvertisementCard from '../../src/components/cards/AdvertisementCard';
 import EmptyState from '../../src/components/common/EmptyState';
 import { getCategoryIcon } from '../../src/utils/iconMap';
 import { apiFetch } from '../../src/utils/api';
+import { MOCK_CATEGORIES, MOCK_LOCATIONS, filterMockAdvertisements } from '../../src/data/mockData';
 
 export default function CategoryDetailPage({ category, adsData, locations = [] }) {
   const router = useRouter();
@@ -124,12 +125,14 @@ export async function getServerSideProps({ params }) {
       }
     };
   } catch (error) {
-    console.error('CategoryDetailPage getServerSideProps error:', error.message);
+    console.warn('CategoryDetailPage fallback to mock data:', error.message);
+    const fallbackCategory = MOCK_CATEGORIES.find(c => c.slug === params.slug) || MOCK_CATEGORIES[0];
+    const fallbackAds = filterMockAdvertisements({ category: params.slug, limit: 20 });
     return {
       props: {
-        category: null,
-        adsData: { data: [], pagination: {} },
-        locations: []
+        category: fallbackCategory,
+        adsData: fallbackAds,
+        locations: MOCK_LOCATIONS
       }
     };
   }

@@ -19,6 +19,7 @@ import EventCard from '../../src/components/cards/EventCard';
 import ShareModal from '../../src/components/modals/ShareModal';
 import { useAuth } from '../../src/context/AuthContext';
 import { apiFetch } from '../../src/utils/api';
+import { MOCK_EVENTS } from '../../src/data/mockData';
 
 export default function EventDetailPage({ event }) {
   const { isFavorited, toggleFavorite } = useAuth();
@@ -240,6 +241,12 @@ export async function getServerSideProps({ params }) {
       }
     };
   } catch (error) {
-    return { props: { event: null } };
+    console.warn('EventDetailPage fallback to mock data:', error.message);
+    const fallbackEvent = MOCK_EVENTS.find(e => e.slug === params.slug) || MOCK_EVENTS[0];
+    return {
+      props: {
+        event: fallbackEvent
+      }
+    };
   }
 }
