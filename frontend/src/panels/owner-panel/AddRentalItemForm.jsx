@@ -65,11 +65,26 @@ export default function AddRentalItemForm() {
 
     setLoading(true);
     try {
+      const selectedCat = CATEGORIES.find(c => c.id === formData.category_id);
+
+      const defaultCatImages = {
+        '1': 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800',
+        '2': 'https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=800',
+        '3': 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800',
+        '4': 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=800',
+        '5': 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=800',
+        '6': 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800'
+      };
+
+      const finalImg = formData.image_url || defaultCatImages[formData.category_id] || defaultCatImages['1'];
+
       const payload = {
         ...formData,
+        category_name: selectedCat ? selectedCat.name : 'Equipment',
         daily_rate: parseFloat(formData.daily_rate),
         security_deposit: parseFloat(formData.security_deposit || 0),
-        media_urls: formData.image_url ? [formData.image_url] : []
+        image_url: finalImg,
+        media_urls: [finalImg]
       };
 
       const res = await apiFetch('/api/v1/rentals', {
@@ -77,7 +92,31 @@ export default function AddRentalItemForm() {
         body: JSON.stringify(payload)
       });
 
-      showToast('Rental item submitted! Pending admin review for public publication.', 'success');
+      // Also ensure direct fallback persistence in localStorage
+      if (typeof window !== 'undefined') {
+        try {
+          const currentList = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
+          const itemToSave = res?.data || {
+            id: Date.now(),
+            title: formData.title,
+            slug: formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString().slice(-4),
+            category_name: selectedCat ? selectedCat.name : 'Equipment',
+            daily_rate: parseFloat(formData.daily_rate),
+            security_deposit: parseFloat(formData.security_deposit || 0),
+            location: formData.location || 'Cinema Road, Adilabad',
+            status: 'AVAILABLE',
+            media: [{ media_url: finalImg }],
+            description: formData.description || formData.title,
+            created_at: new Date().toISOString()
+          };
+          if (!currentList.some(i => i.id === itemToSave.id)) {
+            currentList.unshift(itemToSave);
+            localStorage.setItem('adilabad_rentals', JSON.stringify(currentList));
+          }
+        } catch (e) {}
+      }
+
+      showToast(`Rental item "${formData.title}" listed successfully! Now live in your inventory & marketplace.`, 'success');
       router.push('/owner/rentals');
     } catch (err) {
       showToast(err.message || 'Submission failed. Saved to draft.', 'error');

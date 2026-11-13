@@ -61,6 +61,30 @@ test.describe('Adilabad App — Core Hyperlocal Navigation & Responsiveness', ()
     }
   });
 
+  test('Upload rental item workflow: creates, persists, and displays in inventory and marketplace', async ({ page }) => {
+    // 1. Visit rental item create page
+    await page.goto('/owner/rentals/create');
+    await expect(page.locator('h2:has-text("List an Item for Rent")')).toBeVisible();
+
+    // 2. Fill in form
+    await page.fill('input[name="title"]', 'DJI Mavic 3 Pro Drone 4K Cine Kit');
+    await page.fill('input[name="daily_rate"]', '2500');
+    await page.fill('input[name="security_deposit"]', '10000');
+    await page.fill('input[name="pickup_address"]', 'Shop #12, Cinema Road, Adilabad');
+
+    // 3. Submit form
+    await page.click('button[type="submit"]');
+
+    // 4. Verify redirected to /owner/rentals and the item is visible!
+    await page.waitForURL('**/owner/rentals');
+    await expect(page.locator('text=DJI Mavic 3 Pro Drone 4K Cine Kit').first()).toBeVisible();
+    await expect(page.locator('text=Your Upload').first()).toBeVisible();
+
+    // 5. Verify visible on public rentals marketplace (/rentals)
+    await page.goto('/rentals');
+    await expect(page.locator('text=DJI Mavic 3 Pro Drone 4K Cine Kit').first()).toBeVisible();
+  });
+
   test('Mobile viewport displays sticky bottom navigation', async ({ page, isMobile }) => {
     test.skip(!isMobile, 'Mobile test only');
     await page.goto('/');

@@ -129,76 +129,254 @@ export function getMockResponse(endpoint, options = {}) {
     return { success: true, data: { ...ev, upcoming } };
   }
 
-  // 7. Rentals (Rent Your Items)
+  // 7. Rentals (Rent Your Items & Heavy Equipment)
   if (urlWithoutQuery.includes('/rentals')) {
-    const mockRentals = [
+    const defaultMockRentals = [
       {
         id: 101,
         title: 'Sony Alpha A7 IV Mirrorless Camera + 24-70mm Lens',
         slug: 'sony-alpha-a7-iv-mirrorless-camera',
+        category_id: 1,
         category_name: 'Electronics & Cameras',
         daily_rate: 1500,
+        hourly_rate: 250,
+        weekly_rate: 8000,
+        monthly_rate: 28000,
         security_deposit: 5000,
         location: 'Cinema Road, Adilabad',
+        pickup_address: 'Shop #4, Near Natraj Theater, Cinema Road, Adilabad, 504001',
         item_condition: 'like_new',
-        owner_name: 'Adilabad Media Works',
-        status: 'approved',
-        description: 'Professional camera kit for weddings, documentary shoots, and events in Adilabad.',
+        owner_name: 'Adilabad Media Works & Camera Rentals',
+        owner_phone: '+91 98480 22334',
+        status: 'AVAILABLE',
+        description: 'Professional camera kit for weddings, documentary shoots, and events in Adilabad. Includes 2x high-capacity batteries, 128GB V90 SD card, dual charger, and weather-sealed carrying case.',
+        cancellation_policy: 'Full deposit refund if cancelled 24 hours prior to handover.',
+        damage_policy: 'Hirer is responsible for physical lens scratches or water damage.',
         media: [{ media_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800' }]
       },
       {
         id: 102,
         title: 'John Deere 5050D Tractor with Cultivator',
         slug: 'john-deere-5050d-tractor-rental',
-        category_name: 'Agricultural Equipment',
+        category_id: 2,
+        category_name: 'Agricultural Equipment & Tractors',
         daily_rate: 3200,
+        hourly_rate: 450,
+        weekly_rate: 18000,
+        monthly_rate: 65000,
         security_deposit: 8000,
         location: 'Utnoor Road, Adilabad',
+        pickup_address: 'Utnoor Highway Crossing, Adilabad Rural',
         item_condition: 'good',
         owner_name: 'Telangana Agri Hub',
-        status: 'approved',
-        description: 'High performance 50HP tractor with heavy-duty disc cultivator ready for field plowing.',
+        owner_phone: '+91 98499 11223',
+        status: 'AVAILABLE',
+        description: 'High performance 50HP tractor with heavy-duty disc cultivator ready for field plowing and agricultural transport.',
+        cancellation_policy: 'Free cancellation up to 48 hours before farm dispatch.',
+        damage_policy: 'Hirer responsible for tire puncture or mechanical misuse.',
         media: [{ media_url: 'https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=800' }]
       },
       {
         id: 103,
         title: 'JBL VRX Line Array 10000W Sound Setup for Events',
         slug: 'jbl-vrx-sound-setup-events',
-        category_name: 'Event Equipment',
+        category_id: 3,
+        category_name: 'Event Sound & Stage Gear',
         daily_rate: 8500,
+        hourly_rate: 1200,
+        weekly_rate: 45000,
+        monthly_rate: 150000,
         security_deposit: 12000,
         location: 'Subhash Nagar, Adilabad',
+        pickup_address: 'Royal Sound Depot, Subhash Nagar, Adilabad',
         item_condition: 'like_new',
         owner_name: 'Royal Sound & Lights',
-        status: 'approved',
-        description: 'Complete high-power public address and music sound system with wireless digital microphones.',
+        owner_phone: '+91 94401 55667',
+        status: 'AVAILABLE',
+        description: 'Complete high-power public address and music sound system with wireless digital microphones and digital mixer.',
+        cancellation_policy: '50% retention if cancelled less than 3 days before festival or wedding date.',
+        damage_policy: 'Deposit forfeited if speaker drivers are blown by over-voltage.',
         media: [{ media_url: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800' }]
       }
     ];
 
+    // Load persisted user-uploaded rental items from localStorage
+    let savedRentals = [];
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('adilabad_rentals');
+        if (stored) {
+          savedRentals = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.error('Error reading adilabad_rentals from localStorage:', e);
+      }
+    }
+
+    // Merge: User uploaded items first, followed by default mock rentals
+    const allRentals = [...savedRentals, ...defaultMockRentals];
+
+    // Handle Rental Booking proposal
     if (method === 'POST' && urlWithoutQuery.includes('/book')) {
+      const bookingCode = `ADL-RENT-${Math.floor(100000 + Math.random() * 900000)}`;
+      const newBooking = {
+        id: Date.now(),
+        booking_code: bookingCode,
+        rental_id: body.rental_id,
+        start_date: body.start_date,
+        end_date: body.end_date,
+        customer_notes: body.customer_notes || '',
+        status: 'PENDING',
+        created_at: new Date().toISOString()
+      };
+
+      if (typeof window !== 'undefined') {
+        try {
+          const storedBookings = JSON.parse(localStorage.getItem('adilabad_rental_bookings') || '[]');
+          storedBookings.unshift(newBooking);
+          localStorage.setItem('adilabad_rental_bookings', JSON.stringify(storedBookings));
+        } catch (e) {}
+      }
+
       return {
         success: true,
         message: 'Rental booking proposal sent to owner!',
         data: {
-          booking_code: `ADL-RENT-${Date.now().toString().slice(-6)}`,
+          booking_code: bookingCode,
           status: 'PENDING'
         }
       };
     }
 
+    // Handle Upload / Create new rental item
     if (method === 'POST') {
+      const categoryNames = {
+        '1': 'Electronics & Cameras',
+        '2': 'Agricultural Equipment & Tractors',
+        '3': 'Event Sound & Stage Gear',
+        '4': 'Construction & Power Tools',
+        '5': 'Home Appliances & Coolers',
+        '6': 'Vehicles & Transport'
+      };
+
+      const categoryName = body.category_name || categoryNames[body.category_id] || 'General Equipment';
+      const cleanTitle = (body.title || 'Untitled Rental Item').trim();
+      const generatedSlug = cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString().slice(-4);
+      
+      const defaultCatImages = {
+        '1': 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800',
+        '2': 'https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=800',
+        '3': 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800',
+        '4': 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=800',
+        '5': 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=800',
+        '6': 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800'
+      };
+
+      const finalImage = body.image_url || body.media_urls?.[0] || defaultCatImages[body.category_id] || defaultCatImages['1'];
+
+      const newRental = {
+        id: Date.now(),
+        title: cleanTitle,
+        slug: generatedSlug,
+        category_id: body.category_id || 1,
+        category_name: categoryName,
+        daily_rate: Number(body.daily_rate) || 1000,
+        hourly_rate: Number(body.hourly_rate) || 0,
+        weekly_rate: Number(body.weekly_rate) || 0,
+        monthly_rate: Number(body.monthly_rate) || 0,
+        security_deposit: Number(body.security_deposit) || 0,
+        min_rental_days: Number(body.min_rental_days) || 1,
+        max_rental_days: Number(body.max_rental_days) || 30,
+        item_condition: body.item_condition || 'like_new',
+        location: body.location || 'Cinema Road, Adilabad',
+        pickup_address: body.pickup_address || 'Adilabad, Telangana',
+        is_delivery_available: !!body.is_delivery_available,
+        delivery_charge: Number(body.delivery_charge) || 0,
+        cancellation_policy: body.cancellation_policy || 'Full deposit refund if cancelled 24 hours prior to handover.',
+        damage_policy: body.damage_policy || 'Hirer is responsible for repairing or replacing any physically broken parts.',
+        owner_name: body.owner_name || 'Adilabad Media Works & Camera Rentals',
+        owner_phone: body.owner_phone || '+91 98480 22334',
+        status: 'AVAILABLE',
+        is_user_uploaded: true,
+        description: body.description || `${cleanTitle} available for rent in Adilabad. Verified local handover with test on site.`,
+        media: [{ media_url: finalImage }],
+        created_at: new Date().toISOString()
+      };
+
+      if (typeof window !== 'undefined') {
+        try {
+          const currentList = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
+          currentList.unshift(newRental);
+          localStorage.setItem('adilabad_rentals', JSON.stringify(currentList));
+        } catch (e) {
+          console.error('Error saving new rental to localStorage:', e);
+        }
+      }
+
       return {
         success: true,
-        message: 'Rental listing submitted for admin moderation!',
-        data: { id: Date.now(), slug: 'new-rental-listing' }
+        message: 'Rental listing submitted and published successfully to your inventory!',
+        data: newRental
       };
+    }
+
+    // Handle Delete rental item
+    if (method === 'DELETE') {
+      const idMatch = urlWithoutQuery.match(/\/rentals\/(\d+)/);
+      if (idMatch && typeof window !== 'undefined') {
+        const delId = parseInt(idMatch[1], 10);
+        try {
+          const currentList = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
+          const filtered = currentList.filter(item => item.id !== delId);
+          localStorage.setItem('adilabad_rentals', JSON.stringify(filtered));
+        } catch (e) {}
+      }
+      return { success: true, message: 'Rental item removed from inventory.' };
+    }
+
+    // Handle Status update (e.g. AVAILABLE <-> RENTED / MAINTENANCE)
+    if (method === 'PATCH' || method === 'PUT') {
+      const idMatch = urlWithoutQuery.match(/\/rentals\/(\d+)/);
+      if (idMatch && typeof window !== 'undefined') {
+        const updateId = parseInt(idMatch[1], 10);
+        try {
+          const currentList = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
+          const updated = currentList.map(item => {
+            if (item.id === updateId) {
+              return { ...item, status: body.status || (item.status === 'AVAILABLE' ? 'MAINTENANCE' : 'AVAILABLE') };
+            }
+            return item;
+          });
+          localStorage.setItem('adilabad_rentals', JSON.stringify(updated));
+        } catch (e) {}
+      }
+      return { success: true, message: 'Rental item status updated successfully.' };
+    }
+
+    // Handle Detail route by slug or ID: e.g. /api/v1/rentals/:slug or /rentals/:slug
+    const pathParts = urlWithoutQuery.split('/').filter(Boolean);
+    const lastPart = pathParts[pathParts.length - 1];
+    if (lastPart && lastPart !== 'rentals' && lastPart !== 'list') {
+      const found = allRentals.find(r => r.slug === lastPart || String(r.id) === lastPart);
+      if (found) {
+        return { success: true, data: found };
+      }
+    }
+
+    // Return all merged rentals (optionally filtered by search / category)
+    let result = allRentals;
+    if (params.category && params.category !== 'all') {
+      result = result.filter(r => r.category_name?.toLowerCase().includes(params.category.toLowerCase()));
+    }
+    if (params.search || params.q) {
+      const q = (params.search || params.q).toLowerCase();
+      result = result.filter(r => r.title.toLowerCase().includes(q) || r.location?.toLowerCase().includes(q));
     }
 
     return {
       success: true,
-      count: mockRentals.length,
-      data: mockRentals
+      count: result.length,
+      data: result
     };
   }
 

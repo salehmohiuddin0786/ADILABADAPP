@@ -21,6 +21,18 @@ import { useToast } from '../../context/ToastContext';
 export default function OwnerDashboard() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const [totalRentals, setTotalRentals] = useState(3);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
+        if (Array.isArray(stored)) {
+          setTotalRentals(3 + stored.length);
+        }
+      } catch (e) {}
+    }
+  }, []);
 
   const [bookingRequests, setBookingRequests] = useState([
     {
@@ -96,7 +108,7 @@ export default function OwnerDashboard() {
               <Layers className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-black text-slate-900 mt-2">12</p>
+          <p className="text-2xl font-black text-slate-900 mt-2">{totalRentals}</p>
           <span className="text-[11px] text-emerald-600 font-semibold mt-1 block">Active on Marketplace</span>
         </div>
 

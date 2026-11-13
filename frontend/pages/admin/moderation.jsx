@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import {
@@ -115,6 +115,38 @@ export default function AdminModerationCenter() {
       details: 'Dining and family restaurant verified catering license renewal for seasonal promotions.'
     }
   ]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
+        if (Array.isArray(stored) && stored.length > 0) {
+          const userRentals = stored.map((r) => ({
+            id: `MOD-RENT-${r.id}`,
+            type: 'RENTAL_ITEM',
+            typeLabel: 'User Rental Upload',
+            title: r.title,
+            applicant: r.owner_name || 'Verified Merchant',
+            phone: r.owner_phone || '+91 98480 22334',
+            mandal: r.location || 'Adilabad Urban',
+            address: r.pickup_address || r.location || 'Adilabad, Telangana',
+            docType: 'Owner Equipment Declaration & ID',
+            docNumber: `RENT-REG-${String(r.id).slice(-6)}`,
+            submittedAt: r.created_at ? new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently',
+            riskScore: 'Low (0.01)',
+            status: r.status === 'AVAILABLE' ? 'approved' : 'pending',
+            details: `${r.category_name || 'Equipment'} • Daily: ₹${r.daily_rate} • Deposit: ₹${r.security_deposit} • ${r.description || ''}`
+          }));
+
+          setQueue((prev) => {
+            const existingIds = new Set(prev.map((p) => p.id));
+            const newOnes = userRentals.filter((u) => !existingIds.has(u.id));
+            return [...newOnes, ...prev];
+          });
+        }
+      } catch (e) {}
+    }
+  }, []);
 
   const showNotice = (msg) => {
     setActionNotice(msg);

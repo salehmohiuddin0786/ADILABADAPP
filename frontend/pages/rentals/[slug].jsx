@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -12,12 +12,36 @@ import {
   Phone,
   MessageCircle,
   AlertTriangle,
-  ArrowLeft
+  ArrowLeft,
+  Share2
 } from 'lucide-react';
 import PublicLayout from '../../src/panels/public-website/PublicLayout';
 import { useAuth } from '../../src/context/AuthContext';
 import { useToast } from '../../src/context/ToastContext';
 import { apiFetch } from '../../src/utils/api';
+
+const DEFAULT_ITEM = {
+  id: 101,
+  title: 'Sony Alpha A7 IV Mirrorless Camera + 24-70mm Lens',
+  category_name: 'Electronics & Cameras',
+  daily_rate: 1500,
+  hourly_rate: 250,
+  weekly_rate: 8000,
+  security_deposit: 5000,
+  item_condition: 'like_new',
+  min_rental_days: 1,
+  max_rental_days: 14,
+  location: 'Cinema Road, Adilabad',
+  pickup_address: 'Shop #4, Near Natraj Theater, Cinema Road, Adilabad, 504001',
+  description: 'Professional full-frame mirrorless camera for weddings, commercial events, and documentary shoots. Includes 2x high-capacity batteries, 128GB V90 SD card, dual charger, and weather-sealed carrying case.',
+  owner_name: 'Adilabad Media Works & Camera Rentals',
+  owner_phone: '+91 98480 22334',
+  cancellation_policy: 'Full deposit refund if cancelled at least 24 hours prior to scheduled handover.',
+  damage_policy: 'Hirer is responsible for physical lens scratches or water damage. Pre-handover inspection conducted with video proof.',
+  media: [
+    { media_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1000' }
+  ]
+};
 
 export default function RentalDetailPage() {
   const router = useRouter();
@@ -25,35 +49,46 @@ export default function RentalDetailPage() {
   const { user, isAuthenticated } = useAuth();
   const { showToast } = useToast();
 
+  const [item, setItem] = useState(DEFAULT_ITEM);
+  const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [customerNotes, setCustomerNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(null);
 
-  // Mock item detail fallback
-  const item = {
-    id: 101,
-    title: 'Sony Alpha A7 IV Mirrorless Camera + 24-70mm Lens',
-    category_name: 'Electronics & Cameras',
-    daily_rate: 1500,
-    hourly_rate: 250,
-    weekly_rate: 8000,
-    security_deposit: 5000,
-    item_condition: 'like_new',
-    min_rental_days: 1,
-    max_rental_days: 14,
-    location: 'Cinema Road, Adilabad',
-    pickup_address: 'Shop #4, Near Natraj Theater, Cinema Road, Adilabad, 504001',
-    description: 'Professional full-frame mirrorless camera for weddings, commercial events, and documentary shoots. Includes 2x high-capacity batteries, 128GB V90 SD card, dual charger, and weather-sealed carrying case.',
-    owner_name: 'Adilabad Media Works',
-    owner_phone: '9848022334',
-    cancellation_policy: 'Full deposit refund if cancelled at least 24 hours prior to scheduled handover.',
-    damage_policy: 'Hirer is responsible for physical lens scratches or water damage. Pre-handover inspection conducted with video proof.',
-    media: [
-      { media_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1000' }
-    ]
-  };
+  useEffect(() => {
+    if (!slug) return;
+
+    async function fetchRentalItem() {
+      setLoading(true);
+      try {
+        const res = await apiFetch(`/api/v1/rentals/${slug}`);
+        if (res?.data) {
+          setItem(res.data);
+          return;
+        }
+      } catch (e) {}
+
+      // Fallback: check localStorage for recently uploaded user rentals
+      if (typeof window !== 'undefined') {
+        try {
+          const stored = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
+          const match = stored.find(
+            (s) => s.slug === slug || String(s.id) === String(slug)
+          );
+          if (match) {
+            setItem(match);
+            return;
+          }
+        } catch (e) {}
+      }
+
+      setItem(DEFAULT_ITEM);
+    }
+
+    fetchRentalItem().finally(() => setLoading(false));
+  }, [slug]);
 
   const calculateDays = () => {
     if (!startDate || !endDate) return 1;
@@ -64,8 +99,10 @@ export default function RentalDetailPage() {
   };
 
   const days = calculateDays();
-  const rentalTotal = days * item.daily_rate;
-  const totalDueAtHandover = rentalTotal + item.security_deposit;
+  const dailyRate = Number(item?.daily_rate || 1000);
+  const deposit = Number(item?.security_deposit || 0);
+  const rentalTotal = days * dailyRate;
+  const totalDueAtHandover = rentalTotal + deposit;
 
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
@@ -107,10 +144,12 @@ export default function RentalDetailPage() {
     }
   };
 
+  const itemImg = item?.media?.[0]?.media_url || item?.image_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1000';
+
   return (
     <PublicLayout>
       <Head>
-        <title>{item.title} — Adilabad App Rentals</title>
+        <title>{item?.title || 'Rental Gear'} — Adilabad App Rentals</title>
       </Head>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -128,53 +167,53 @@ export default function RentalDetailPage() {
             <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
               <div className="h-80 sm:h-96 w-full bg-slate-100 overflow-hidden relative">
                 <img
-                  src={item.media[0].media_url}
-                  alt={item.title}
+                  src={itemImg}
+                  alt={item?.title || 'Rental Item'}
                   className="w-full h-full object-cover"
                 />
                 <span className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-xl">
-                  {item.category_name}
+                  {item?.category_name || 'Equipment'}
                 </span>
-                <span className="absolute top-4 right-4 bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl">
-                  Condition: Like New
+                <span className="absolute top-4 right-4 bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl uppercase tracking-wider">
+                  {item?.item_condition ? `Condition: ${item.item_condition.replace('_', ' ')}` : 'Available'}
                 </span>
               </div>
 
               <div className="p-6 sm:p-8 space-y-6">
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                    {item.title}
+                    {item?.title}
                   </h1>
                   <div className="flex items-center text-xs text-slate-500 mt-2 space-x-2">
                     <MapPin className="w-4 h-4 text-amber-500" />
-                    <span>{item.location}</span>
+                    <span>{item?.location || 'Adilabad, Telangana'}</span>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t border-slate-100">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-2">
-                    Description & Included Accessories
+                    Description & Specifications
                   </h3>
                   <p className="text-sm text-slate-700 leading-relaxed">
-                    {item.description}
+                    {item?.description || 'Quality verified equipment ready for instant handover in Adilabad.'}
                   </p>
                 </div>
 
                 <div className="pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <span className="font-bold text-slate-900 block mb-1">Pickup Location</span>
-                    <p className="text-slate-600">{item.pickup_address}</p>
+                    <p className="text-slate-600">{item?.pickup_address || item?.location || 'Adilabad, Telangana'}</p>
                   </div>
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                    <span className="font-bold text-slate-900 block mb-1">Verified Owner</span>
-                    <p className="text-slate-600 font-semibold">{item.owner_name}</p>
-                    <span className="text-emerald-700 font-bold text-[11px]">KYC Verified Vendor</span>
+                    <span className="font-bold text-slate-900 block mb-1">Equipment Owner</span>
+                    <p className="text-slate-600 font-semibold">{item?.owner_name || 'Adilabad Merchant'}</p>
+                    <span className="text-emerald-700 font-bold text-[11px]">Local Verified Vendor</span>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500">
-                  <p><strong>Cancellation Policy:</strong> {item.cancellation_policy}</p>
-                  <p><strong>Damage & Security Policy:</strong> {item.damage_policy}</p>
+                  <p><strong>Cancellation Policy:</strong> {item?.cancellation_policy || 'Full deposit refund if cancelled 24 hours prior to handover.'}</p>
+                  <p><strong>Damage & Security Policy:</strong> {item?.damage_policy || 'Hirer is responsible for physical damage or broken accessories.'}</p>
                 </div>
               </div>
             </div>
@@ -188,7 +227,7 @@ export default function RentalDetailPage() {
                   Daily Rental Rate
                 </span>
                 <div className="flex items-baseline space-x-2">
-                  <span className="text-3xl font-black text-slate-900">₹{item.daily_rate}</span>
+                  <span className="text-3xl font-black text-slate-900">₹{dailyRate.toLocaleString('en-IN')}</span>
                   <span className="text-xs font-bold text-slate-400">/ 24 hours</span>
                 </div>
               </div>
@@ -239,7 +278,7 @@ export default function RentalDetailPage() {
                         type="text"
                         value={customerNotes}
                         onChange={(e) => setCustomerNotes(e.target.value)}
-                        placeholder="e.g. Wedding shoot at Subhash Nagar"
+                        placeholder="e.g. For event at Shivaji Chowk"
                         className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500 outline-none"
                       />
                     </div>
@@ -252,12 +291,12 @@ export default function RentalDetailPage() {
                       <span className="font-bold text-slate-900">{days} day(s)</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
-                      <span>Rental Fee (₹{item.daily_rate} × {days}):</span>
+                      <span>Rental Fee (₹{dailyRate.toLocaleString()} × {days}):</span>
                       <span className="font-bold text-slate-900">₹{rentalTotal.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>Refundable Security Deposit:</span>
-                      <span className="font-bold text-amber-700">₹{item.security_deposit.toLocaleString()}</span>
+                      <span className="font-bold text-amber-700">₹{deposit.toLocaleString()}</span>
                     </div>
                     <div className="pt-2 border-t border-slate-200 flex justify-between text-sm font-extrabold text-slate-900">
                       <span>Total at Handover:</span>

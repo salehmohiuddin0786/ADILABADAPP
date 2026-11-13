@@ -38,7 +38,21 @@ export default function RentalsPage() {
       try {
         setLoading(true);
         const data = await apiFetch('/api/v1/rentals');
-        setItems(data.data || []);
+        let rentalList = Array.isArray(data?.data) ? data.data : [];
+
+        // Check local storage directly
+        if (typeof window !== 'undefined') {
+          try {
+            const stored = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
+            if (Array.isArray(stored) && stored.length > 0) {
+              const existingIds = new Set(rentalList.map((i) => i.id));
+              const missing = stored.filter((s) => !existingIds.has(s.id));
+              rentalList = [...missing, ...rentalList];
+            }
+          } catch (e) {}
+        }
+
+        setItems(rentalList);
       } catch (err) {
         console.error('Failed to load rentals:', err);
       } finally {
@@ -126,7 +140,7 @@ export default function RentalsPage() {
               {/* Image Preview */}
               <div className="relative h-48 bg-slate-100 overflow-hidden">
                 <img
-                  src={item.media?.[0]?.media_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800'}
+                  src={item.media?.[0]?.media_url || item.image_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800'}
                   alt={item.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -161,7 +175,7 @@ export default function RentalsPage() {
                   </div>
 
                   <Link
-                    href={`/rentals/${item.slug}`}
+                    href={`/rentals/${item.slug || item.id}`}
                     className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-sm transition-all flex items-center space-x-1"
                   >
                     <span>Book Rental</span>
