@@ -55,6 +55,7 @@ export default function CustomerLayout({ children, title = 'Customer Dashboard' 
       { name: 'Job Applications', href: '/customer/jobs', icon: Briefcase },
       { name: 'Property Enquiries', href: '/customer/properties', icon: Building },
       { name: 'Event Enquiries', href: '/customer/events', icon: Calendar },
+      { name: 'Saved Offers', href: '/customer/offers', icon: ShoppingBag },
       { name: 'My Reviews', href: '/customer/reviews', icon: Star }
     ]},
     { section: 'Preferences & Security', items: [

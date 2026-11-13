@@ -16,14 +16,14 @@ module.exports = defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'list',
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3030',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3010',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure'
   },
   webServer: {
-    command: 'npx next start -p 3030',
-    url: 'http://localhost:3030',
-    reuseExistingServer: false,
+    command: 'npm run dev',
+    url: 'http://localhost:3010',
+    reuseExistingServer: true,
     timeout: 120 * 1000
   },
   projects: [

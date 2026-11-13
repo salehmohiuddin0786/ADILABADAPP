@@ -32,7 +32,8 @@ import {
   Menu,
   X,
   ChevronRight,
-  AlertTriangle
+  AlertTriangle,
+  User
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../shared/contexts/LanguageContext';
@@ -58,6 +59,7 @@ export default function OwnerLayout({ children, title = 'Owner Control Center' }
       section: 'Command Center',
       items: [
         { name: 'Owner Dashboard', href: '/owner/dashboard', icon: LayoutDashboard },
+        { name: 'My Profile', href: '/owner/profile', icon: User },
         { name: 'Verification & KYC', href: '/owner/verification', icon: ShieldCheck, badge: 'Verified' },
         { name: 'Business Profiles', href: '/owner/businesses', icon: Store },
         { name: 'Advertisements', href: '/owner/advertisements', icon: Tag }

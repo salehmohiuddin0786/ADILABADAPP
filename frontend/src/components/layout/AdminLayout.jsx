@@ -57,6 +57,7 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
       heading: 'COMMERCIAL & PROMOTIONS',
       items: [
         { name: 'Advertisements', href: '/admin/advertisements', icon: Megaphone },
+        { name: 'Rental Fleet', href: '/admin/rentals', icon: LayoutDashboard },
         { name: 'Homepage Banners', href: '/admin/banners', icon: ImageIcon },
         { name: 'Category Schema', href: '/admin/categories', icon: FolderTree }
       ]
@@ -73,6 +74,7 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
       heading: 'GOVERNANCE & TELEMETRY',
       items: [
         { name: 'User & Roles Directory', href: '/admin/users', icon: Users },
+        { name: 'Staff Task Force', href: '/admin/staff', icon: ShieldCheck },
         { name: 'Flagged Content & Reports', href: '/admin/reports', icon: Flag },
         { name: 'Broadcast Notifications', href: '/admin/notifications', icon: Bell },
         { name: 'Analytics & Telemetry', href: '/admin/analytics', icon: BarChart3 },

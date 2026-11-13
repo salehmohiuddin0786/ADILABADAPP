@@ -13,7 +13,7 @@ import {
   getMockSearch
 } from '../data/mockData';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
 /**
  * Parses query string from endpoint URL into key-value object

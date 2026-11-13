@@ -24,7 +24,8 @@ export default function StaffLayout({ children, title = 'Staff Operations Hub' }
 
   const STAFF_NAV = [
     { name: 'Staff Dashboard', href: '/staff/dashboard', icon: Inbox },
-    { name: 'Assigned Moderation Queue', href: '/staff/moderation', icon: Inbox, badge: '4 Pending' },
+    { name: 'My Assigned Tasks', href: '/staff/tasks', icon: Inbox, badge: '3 Tasks' },
+    { name: 'Assigned Moderation Queue', href: '/staff/moderation', icon: ShieldCheck, badge: '4 Pending' },
     { name: 'KYC & Verification Tasks', href: '/staff/verifications', icon: ShieldCheck },
     { name: 'Disputes & Damage Claims', href: '/staff/disputes', icon: AlertTriangle, badge: '1 Open' },
     { name: 'Customer Support Tickets', href: '/staff/support', icon: LifeBuoy },
