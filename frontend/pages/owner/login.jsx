@@ -22,7 +22,7 @@ import { useToast } from '../../src/context/ToastContext';
 
 export default function OwnerLoginPage() {
   const router = useRouter();
-  const { login, register, user, isOwner, isLoggedIn } = useAuth();
+  const { login, register, logout, user, isOwner, isLoggedIn } = useAuth();
   const { addToast } = useToast();
 
   const [tab, setTab] = useState(router.query.tab === 'register' ? 'register' : 'login');
@@ -46,11 +46,10 @@ export default function OwnerLoginPage() {
     }
   }, [router.query.tab]);
 
-  useEffect(() => {
-    if (isLoggedIn && isOwner) {
-      router.replace(router.query.redirect || '/owner/dashboard');
-    }
-  }, [isLoggedIn, isOwner, router]);
+  // If already logged in as owner and redirected here from another route
+  const handleDirectAccess = () => {
+    router.push(router.query.redirect || '/owner/dashboard');
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -127,6 +126,32 @@ export default function OwnerLoginPage() {
               Businesses • Rentals • Inventory • Classifieds
             </p>
           </div>
+
+          {/* Active Session Notification */}
+          {isLoggedIn && isOwner && (
+            <div className="mb-6 p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500/40 text-xs text-white space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-emerald-300">Signed in as {user?.name}</span>
+                <span className="px-2 py-0.5 rounded bg-emerald-800 text-[10px] font-bold">Owner Active</span>
+              </div>
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={handleDirectAccess}
+                  className="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition"
+                >
+                  Enter Owner Dashboard &rarr;
+                </button>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition"
+                >
+                  Switch
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Quick Demo Pill */}
           <div className="mb-6 p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/30 flex items-center justify-between text-xs">
