@@ -31,6 +31,18 @@ test.describe('Adilabad App — Core Hyperlocal Navigation & Responsiveness', ()
     await expect(page.locator('text=Business Directory').first()).toBeVisible();
   });
 
+  test('Owner Portal login loads and authenticates successfully', async ({ page }) => {
+    await page.goto('/owner/login');
+    await expect(page.locator('text=Adilabad Owner Portal').first()).toBeVisible();
+
+    // Click Sign In with demo credentials
+    await page.click('button:has-text("Sign In to Owner Center")');
+
+    // Should redirect to /owner/dashboard
+    await page.waitForURL('**/owner/dashboard');
+    await expect(page.locator('text=Commercial Management Dashboard').first()).toBeVisible();
+  });
+
   test('Mobile viewport displays sticky bottom navigation', async ({ page, isMobile }) => {
     test.skip(!isMobile, 'Mobile test only');
     await page.goto('/');

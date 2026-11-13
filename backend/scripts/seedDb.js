@@ -21,20 +21,23 @@ async function seedDatabase() {
     await connection.query(`
       INSERT INTO roles (id, name, description) VALUES
       (1, 'admin', 'System Administrator with full management permissions'),
-      (2, 'user', 'Registered visitor with browsing and favorites permissions')
+      (2, 'user', 'Registered visitor with browsing and favorites permissions'),
+      (3, 'owner', 'Business and Rental inventory owner with listing management permissions')
       ON DUPLICATE KEY UPDATE name=VALUES(name);
     `);
 
-    // 2. Users (Admin + User)
+    // 2. Users (Admin + User + Owner)
     const adminPasswordHash = await bcrypt.hash('Admin@123456', 10);
     const userPasswordHash = await bcrypt.hash('User@123456', 10);
+    const ownerPasswordHash = await bcrypt.hash('Owner@123456', 10);
 
     await connection.query(`
       INSERT INTO users (id, role_id, name, email, phone, password_hash, avatar_url, is_active) VALUES
       (1, 1, 'Adilabad Admin', 'admin@adilabadapp.com', '+91 94401 12345', ?, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80', 1),
-      (2, 2, 'Ramesh Kumar', 'user@adilabadapp.com', '+91 98480 54321', ?, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80', 1)
+      (2, 2, 'Ramesh Kumar', 'user@adilabadapp.com', '+91 98480 54321', ?, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80', 1),
+      (3, 3, 'Adilabad Media Works (Owner)', 'owner@adilabadapp.com', '+91 98480 22334', ?, 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80', 1)
       ON DUPLICATE KEY UPDATE name=VALUES(name), password_hash=VALUES(password_hash);
-    `, [adminPasswordHash, userPasswordHash]);
+    `, [adminPasswordHash, userPasswordHash, ownerPasswordHash]);
 
     // 3. Categories (All required categories)
     const categories = [

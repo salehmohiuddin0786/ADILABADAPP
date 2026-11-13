@@ -311,12 +311,15 @@ export function getMockResponse(endpoint, options = {}) {
 
   if (urlWithoutQuery === '/auth/login') {
     const isAdmin = body.email && (body.email.includes('admin') || body.email === 'admin@adilabadapp.com');
+    const isOwner = body.email && (body.email.includes('owner') || body.email === 'owner@adilabadapp.com');
     const mockUser = {
-      id: isAdmin ? 1 : 2,
-      name: isAdmin ? 'Adilabad Admin' : 'Ramesh Kumar',
-      email: body.email || (isAdmin ? 'admin@adilabadapp.com' : 'user@adilabadapp.com'),
-      phone: '+91 94401 12345',
-      role: isAdmin ? 'admin' : 'user'
+      id: isAdmin ? 1 : (isOwner ? 3 : 2),
+      name: isAdmin ? 'Adilabad Admin' : (isOwner ? 'Adilabad Media Works (Owner)' : 'Ramesh Kumar'),
+      email: body.email || (isAdmin ? 'admin@adilabadapp.com' : (isOwner ? 'owner@adilabadapp.com' : 'user@adilabadapp.com')),
+      phone: isOwner ? '+91 98480 22334' : '+91 94401 12345',
+      role: isAdmin ? 'admin' : (isOwner ? 'owner' : 'user'),
+      primary_role: isAdmin ? 'SUPER_ADMIN' : (isOwner ? 'BUSINESS_OWNER' : 'CUSTOMER'),
+      roles: isAdmin ? ['SUPER_ADMIN', 'ADMIN'] : (isOwner ? ['BUSINESS_OWNER', 'INDIVIDUAL_OWNER'] : ['CUSTOMER'])
     };
     if (typeof window !== 'undefined') {
       localStorage.setItem('adilabad_mock_user', JSON.stringify(mockUser));
@@ -330,12 +333,15 @@ export function getMockResponse(endpoint, options = {}) {
   }
 
   if (urlWithoutQuery === '/auth/register') {
+    const isOwner = body.accountType === 'owner' || body.role === 'owner' || (body.email && body.email.includes('owner'));
     const mockUser = {
       id: Date.now(),
-      name: body.name || 'Local Resident',
-      email: body.email || 'user@adilabadapp.com',
+      name: body.name || (isOwner ? 'Adilabad Enterprise' : 'Local Resident'),
+      email: body.email || (isOwner ? 'owner@adilabadapp.com' : 'user@adilabadapp.com'),
       phone: body.phone || '+91 98480 12345',
-      role: 'user'
+      role: isOwner ? 'owner' : 'user',
+      primary_role: isOwner ? 'BUSINESS_OWNER' : 'CUSTOMER',
+      roles: isOwner ? ['BUSINESS_OWNER', 'INDIVIDUAL_OWNER'] : ['CUSTOMER']
     };
     if (typeof window !== 'undefined') {
       localStorage.setItem('adilabad_mock_user', JSON.stringify(mockUser));
@@ -344,7 +350,7 @@ export function getMockResponse(endpoint, options = {}) {
       success: true,
       token: 'mock-jwt-token-adilabad-preview',
       user: mockUser,
-      message: 'Account created successfully (Offline Preview Mode)'
+      message: isOwner ? 'Business Owner account registered!' : 'Account created successfully (Offline Preview Mode)'
     };
   }
 

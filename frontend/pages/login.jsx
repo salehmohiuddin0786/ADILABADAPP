@@ -40,21 +40,29 @@ export default function LoginPage() {
     const res = await login(email, password);
     setSubmitting(false);
     if (res.success) {
-      if (res.user?.role === 'admin') {
+      if (res.user?.role === 'admin' || res.user?.role === 'SUPER_ADMIN') {
         router.push('/admin');
+      } else if (res.user?.role === 'owner' || res.user?.role === 'BUSINESS_OWNER') {
+        router.push(router.query.redirect || '/owner/dashboard');
       } else {
         router.push(router.query.redirect || '/');
       }
     }
   };
 
+  const [accountType, setAccountType] = useState('user');
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    const res = await register(name, email, phone, password);
+    const res = await register(name, email, phone, password, accountType);
     setSubmitting(false);
     if (res.success) {
-      router.push('/');
+      if (accountType === 'owner') {
+        router.push('/owner/dashboard');
+      } else {
+        router.push('/');
+      }
     }
   };
 
@@ -250,6 +258,24 @@ export default function LoginPage() {
               </button>
             </form>
           )}
+
+          {/* Business & Rental Owner Callout */}
+          <div className="mt-6 pt-5 border-t border-slate-100">
+            <Link
+              href="/owner/login"
+              className="group flex items-center justify-between p-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100/80 border border-amber-200/80 transition"
+            >
+              <div className="text-left">
+                <span className="block text-xs font-bold text-amber-950">
+                  Business or Rental Inventory Owner?
+                </span>
+                <span className="block text-[11px] text-amber-800">
+                  Manage commercial listings, rentals & leads in Owner Portal &rarr;
+                </span>
+              </div>
+              <ArrowRight className="w-4 h-4 text-amber-700 group-hover:translate-x-1 transition-transform shrink-0" />
+            </Link>
+          </div>
         </motion.div>
       </div>
     </>

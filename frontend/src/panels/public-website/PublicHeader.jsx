@@ -147,9 +147,15 @@ export default function PublicHeader({ selectedLocation = 'Adilabad', onSelectLo
                 )}
               </div>
             ) : (
-              <Link href="/login" className="hover:text-white font-medium transition-colors">
-                {t('nav.login')}
-              </Link>
+              <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                <Link href="/login" className="hover:text-white font-medium transition-colors">
+                  {t('nav.login')}
+                </Link>
+                <span className="text-emerald-700/60">|</span>
+                <Link href="/owner/login" className="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
+                  Owner Portal
+                </Link>
+              </div>
             )}
           </div>
         </div>

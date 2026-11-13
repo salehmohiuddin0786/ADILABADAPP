@@ -89,11 +89,14 @@ exports.register = async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Register user with role_id = 2 ('user'). Standard users CANNOT publish or create ads.
+    const isOwnerReg = req.body.accountType === 'owner' || req.body.role === 'owner';
+    const targetRoleId = isOwnerReg ? 3 : 2;
+    const targetRoleName = isOwnerReg ? 'owner' : 'user';
+
     const result = await query(
       `INSERT INTO users (role_id, name, email, phone, password_hash, is_active)
-       VALUES (2, ?, ?, ?, ?, 1)`,
-      [name.trim(), cleanEmail, phone ? phone.trim() : null, passwordHash]
+       VALUES (?, ?, ?, ?, ?, 1)`,
+      [targetRoleId, name.trim(), cleanEmail, phone ? phone.trim() : null, passwordHash]
     );
 
     const newUser = {
@@ -102,7 +105,7 @@ exports.register = async (req, res) => {
       email: cleanEmail,
       phone: phone || null,
       avatar_url: null,
-      role: 'user'
+      role: targetRoleName
     };
 
     const token = generateToken(newUser);

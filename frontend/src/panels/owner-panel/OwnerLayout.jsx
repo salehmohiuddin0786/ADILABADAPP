@@ -39,8 +39,25 @@ import { useLanguage } from '../../shared/contexts/LanguageContext';
 
 export default function OwnerLayout({ children, title = 'Owner Control Center' }) {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, isOwner, loading, logout } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  React.useEffect(() => {
+    if (!loading && (!user || !isOwner)) {
+      router.replace('/owner/login');
+    }
+  }, [user, loading, isOwner, router]);
+
+  if (loading || !user || !isOwner) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm font-semibold text-slate-300">Verifying merchant / owner credentials...</p>
+        </div>
+      </div>
+    );
+  }
 
   const OWNER_NAV = [
     {

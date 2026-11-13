@@ -66,11 +66,11 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const register = async (name, email, phone, password) => {
+  const register = async (name, email, phone, password, accountType = 'user') => {
     try {
       const res = await apiFetch('/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ name, email, phone, password })
+        body: JSON.stringify({ name, email, phone, password, accountType })
       });
 
       if (res.success && res.token) {
@@ -127,13 +127,55 @@ export function AuthProvider({ children }) {
     );
   };
 
+  const isAdmin = Boolean(
+    user && (
+      user.role === 'admin' ||
+      user.role === 'SUPER_ADMIN' ||
+      user.primary_role === 'SUPER_ADMIN' ||
+      user.primary_role === 'ADMIN' ||
+      (Array.isArray(user.roles) && user.roles.some((r) => ['SUPER_ADMIN', 'ADMIN'].includes(r)))
+    )
+  );
+
+  const isOwner = Boolean(
+    user && (
+      isAdmin ||
+      user.role === 'owner' ||
+      user.role === 'BUSINESS_OWNER' ||
+      user.role === 'INDIVIDUAL_OWNER' ||
+      user.primary_role === 'BUSINESS_OWNER' ||
+      user.primary_role === 'INDIVIDUAL_OWNER' ||
+      user.primary_role === 'PROPERTY_OWNER' ||
+      user.primary_role === 'SERVICE_PROVIDER' ||
+      user.primary_role === 'EMPLOYER' ||
+      (Array.isArray(user.roles) &&
+        user.roles.some((r) =>
+          ['BUSINESS_OWNER', 'INDIVIDUAL_OWNER', 'PROPERTY_OWNER', 'SERVICE_PROVIDER', 'EMPLOYER'].includes(r)
+        ))
+    )
+  );
+
+  const isStaff = Boolean(
+    user && (
+      isAdmin ||
+      user.role === 'staff' ||
+      user.primary_role === 'MODERATOR' ||
+      user.primary_role === 'SUPPORT_STAFF' ||
+      user.primary_role === 'CONTENT_MANAGER' ||
+      (Array.isArray(user.roles) &&
+        user.roles.some((r) => ['MODERATOR', 'SUPPORT_STAFF', 'CONTENT_MANAGER'].includes(r)))
+    )
+  );
+
   return (
     <AuthContext.Provider
       value={{
         user,
         loading,
         isLoggedIn: !!user,
-        isAdmin: user?.role === 'admin',
+        isAdmin,
+        isOwner,
+        isStaff,
         login,
         register,
         logout,
