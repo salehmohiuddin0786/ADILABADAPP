@@ -1,0 +1,135 @@
+/**
+ * ADILABAD APP — GLOBAL COLOR PALETTE
+ * Centralized color token definition for all 5 panels:
+ * 1. Public Website | 2. Customer Panel | 3. Owner Panel | 4. Admin Panel | 5. Staff Panel
+ * 
+ * Strict Rule: Do not hardcode raw hex values inside individual component files.
+ */
+
+:root {
+  /* Brand Primary: Deep Emerald Green */
+  --brand-primary: #14532d;
+  --brand-primary-hover: #0f3f22;
+  --brand-primary-light: #166534;
+  --brand-primary-subtle: #f0fdf4;
+  --brand-primary-glow: rgba(20, 83, 45, 0.25);
+
+  /* Brand Secondary: Fresh Green */
+  --brand-secondary: #16a34a;
+  --brand-secondary-hover: #15803d;
+  --brand-secondary-light: #4ade80;
+  --brand-secondary-subtle: #dcfce7;
+
+  /* Accent: Warm Gold */
+  --accent-gold: #eab308;
+  --accent-gold-hover: #ca8a04;
+  --accent-gold-subtle: #fef9c3;
+  --accent-gold-glow: rgba(234, 179, 8, 0.25);
+
+  /* Surfaces & Backgrounds */
+  --bg-app: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #ffffff;
+  --bg-surface-muted: #f1f5f9;
+  --bg-surface-glass: rgba(255, 255, 255, 0.85);
+
+  /* Typography & Text */
+  --text-main: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --text-inverse: #ffffff;
+
+  /* Borders & Dividers */
+  --border-subtle: #f1f5f9;
+  --border-default: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-focus: #16a34a;
+
+  /* Status Tokens */
+  --status-success: #15803d;
+  --status-success-bg: #f0fdf4;
+  --status-success-border: #bbf7d0;
+
+  --status-warning: #d97706;
+  --status-warning-bg: #fffbeb;
+  --status-warning-border: #fde68a;
+
+  --status-danger: #dc2626;
+  --status-danger-bg: #fef2f2;
+  --status-danger-border: #fecaca;
+
+  --status-info: #2563eb;
+  --status-info-bg: #eff6ff;
+  --status-info-border: #bfdbfe;
+
+  /* Interactive Elements */
+  --btn-primary-bg: var(--brand-primary);
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: var(--brand-primary-hover);
+
+  --btn-secondary-bg: var(--brand-primary-subtle);
+  --btn-secondary-text: var(--brand-primary);
+  --btn-secondary-hover: #dcfce7;
+
+  --link-color: var(--brand-secondary);
+  --link-color-hover: var(--brand-primary);
+
+  /* Navigation & Chrome */
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --nav-border: var(--border-default);
+  --sidebar-bg: #ffffff;
+  --sidebar-text: var(--text-main);
+  --sidebar-active-bg: var(--brand-primary-subtle);
+  --sidebar-active-text: var(--brand-primary);
+}
+
+/* Dark Mode Tokens */
+[data-theme="dark"],
+.dark {
+  --bg-app: #09130d;
+  --bg-surface: #0f1f15;
+  --bg-surface-elevated: #162c1e;
+  --bg-surface-muted: #1c3625;
+  --bg-surface-glass: rgba(15, 31, 21, 0.85);
+
+  --text-main: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #0f172a;
+
+  --border-subtle: #1c3625;
+  --border-default: #254631;
+  --border-strong: #335d41;
+  --border-focus: #4ade80;
+
+  --status-success: #22c55e;
+  --status-success-bg: rgba(34, 197, 94, 0.15);
+  --status-success-border: #166534;
+
+  --status-warning: #f59e0b;
+  --status-warning-bg: rgba(245, 158, 11, 0.15);
+  --status-warning-border: #92400e;
+
+  --status-danger: #ef4444;
+  --status-danger-bg: rgba(239, 68, 68, 0.15);
+  --status-danger-border: #991b1b;
+
+  --status-info: #3b82f6;
+  --status-info-bg: rgba(59, 130, 246, 0.15);
+  --status-info-border: #1e40af;
+
+  --btn-primary-bg: #16a34a;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #15803d;
+
+  --btn-secondary-bg: #162c1e;
+  --btn-secondary-text: #4ade80;
+  --btn-secondary-hover: #1c3625;
+
+  --nav-bg: rgba(15, 31, 21, 0.95);
+  --nav-border: var(--border-default);
+  --sidebar-bg: #0d1a12;
+  --sidebar-text: var(--text-main);
+  --sidebar-active-bg: rgba(22, 163, 74, 0.2);
+  --sidebar-active-text: #4ade80;
+}

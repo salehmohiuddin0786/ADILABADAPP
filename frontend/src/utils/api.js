@@ -108,7 +108,80 @@ export function getMockResponse(endpoint, options = {}) {
     return { success: true, data: { ...ev, upcoming } };
   }
 
-  // 7. Global Search
+  // 7. Rentals (Rent Your Items)
+  if (urlWithoutQuery.includes('/rentals')) {
+    const mockRentals = [
+      {
+        id: 101,
+        title: 'Sony Alpha A7 IV Mirrorless Camera + 24-70mm Lens',
+        slug: 'sony-alpha-a7-iv-mirrorless-camera',
+        category_name: 'Electronics & Cameras',
+        daily_rate: 1500,
+        security_deposit: 5000,
+        location: 'Cinema Road, Adilabad',
+        item_condition: 'like_new',
+        owner_name: 'Adilabad Media Works',
+        status: 'approved',
+        description: 'Professional camera kit for weddings, documentary shoots, and events in Adilabad.',
+        media: [{ media_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800' }]
+      },
+      {
+        id: 102,
+        title: 'John Deere 5050D Tractor with Cultivator',
+        slug: 'john-deere-5050d-tractor-rental',
+        category_name: 'Agricultural Equipment',
+        daily_rate: 3200,
+        security_deposit: 8000,
+        location: 'Utnoor Road, Adilabad',
+        item_condition: 'good',
+        owner_name: 'Telangana Agri Hub',
+        status: 'approved',
+        description: 'High performance 50HP tractor with heavy-duty disc cultivator ready for field plowing.',
+        media: [{ media_url: 'https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=800' }]
+      },
+      {
+        id: 103,
+        title: 'JBL VRX Line Array 10000W Sound Setup for Events',
+        slug: 'jbl-vrx-sound-setup-events',
+        category_name: 'Event Equipment',
+        daily_rate: 8500,
+        security_deposit: 12000,
+        location: 'Subhash Nagar, Adilabad',
+        item_condition: 'like_new',
+        owner_name: 'Royal Sound & Lights',
+        status: 'approved',
+        description: 'Complete high-power public address and music sound system with wireless digital microphones.',
+        media: [{ media_url: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800' }]
+      }
+    ];
+
+    if (method === 'POST' && urlWithoutQuery.includes('/book')) {
+      return {
+        success: true,
+        message: 'Rental booking proposal sent to owner!',
+        data: {
+          booking_code: `ADL-RENT-${Date.now().toString().slice(-6)}`,
+          status: 'PENDING'
+        }
+      };
+    }
+
+    if (method === 'POST') {
+      return {
+        success: true,
+        message: 'Rental listing submitted for admin moderation!',
+        data: { id: Date.now(), slug: 'new-rental-listing' }
+      };
+    }
+
+    return {
+      success: true,
+      count: mockRentals.length,
+      data: mockRentals
+    };
+  }
+
+  // 8. Global Search
   if (urlWithoutQuery === '/search') {
     return getMockSearch(params.q || params.search || '', params.location || '');
   }

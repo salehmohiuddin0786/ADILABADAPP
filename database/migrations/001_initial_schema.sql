@@ -1,0 +1,3 @@
+-- Migration: 001_initial_schema.sql
+-- Description: Complete Adilabad App Initial Architecture & Tables
+-- Source of Truth: database/schema/complete_schema.sql

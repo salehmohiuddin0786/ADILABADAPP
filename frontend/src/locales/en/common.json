@@ -1,0 +1,65 @@
+{
+  "brand": {
+    "name": "Adilabad App",
+    "tagline": "Your City. Your Community. Your Marketplace.",
+    "subheading": "Discover local businesses, rent equipment, explore events, and connect with trusted local services in Adilabad."
+  },
+  "nav": {
+    "home": "Home",
+    "discover": "Discover",
+    "advertisements": "Advertisements",
+    "businesses": "Businesses",
+    "rentals": "Rent Items",
+    "buySell": "Buy & Sell",
+    "services": "Services",
+    "jobs": "Jobs",
+    "events": "Events",
+    "offers": "Offers",
+    "more": "More",
+    "food": "Food & Dining",
+    "live": "Adilabad Live",
+    "explore": "Explore Adilabad",
+    "properties": "Property Rentals",
+    "education": "Education",
+    "agriculture": "Agriculture",
+    "weddings": "Weddings",
+    "search": "Search",
+    "language": "Language",
+    "login": "Sign In",
+    "account": "My Account",
+    "customerPanel": "Customer Hub",
+    "ownerPanel": "Owner Dashboard",
+    "adminPanel": "Admin Portal",
+    "staffPanel": "Staff Workspace",
+    "logout": "Sign Out"
+  },
+  "search": {
+    "placeholder": "Search ads, businesses, rental items, jobs in Adilabad...",
+    "allCategories": "All Categories",
+    "allLocations": "All Localities",
+    "submit": "Search",
+    "noResults": "No results matched your search criteria."
+  },
+  "actions": {
+    "call": "Call Now",
+    "whatsapp": "WhatsApp",
+    "bookRental": "Request Rental Booking",
+    "viewDetails": "View Details",
+    "makeOffer": "Make Offer",
+    "applyNow": "Apply Now",
+    "contact": "Contact",
+    "directions": "Get Directions",
+    "save": "Save",
+    "share": "Share",
+    "filter": "Filter",
+    "clearAll": "Clear All",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "panels": {
+    "customer": "Customer Panel",
+    "owner": "Owner Panel",
+    "admin": "Admin Panel",
+    "staff": "Staff Panel"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "brand": {
+    "name": "عادل آباد ایپ",
+    "tagline": "آپ کا شہر۔ آپ کی کمیونٹی۔ آپ کا بازار۔",
+    "subheading": "عادل آباد میں مقامی کاروبار، کرائے کی اشیاء، تقاریب اور قابل اعتماد خدمات تلاش کریں۔"
+  },
+  "nav": {
+    "home": "ہوم",
+    "discover": "دریافت کریں",
+    "advertisements": "اشتہارات",
+    "businesses": "کاروبار",
+    "rentals": "کرایہ کی اشیاء",
+    "buySell": "خرید و فروخت",
+    "services": "خدمات",
+    "jobs": "ملازمتیں",
+    "events": "تقاریب",
+    "offers": "پیشکشیں",
+    "more": "مزید",
+    "food": "کھانا اور ہوٹل",
+    "live": "عادل آباد لائیو",
+    "explore": "سیاحت",
+    "properties": "جائیداد کرایہ",
+    "education": "تعلیم",
+    "agriculture": "زراعت",
+    "weddings": "شادیاں",
+    "search": "تلاش",
+    "language": "زبان",
+    "login": "لاگ ان",
+    "account": "میرا اکاؤنٹ",
+    "customerPanel": "کسٹمر پینل",
+    "ownerPanel": "مالک ڈیش بورڈ",
+    "adminPanel": "ایڈمن پورٹل",
+    "staffPanel": "سٹاف پینل",
+    "logout": "لاگ آؤٹ"
+  },
+  "search": {
+    "placeholder": "اشتہارات، کاروبار، کرائے کا سامان، ملازمتیں تلاش کریں...",
+    "allCategories": "تمام زمرے",
+    "allLocations": "تمام مقامات",
+    "submit": "تلاش کریں",
+    "noResults": "کوئی نتائج دستیاب نہیں ہیں۔"
+  },
+  "actions": {
+    "call": "کال کریں",
+    "whatsapp": "واٹس ایپ",
+    "bookRental": "کرایہ بکنگ کی درخواست",
+    "viewDetails": "تفصیلات دیکھیں",
+    "makeOffer": "پیشکش کریں",
+    "applyNow": "درخواست دیں",
+    "contact": "رابطہ کریں",
+    "directions": "راستہ دیکھیں",
+    "save": "محفوظ کریں",
+    "share": "شیئر کریں",
+    "filter": "فلٹر",
+    "clearAll": "صاف کریں",
+    "confirm": "تصدیق کریں",
+    "cancel": "منسوخ کریں"
+  },
+  "panels": {
+    "customer": "کسٹمر پینل",
+    "owner": "مالک پینل",
+    "admin": "ایڈمن پینل",
+    "staff": "سٹاف پینل"
+  }
+}

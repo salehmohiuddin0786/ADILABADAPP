@@ -1,0 +1,73 @@
+/**
+ * ADILABAD APP — GLOBAL ROLES CONFIGURATION
+ * Strict Backend-Controlled Access Authority
+ * 
+ * NOTE: These roles and their hierarchical authority are strictly configured in this file.
+ * The Admin Panel does not provide UI editing of roles to prevent privilege escalation.
+ */
+
+const ROLES = Object.freeze({
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  ADMIN: 'ADMIN',
+  CONTENT_MANAGER: 'CONTENT_MANAGER',
+  MODERATOR: 'MODERATOR',
+  SUPPORT_STAFF: 'SUPPORT_STAFF',
+  INDIVIDUAL_OWNER: 'INDIVIDUAL_OWNER',
+  BUSINESS_OWNER: 'BUSINESS_OWNER',
+  SERVICE_PROVIDER: 'SERVICE_PROVIDER',
+  EMPLOYER: 'EMPLOYER',
+  PROPERTY_OWNER: 'PROPERTY_OWNER',
+  CUSTOMER: 'CUSTOMER'
+});
+
+// Role hierarchy rank (higher numerical score = higher administrative precedence)
+const ROLE_HIERARCHY = Object.freeze({
+  [ROLES.SUPER_ADMIN]: 100,
+  [ROLES.ADMIN]: 80,
+  [ROLES.CONTENT_MANAGER]: 60,
+  [ROLES.MODERATOR]: 50,
+  [ROLES.SUPPORT_STAFF]: 40,
+  [ROLES.BUSINESS_OWNER]: 25,
+  [ROLES.PROPERTY_OWNER]: 24,
+  [ROLES.SERVICE_PROVIDER]: 23,
+  [ROLES.EMPLOYER]: 22,
+  [ROLES.INDIVIDUAL_OWNER]: 21,
+  [ROLES.CUSTOMER]: 10
+});
+
+// Categorization of roles by panel affinity
+const PANEL_ROLE_MAPPING = Object.freeze({
+  ADMIN_PANEL: [
+    ROLES.SUPER_ADMIN,
+    ROLES.ADMIN,
+    ROLES.CONTENT_MANAGER
+  ],
+  STAFF_PANEL: [
+    ROLES.SUPER_ADMIN,
+    ROLES.ADMIN,
+    ROLES.MODERATOR,
+    ROLES.SUPPORT_STAFF
+  ],
+  OWNER_PANEL: [
+    ROLES.BUSINESS_OWNER,
+    ROLES.INDIVIDUAL_OWNER,
+    ROLES.SERVICE_PROVIDER,
+    ROLES.EMPLOYER,
+    ROLES.PROPERTY_OWNER
+  ],
+  CUSTOMER_PANEL: [
+    ROLES.CUSTOMER,
+    ROLES.INDIVIDUAL_OWNER,
+    ROLES.BUSINESS_OWNER,
+    ROLES.SERVICE_PROVIDER,
+    ROLES.EMPLOYER,
+    ROLES.PROPERTY_OWNER
+  ],
+  PUBLIC_WEBSITE: Object.values(ROLES)
+});
+
+module.exports = {
+  ROLES,
+  ROLE_HIERARCHY,
+  PANEL_ROLE_MAPPING
+};

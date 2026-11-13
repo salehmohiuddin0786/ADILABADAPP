@@ -63,6 +63,15 @@ app.use('/api/favorites', require('./routes/favoriteRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+
+// Modular v1 Endpoints & Aliases
+app.use('/api/v1/locations', require('./src/modules/locations/locationRoutes'));
+app.use('/api/locations', require('./src/modules/locations/locationRoutes'));
+app.use('/api/v1/rentals', require('./src/modules/rentals/rentalRoutes'));
+app.use('/api/rentals', require('./src/modules/rentals/rentalRoutes'));
+app.use('/api/v1/search', require('./src/modules/search/searchRoutes'));
+app.use('/api/search', require('./src/modules/search/searchRoutes'));
+
 app.use('/api', require('./routes/publicRoutes'));
 
 // 404 handler

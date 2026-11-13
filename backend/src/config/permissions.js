@@ -1,0 +1,237 @@
+/**
+ * ADILABAD APP — GLOBAL PERMISSIONS MATRIX
+ * Backend-Controlled Fine-Grained Authorization
+ */
+
+const { ROLES } = require('./roles');
+
+const PERMISSIONS = Object.freeze({
+  // Platform & User Administration
+  USERS_READ_ALL: 'users:read:all',
+  USERS_CREATE_ADMIN: 'users:create:admin',
+  USERS_MANAGE_ROLES: 'users:manage:roles',
+  USERS_SUSPEND: 'users:suspend',
+  USERS_DELETE: 'users:delete',
+  
+  // Owner Verification
+  VERIFICATIONS_READ: 'verifications:read',
+  VERIFICATIONS_APPROVE: 'verifications:approve',
+  VERIFICATIONS_REJECT: 'verifications:reject',
+  VERIFICATIONS_SUBMIT: 'verifications:submit',
+
+  // Moderation Queue
+  MODERATION_VIEW_QUEUE: 'moderation:view_queue',
+  MODERATION_ACTION: 'moderation:action',
+  MODERATION_AUDIT_LOGS: 'moderation:audit_logs',
+
+  // Advertisements
+  ADS_CREATE: 'ads:create',
+  ADS_READ_OWN: 'ads:read:own',
+  ADS_UPDATE_OWN: 'ads:update:own',
+  ADS_DELETE_OWN: 'ads:delete:own',
+  ADS_MANAGE_ALL: 'ads:manage:all',
+
+  // Business Directory
+  BUSINESS_CREATE: 'business:create',
+  BUSINESS_UPDATE_OWN: 'business:update:own',
+  BUSINESS_MANAGE_ALL: 'business:manage:all',
+
+  // Rentals & Inventory
+  RENTAL_LIST_CREATE: 'rentals:create',
+  RENTAL_LIST_UPDATE_OWN: 'rentals:update:own',
+  RENTAL_LIST_MANAGE_ALL: 'rentals:manage:all',
+  RENTAL_BOOK_REQUEST: 'rentals:book:request',
+  RENTAL_BOOK_ACCEPT: 'rentals:book:accept',
+  RENTAL_BOOK_REJECT: 'rentals:book:reject',
+  RENTAL_HANDOVER_CONFIRM: 'rentals:handover:confirm',
+  RENTAL_RETURN_CONFIRM: 'rentals:return:confirm',
+  RENTAL_DAMAGE_REPORT: 'rentals:damage:report',
+  RENTAL_DISPUTE_RAISE: 'rentals:dispute:raise',
+  RENTAL_DISPUTE_RESOLVE: 'rentals:dispute:resolve',
+
+  // Buy & Sell
+  BUY_SELL_CREATE: 'buy_sell:create',
+  BUY_SELL_MANAGE_OWN: 'buy_sell:manage:own',
+  BUY_SELL_MANAGE_ALL: 'buy_sell:manage:all',
+  BUY_SELL_MAKE_OFFER: 'buy_sell:make_offer',
+
+  // Local Services
+  SERVICES_REGISTER_PROVIDER: 'services:register_provider',
+  SERVICES_MANAGE_OWN: 'services:manage:own',
+  SERVICES_MANAGE_ALL: 'services:manage:all',
+  SERVICES_SUBMIT_ENQUIRY: 'services:submit_enquiry',
+
+  // Jobs & Employment
+  JOBS_POST: 'jobs:post',
+  JOBS_MANAGE_OWN: 'jobs:manage:own',
+  JOBS_MANAGE_ALL: 'jobs:manage:all',
+  JOBS_APPLY: 'jobs:apply',
+  JOBS_VIEW_APPLICATIONS_OWN: 'jobs:view_applications:own',
+
+  // Events & Offers
+  EVENTS_CREATE: 'events:create',
+  EVENTS_MANAGE_ALL: 'events:manage:all',
+  OFFERS_CREATE: 'offers:create',
+  OFFERS_MANAGE_ALL: 'offers:manage:all',
+
+  // Niche Hyperlocal Modules (Food, Property, Education, Agriculture, Weddings, Live)
+  FOOD_MANAGE: 'food:manage',
+  PROPERTY_MANAGE_OWN: 'property:manage:own',
+  PROPERTY_MANAGE_ALL: 'property:manage:all',
+  EDUCATION_MANAGE: 'education:manage',
+  AGRICULTURE_MANAGE: 'agriculture:manage',
+  WEDDING_MANAGE: 'wedding:manage',
+  COMMUNITY_POST: 'community:post',
+  COMMUNITY_MANAGE_ALL: 'community:manage:all',
+
+  // Support & Reports
+  SUPPORT_VIEW_ASSIGNED: 'support:view_assigned',
+  SUPPORT_MANAGE_ALL: 'support:manage:all',
+  REPORTS_HANDLE: 'reports:handle',
+
+  // Analytics & Settings
+  ANALYTICS_VIEW_OWN: 'analytics:view:own',
+  ANALYTICS_VIEW_GLOBAL: 'analytics:view:global',
+  SYSTEM_SETTINGS_MANAGE: 'system:settings:manage'
+});
+
+// Explicit Role to Permissions Mapping
+const ROLE_PERMISSIONS = Object.freeze({
+  [ROLES.SUPER_ADMIN]: Object.values(PERMISSIONS),
+
+  [ROLES.ADMIN]: [
+    PERMISSIONS.USERS_READ_ALL,
+    PERMISSIONS.USERS_SUSPEND,
+    PERMISSIONS.VERIFICATIONS_READ,
+    PERMISSIONS.VERIFICATIONS_APPROVE,
+    PERMISSIONS.VERIFICATIONS_REJECT,
+    PERMISSIONS.MODERATION_VIEW_QUEUE,
+    PERMISSIONS.MODERATION_ACTION,
+    PERMISSIONS.MODERATION_AUDIT_LOGS,
+    PERMISSIONS.ADS_MANAGE_ALL,
+    PERMISSIONS.BUSINESS_MANAGE_ALL,
+    PERMISSIONS.RENTAL_LIST_MANAGE_ALL,
+    PERMISSIONS.RENTAL_DISPUTE_RESOLVE,
+    PERMISSIONS.BUY_SELL_MANAGE_ALL,
+    PERMISSIONS.SERVICES_MANAGE_ALL,
+    PERMISSIONS.JOBS_MANAGE_ALL,
+    PERMISSIONS.EVENTS_MANAGE_ALL,
+    PERMISSIONS.OFFERS_MANAGE_ALL,
+    PERMISSIONS.FOOD_MANAGE,
+    PERMISSIONS.PROPERTY_MANAGE_ALL,
+    PERMISSIONS.EDUCATION_MANAGE,
+    PERMISSIONS.AGRICULTURE_MANAGE,
+    PERMISSIONS.WEDDING_MANAGE,
+    PERMISSIONS.COMMUNITY_MANAGE_ALL,
+    PERMISSIONS.SUPPORT_MANAGE_ALL,
+    PERMISSIONS.REPORTS_HANDLE,
+    PERMISSIONS.ANALYTICS_VIEW_GLOBAL,
+    PERMISSIONS.SYSTEM_SETTINGS_MANAGE
+  ],
+
+  [ROLES.CONTENT_MANAGER]: [
+    PERMISSIONS.MODERATION_VIEW_QUEUE,
+    PERMISSIONS.MODERATION_ACTION,
+    PERMISSIONS.ADS_MANAGE_ALL,
+    PERMISSIONS.EVENTS_MANAGE_ALL,
+    PERMISSIONS.COMMUNITY_MANAGE_ALL,
+    PERMISSIONS.ANALYTICS_VIEW_GLOBAL
+  ],
+
+  [ROLES.MODERATOR]: [
+    PERMISSIONS.MODERATION_VIEW_QUEUE,
+    PERMISSIONS.MODERATION_ACTION,
+    PERMISSIONS.REPORTS_HANDLE,
+    PERMISSIONS.RENTAL_DISPUTE_RESOLVE
+  ],
+
+  [ROLES.SUPPORT_STAFF]: [
+    PERMISSIONS.SUPPORT_VIEW_ASSIGNED,
+    PERMISSIONS.REPORTS_HANDLE,
+    PERMISSIONS.VERIFICATIONS_READ
+  ],
+
+  [ROLES.BUSINESS_OWNER]: [
+    PERMISSIONS.VERIFICATIONS_SUBMIT,
+    PERMISSIONS.BUSINESS_CREATE,
+    PERMISSIONS.BUSINESS_UPDATE_OWN,
+    PERMISSIONS.ADS_CREATE,
+    PERMISSIONS.ADS_READ_OWN,
+    PERMISSIONS.ADS_UPDATE_OWN,
+    PERMISSIONS.OFFERS_CREATE,
+    PERMISSIONS.RENTAL_LIST_CREATE,
+    PERMISSIONS.RENTAL_LIST_UPDATE_OWN,
+    PERMISSIONS.RENTAL_BOOK_ACCEPT,
+    PERMISSIONS.RENTAL_BOOK_REJECT,
+    PERMISSIONS.RENTAL_HANDOVER_CONFIRM,
+    PERMISSIONS.RENTAL_RETURN_CONFIRM,
+    PERMISSIONS.RENTAL_DAMAGE_REPORT,
+    PERMISSIONS.ANALYTICS_VIEW_OWN
+  ],
+
+  [ROLES.INDIVIDUAL_OWNER]: [
+    PERMISSIONS.VERIFICATIONS_SUBMIT,
+    PERMISSIONS.RENTAL_LIST_CREATE,
+    PERMISSIONS.RENTAL_LIST_UPDATE_OWN,
+    PERMISSIONS.RENTAL_BOOK_ACCEPT,
+    PERMISSIONS.RENTAL_BOOK_REJECT,
+    PERMISSIONS.RENTAL_HANDOVER_CONFIRM,
+    PERMISSIONS.RENTAL_RETURN_CONFIRM,
+    PERMISSIONS.RENTAL_DAMAGE_REPORT,
+    PERMISSIONS.BUY_SELL_CREATE,
+    PERMISSIONS.BUY_SELL_MANAGE_OWN,
+    PERMISSIONS.ANALYTICS_VIEW_OWN
+  ],
+
+  [ROLES.SERVICE_PROVIDER]: [
+    PERMISSIONS.VERIFICATIONS_SUBMIT,
+    PERMISSIONS.SERVICES_REGISTER_PROVIDER,
+    PERMISSIONS.SERVICES_MANAGE_OWN,
+    PERMISSIONS.ANALYTICS_VIEW_OWN
+  ],
+
+  [ROLES.EMPLOYER]: [
+    PERMISSIONS.VERIFICATIONS_SUBMIT,
+    PERMISSIONS.JOBS_POST,
+    PERMISSIONS.JOBS_MANAGE_OWN,
+    PERMISSIONS.JOBS_VIEW_APPLICATIONS_OWN,
+    PERMISSIONS.ANALYTICS_VIEW_OWN
+  ],
+
+  [ROLES.PROPERTY_OWNER]: [
+    PERMISSIONS.VERIFICATIONS_SUBMIT,
+    PERMISSIONS.PROPERTY_MANAGE_OWN,
+    PERMISSIONS.ANALYTICS_VIEW_OWN
+  ],
+
+  [ROLES.CUSTOMER]: [
+    PERMISSIONS.RENTAL_BOOK_REQUEST,
+    PERMISSIONS.RENTAL_DISPUTE_RAISE,
+    PERMISSIONS.BUY_SELL_CREATE,
+    PERMISSIONS.BUY_SELL_MANAGE_OWN,
+    PERMISSIONS.BUY_SELL_MAKE_OFFER,
+    PERMISSIONS.SERVICES_SUBMIT_ENQUIRY,
+    PERMISSIONS.JOBS_APPLY,
+    PERMISSIONS.COMMUNITY_POST,
+    PERMISSIONS.VERIFICATIONS_SUBMIT
+  ]
+});
+
+function hasPermission(userRoles = [], requiredPermission) {
+  if (!Array.isArray(userRoles)) userRoles = [userRoles];
+  if (userRoles.includes(ROLES.SUPER_ADMIN)) return true;
+
+  for (const role of userRoles) {
+    const granted = ROLE_PERMISSIONS[role] || [];
+    if (granted.includes(requiredPermission)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+module.exports = {
+  PERMISSIONS,
+  ROLE_PERMISSIONS,
+  hasPermission
+};

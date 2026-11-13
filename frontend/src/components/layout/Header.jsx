@@ -14,17 +14,32 @@ import {
   ChevronDown,
   MapPin,
   ExternalLink,
-  Compass
+  Compass,
+  Globe,
+  Layers,
+  ShoppingBag,
+  Wrench,
+  Briefcase,
+  Utensils,
+  Sparkles,
+  Building,
+  GraduationCap,
+  Tractor,
+  PartyPopper
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../shared/contexts/LanguageContext';
 import { apiFetch } from '../../utils/api';
 
 export default function Header() {
   const router = useRouter();
   const { user, isLoggedIn, isAdmin, logout, favorites } = useAuth();
+  const { t, currentLanguage, changeLanguage, supportedLanguages } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -46,14 +61,26 @@ export default function Header() {
     setMobileMenuOpen(false);
     setNotifDropdownOpen(false);
     setUserDropdownOpen(false);
+    setLangDropdownOpen(false);
+    setMoreDropdownOpen(false);
   }, [router.asPath]);
 
   const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Advertisements', href: '/advertisements' },
-    { name: 'Businesses', href: '/businesses' },
-    { name: 'Events', href: '/events' },
-    { name: 'Explore', href: '/explore' }
+    { name: t('nav.home') || 'Home', href: '/' },
+    { name: t('nav.advertisements') || 'Advertisements', href: '/advertisements' },
+    { name: t('nav.businesses') || 'Businesses', href: '/businesses' },
+    { name: t('nav.rentals') || 'Rent Items', href: '/rentals', highlight: true },
+    { name: t('nav.buySell') || 'Buy & Sell', href: '/buy-sell' },
+    { name: t('nav.services') || 'Services', href: '/services' },
+    { name: t('nav.jobs') || 'Jobs', href: '/jobs' },
+    { name: t('nav.events') || 'Events', href: '/events' }
+  ];
+
+  const moreLinks = [
+    { name: t('nav.food') || 'Food & Dining', href: '/food', icon: Utensils },
+    { name: t('nav.live') || 'Adilabad Live', href: '/live', icon: Sparkles },
+    { name: t('nav.explore') || 'Explore Adilabad', href: '/explore', icon: Compass },
+    { name: t('nav.properties') || 'Property Rentals', href: '/properties', icon: Building }
   ];
 
   const isActive = (href) => {
@@ -135,6 +162,46 @@ export default function Header() {
                 </span>
               )}
             </Link>
+
+            {/* Language Selector Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                aria-label="Language Selector"
+                className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-slate-100 transition text-xs font-semibold"
+              >
+                <Globe className="w-4 h-4 text-emerald-700" />
+                <span className="hidden sm:inline uppercase">{currentLanguage}</span>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
+              </button>
+
+              <AnimatePresence>
+                {langDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    className="absolute right-0 mt-2 w-36 bg-white text-slate-800 rounded-2xl shadow-xl border border-slate-200 py-1.5 z-50"
+                  >
+                    {supportedLanguages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          changeLanguage(lang.code);
+                          setLangDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3.5 py-2 text-xs font-semibold hover:bg-emerald-50 hover:text-emerald-800 transition-colors flex items-center justify-between ${
+                          currentLanguage === lang.code ? 'bg-emerald-50 text-emerald-800 font-bold' : ''
+                        }`}
+                      >
+                        <span>{lang.nativeLabel}</span>
+                        <span className="text-[10px] text-slate-400 uppercase">{lang.code}</span>
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Notifications Dropdown */}
             <div className="relative">
@@ -224,25 +291,39 @@ export default function Header() {
                       </div>
 
                       <div className="py-1">
+                        <Link
+                          href="/customer/dashboard"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-emerald-800 bg-emerald-50/70 hover:bg-emerald-100/70 transition font-bold"
+                        >
+                          <User className="w-4 h-4 text-emerald-700" />
+                          Customer Hub
+                        </Link>
+                        <Link
+                          href="/owner/dashboard"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-amber-800 bg-amber-50/70 hover:bg-amber-100/70 transition font-bold"
+                        >
+                          <Layers className="w-4 h-4 text-amber-600" />
+                          Owner Portal
+                        </Link>
                         {isAdmin && (
                           <Link
                             href="/admin"
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-brand-50 hover:text-brand-600 transition font-medium"
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-800 hover:bg-slate-100 transition font-semibold"
                           >
-                            <Shield className="w-4 h-4 text-brand-600" />
+                            <Shield className="w-4 h-4 text-emerald-600" />
                             Admin Dashboard
                           </Link>
                         )}
                         <Link
-                          href="/profile"
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 transition"
+                          href="/staff/dashboard"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 transition text-xs font-medium"
                         >
-                          <User className="w-4 h-4 text-slate-400" />
-                          My Profile
+                          <Shield className="w-4 h-4 text-blue-500" />
+                          Staff Workspace
                         </Link>
                         <Link
                           href="/favorites"
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 transition"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 transition text-xs font-medium"
                         >
                           <Bookmark className="w-4 h-4 text-slate-400" />
                           Saved Items
