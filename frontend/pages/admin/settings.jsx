@@ -28,8 +28,12 @@ export default function AdminSettingsPage() {
         if (setRes.success && setRes.data) {
           setSettings((prev) => ({ ...prev, ...setRes.data }));
         }
-        if (logRes.success && logRes.data) {
+        if (logRes && logRes.success && Array.isArray(logRes.data)) {
           setLogs(logRes.data);
+        } else if (logRes && Array.isArray(logRes)) {
+          setLogs(logRes);
+        } else {
+          setLogs([]);
         }
       })
       .catch((err) => console.error(err))
@@ -184,7 +188,7 @@ export default function AdminSettingsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
-                {logs.map((log) => (
+                {(Array.isArray(logs) ? logs : []).map((log) => (
                   <tr key={log.id} className="hover:bg-slate-50 transition">
                     <td className="py-3 px-6 font-mono text-slate-500">{log.created_at}</td>
                     <td className="py-3 px-4 font-bold text-slate-900">{log.admin_name || 'Admin'}</td>

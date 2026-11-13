@@ -36,7 +36,7 @@ export default function AdminAnalyticsPage() {
     );
   }
 
-  const clicks = stats.clicks_breakdown || [];
+  const clicks = Array.isArray(stats?.clicks_breakdown) ? stats.clicks_breakdown : [];
 
   return (
     <AdminLayout title="Platform Analytics">

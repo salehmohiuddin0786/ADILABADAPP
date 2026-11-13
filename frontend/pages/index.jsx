@@ -274,7 +274,7 @@ export default function HomePage({
                         className="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-800 focus:outline-none cursor-pointer appearance-none pr-4"
                       >
                         <option value="all">All Adilabad</option>
-                        {locations && locations.length > 0 ? (
+                        {Array.isArray(locations) && locations.length > 0 ? (
                           locations.map((loc) => (
                             <option key={loc.id} value={loc.name}>
                               {loc.name}
@@ -612,7 +612,7 @@ export default function HomePage({
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {categories.slice(0, 8).map((category) => (
+            {(Array.isArray(categories) ? categories : []).slice(0, 8).map((category) => (
               <CategoryCard key={category.id} category={category} />
             ))}
           </div>
@@ -642,7 +642,7 @@ export default function HomePage({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredAds.slice(0, 6).map((ad) => (
+            {(Array.isArray(featuredAds) ? featuredAds : []).slice(0, 6).map((ad) => (
               <AdvertisementCard key={ad.id} ad={ad} />
             ))}
           </div>
@@ -696,7 +696,7 @@ export default function HomePage({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {latestAds.slice(0, 6).map((ad) => (
+            {(Array.isArray(latestAds) ? latestAds : []).slice(0, 6).map((ad) => (
               <AdvertisementCard key={ad.id} ad={ad} />
             ))}
           </div>
@@ -725,7 +725,7 @@ export default function HomePage({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {businesses.slice(0, 4).map((biz) => (
+            {(Array.isArray(businesses) ? businesses : []).slice(0, 4).map((biz) => (
               <BusinessCard key={biz.id} business={biz} />
             ))}
           </div>
@@ -754,7 +754,7 @@ export default function HomePage({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.slice(0, 3).map((event) => (
+            {(Array.isArray(events) ? events : []).slice(0, 3).map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>

@@ -176,7 +176,7 @@ export default function CustomerDashboard() {
         </div>
 
         <div className="divide-y divide-slate-100">
-          {activeRentals.map((rental) => (
+          {(Array.isArray(activeRentals) ? activeRentals : []).map((rental) => (
             <div key={rental.id} className="p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">

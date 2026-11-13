@@ -625,6 +625,83 @@ export const MOCK_ANALYTICS = {
     { name: 'Shopping', count: 18 },
     { name: 'Vehicles', count: 11 },
     { name: 'Food & Restaurants', count: 12 }
+  ],
+  advertisements: {
+    total: 12,
+    active: 12,
+    featured: 6,
+    views: 3850,
+    clicks: 620,
+    shares: 145
+  },
+  users: {
+    total: 1420,
+    active: 890
+  },
+  businesses: {
+    total: 8,
+    verified: 6
+  },
+  events: {
+    total: 3,
+    upcoming: 3
+  },
+  clicks_breakdown: [
+    { click_type: 'call', count: 284 },
+    { click_type: 'whatsapp', count: 216 },
+    { click_type: 'directions', count: 120 }
+  ],
+  top_advertisements: [
+    {
+      id: 1,
+      title: 'Prime Commercial Shop for Rent - Cinema Road',
+      business_name: 'Adilabad Prime Properties',
+      views: 1240,
+      clicks: 184,
+      status: 'published'
+    },
+    {
+      id: 2,
+      title: 'Royal Enfield Classic 350 - Stealth Black (2022)',
+      business_name: 'Adilabad MotoHub',
+      views: 980,
+      clicks: 142,
+      status: 'published'
+    },
+    {
+      id: 3,
+      title: 'Authentic Hyderabadi Dum Biryani Family Pack',
+      business_name: 'Hotel Mehfil & Family Restaurant',
+      views: 750,
+      clicks: 110,
+      status: 'published'
+    }
+  ],
+  top_categories: [
+    { id: 1, name: 'Food & Dining', count: 28, ads_count: 28 },
+    { id: 2, name: 'Properties & Rent', count: 22, ads_count: 22 },
+    { id: 3, name: 'Shopping & Retail', count: 19, ads_count: 19 },
+    { id: 4, name: 'Automobiles & Bikes', count: 15, ads_count: 15 }
+  ],
+  recent_activity: [
+    {
+      id: 1,
+      action: 'NEW_AD',
+      details: 'New ad posted: Prime Commercial Shop for Rent',
+      created_at: '2026-11-13T10:30:00Z'
+    },
+    {
+      id: 2,
+      action: 'STATUS_UPDATE',
+      details: 'Business verified: Hotel Mehfil',
+      created_at: '2026-11-13T09:15:00Z'
+    },
+    {
+      id: 3,
+      action: 'USER_REGISTERED',
+      details: 'New user registered from Shivaji Chowk',
+      created_at: '2026-11-13T08:00:00Z'
+    }
   ]
 };
 

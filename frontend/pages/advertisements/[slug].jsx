@@ -55,7 +55,7 @@ export default function AdvertisementDetailPage({ ad }) {
 
   const favorited = isFavorited('advertisement', ad.id);
 
-  const images = ad.images && ad.images.length > 0
+  const images = Array.isArray(ad?.images) && ad.images.length > 0
     ? ad.images
     : [{ image_url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1000&q=80' }];
 
@@ -394,7 +394,7 @@ export default function AdvertisementDetailPage({ ad }) {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {ad.related.map((rel) => (
+                {(Array.isArray(ad?.related) ? ad.related : []).map((rel) => (
                   <AdvertisementCard key={rel.id} ad={rel} />
                 ))}
               </div>

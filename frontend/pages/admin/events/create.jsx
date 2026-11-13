@@ -32,7 +32,8 @@ export default function CreateEventPage() {
   useEffect(() => {
     apiFetch('/locations')
       .then((res) => {
-        if (res.success) setLocations(res.data);
+        if (res && res.success && Array.isArray(res.data)) setLocations(res.data);
+        else if (res && Array.isArray(res)) setLocations(res);
       })
       .catch((err) => console.error(err));
   }, []);
@@ -165,7 +166,7 @@ export default function CreateEventPage() {
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white"
               >
                 <option value="">Select Locality</option>
-                {locations.map((l) => (
+                {(Array.isArray(locations) ? locations : []).map((l) => (
                   <option key={l.id} value={l.id}>
                     {l.name}
                   </option>

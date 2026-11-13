@@ -62,8 +62,8 @@ export default function EditAdvertisementPage() {
           setAddress(ad.address || '');
           setIsFeatured(ad.is_featured === 1);
           setStatus(ad.status || 'published');
-          if (ad.images && ad.images.length > 0) {
-            setImages(ad.images.map((img) => img.image_url));
+          if (Array.isArray(ad?.images) && ad.images.length > 0) {
+            setImages(ad.images.map((img) => img.image_url || img));
           }
         }
       })
@@ -186,7 +186,7 @@ export default function EditAdvertisementPage() {
                   onChange={(e) => setCategoryId(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white"
                 >
-                  {categories.map((c) => (
+                  {(Array.isArray(categories) ? categories : []).map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
                     </option>
@@ -275,7 +275,7 @@ export default function EditAdvertisementPage() {
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white"
                 >
                   <option value="">Select Locality</option>
-                  {locations.map((l) => (
+                  {(Array.isArray(locations) ? locations : []).map((l) => (
                     <option key={l.id} value={l.id}>
                       {l.name}
                     </option>

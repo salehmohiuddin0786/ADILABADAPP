@@ -51,7 +51,7 @@ export default function StaffDashboardPage() {
             <p className="text-xs text-slate-500 mt-1">Review pending items and resolve tickets according to district policy.</p>
           </div>
           <span className="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1.5 rounded-full">
-            {queue.length} Active Items
+            {Array.isArray(queue) ? queue.length : 0} Active Items
           </span>
         </div>
 
@@ -67,7 +67,7 @@ export default function StaffDashboardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {queue.map((item) => (
+              {(Array.isArray(queue) ? queue : []).map((item) => (
                 <tr key={item.id} className="hover:bg-slate-50/70">
                   <td className="px-6 py-4 font-mono font-bold text-slate-500">#{item.id}</td>
                   <td className="px-6 py-4">

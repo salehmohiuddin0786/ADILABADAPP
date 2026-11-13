@@ -198,7 +198,7 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="divide-y divide-slate-100">
-              {stats.top_advertisements?.map((ad) => (
+              {(Array.isArray(stats.top_advertisements) ? stats.top_advertisements : []).map((ad) => (
                 <div key={ad.id} className="py-3.5 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
                     <img
@@ -238,7 +238,7 @@ export default function AdminDashboardPage() {
             <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
               <h3 className="font-bold text-slate-900 text-base">Popular Categories</h3>
               <div className="space-y-3">
-                {stats.top_categories?.map((cat) => (
+                {(Array.isArray(stats.top_categories) ? stats.top_categories : []).map((cat) => (
                   <div key={cat.id} className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <Tag className="w-3.5 h-3.5 text-brand-600" />
@@ -262,7 +262,7 @@ export default function AdminDashboardPage() {
               </div>
 
               <div className="divide-y divide-slate-100 text-xs">
-                {stats.recent_activity?.slice(0, 4).map((log) => (
+                {(Array.isArray(stats.recent_activity) ? stats.recent_activity : []).slice(0, 4).map((log) => (
                   <div key={log.id} className="py-2.5 flex items-start justify-between gap-2">
                     <div>
                       <p className="font-bold text-slate-800">{log.action}</p>

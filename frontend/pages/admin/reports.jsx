@@ -17,9 +17,16 @@ export default function AdminReportsPage() {
     try {
       const q = statusFilter ? `?status=${statusFilter}` : '';
       const res = await apiFetch(`/reports/admin/list${q}`);
-      if (res.success) setReports(res.data);
+      if (res && res.success && Array.isArray(res.data)) {
+        setReports(res.data);
+      } else if (res && Array.isArray(res)) {
+        setReports(res);
+      } else {
+        setReports([]);
+      }
     } catch (err) {
       addToast(err.message, 'error');
+      setReports([]);
     } finally {
       setLoading(false);
     }
@@ -88,7 +95,7 @@ export default function AdminReportsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {reports.map((r) => (
+                {(Array.isArray(reports) ? reports : []).map((r) => (
                   <tr key={r.id} className="hover:bg-slate-50/70 transition">
                     <td className="py-4 px-6">
                       <p className="font-bold text-slate-900 text-sm">{r.advertisement_title || 'Ad ID: ' + r.advertisement_id}</p>

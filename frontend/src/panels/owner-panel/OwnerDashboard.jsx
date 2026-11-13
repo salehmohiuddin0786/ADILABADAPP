@@ -53,7 +53,7 @@ export default function OwnerDashboard() {
 
   const handleAction = (bookingId, action) => {
     setBookingRequests((prev) =>
-      prev.map((b) => (b.id === bookingId ? { ...b, status: action === 'accept' ? 'ACCEPTED' : 'REJECTED' } : b))
+      (Array.isArray(prev) ? prev : []).map((b) => (b.id === bookingId ? { ...b, status: action === 'accept' ? 'ACCEPTED' : 'REJECTED' } : b))
     );
     showToast(
       action === 'accept' ? 'Booking proposal accepted! Customer notified.' : 'Booking proposal declined.',
@@ -151,7 +151,7 @@ export default function OwnerDashboard() {
         </div>
 
         <div className="divide-y divide-slate-100">
-          {bookingRequests.map((b) => (
+          {(Array.isArray(bookingRequests) ? bookingRequests : []).map((b) => (
             <div key={b.id} className="p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">

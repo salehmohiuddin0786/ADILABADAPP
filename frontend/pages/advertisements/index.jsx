@@ -19,18 +19,18 @@ import EmptyState from '../../src/components/common/EmptyState';
 import { apiFetch } from '../../src/utils/api';
 import { MOCK_CATEGORIES, MOCK_LOCATIONS, filterMockAdvertisements } from '../../src/data/mockData';
 
-export default function AdvertisementsPage({ initialData, categories, locations, initialQuery }) {
+export default function AdvertisementsPage({ initialData = {}, categories = [], locations = [], initialQuery = {} }) {
   const router = useRouter();
   const [data, setData] = useState(initialData);
   const [loading, setLoading] = useState(false);
 
   // Filter States
-  const [search, setSearch] = useState(initialQuery.search || '');
-  const [selectedCategory, setSelectedCategory] = useState(initialQuery.category || '');
-  const [selectedLocation, setSelectedLocation] = useState(initialQuery.location || '');
-  const [featuredOnly, setFeaturedOnly] = useState(initialQuery.featured === 'true');
-  const [sort, setSort] = useState(initialQuery.sort || 'latest');
-  const [page, setPage] = useState(parseInt(initialQuery.page || '1', 10));
+  const [search, setSearch] = useState(initialQuery?.search || '');
+  const [selectedCategory, setSelectedCategory] = useState(initialQuery?.category || '');
+  const [selectedLocation, setSelectedLocation] = useState(initialQuery?.location || '');
+  const [featuredOnly, setFeaturedOnly] = useState(initialQuery?.featured === 'true');
+  const [sort, setSort] = useState(initialQuery?.sort || 'latest');
+  const [page, setPage] = useState(parseInt(initialQuery?.page || '1', 10));
 
   // Sync and fetch on filters change
   const applyFilters = async (newPage = 1) => {
@@ -123,7 +123,7 @@ export default function AdvertisementsPage({ initialData, categories, locations,
             >
               <span>All Categories ({pagination.total})</span>
             </button>
-            {categories.map((c) => {
+            {(Array.isArray(categories) ? categories : []).map((c) => {
               const isSelected = selectedCategory === c.slug;
               return (
                 <button
@@ -174,7 +174,7 @@ export default function AdvertisementsPage({ initialData, categories, locations,
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
                 >
                   <option value="">All Categories</option>
-                  {categories.map((c) => (
+                  {(Array.isArray(categories) ? categories : []).map((c) => (
                     <option key={c.id} value={c.slug}>
                       {c.name}
                     </option>
@@ -190,7 +190,7 @@ export default function AdvertisementsPage({ initialData, categories, locations,
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
                 >
                   <option value="">All Localities</option>
-                  {locations.map((l) => (
+                  {(Array.isArray(locations) ? locations : []).map((l) => (
                     <option key={l.id} value={l.slug}>
                       {l.name}
                     </option>
@@ -262,9 +262,9 @@ export default function AdvertisementsPage({ initialData, categories, locations,
                 </div>
               ))}
             </div>
-          ) : ads.length > 0 ? (
+          ) : Array.isArray(ads) && ads.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {ads.map((ad) => (
+              {(Array.isArray(ads) ? ads : []).map((ad) => (
                 <AdvertisementCard key={ad.id} ad={ad} />
               ))}
             </div>

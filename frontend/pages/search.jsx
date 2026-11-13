@@ -217,15 +217,15 @@ export default function SearchPage() {
               ) : (
                 <div className="space-y-12">
                   {/* Advertisements */}
-                  {(activeTab === 'all' || activeTab === 'ads') && ads.length > 0 && (
+                  {(activeTab === 'all' || activeTab === 'ads') && (Array.isArray(ads) ? ads : []).length > 0 && (
                     <div>
                       <div className="flex items-center justify-between mb-5">
                         <h3 className="font-bold text-slate-900 text-lg">
-                          Advertisements ({ads.length})
+                          Advertisements ({(Array.isArray(ads) ? ads : []).length})
                         </h3>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {ads.map((ad) => (
+                        {(Array.isArray(ads) ? ads : []).map((ad) => (
                           <AdvertisementCard key={ad.id} ad={ad} />
                         ))}
                       </div>
@@ -233,15 +233,15 @@ export default function SearchPage() {
                   )}
 
                   {/* Businesses */}
-                  {(activeTab === 'all' || activeTab === 'businesses') && businesses.length > 0 && (
+                  {(activeTab === 'all' || activeTab === 'businesses') && (Array.isArray(businesses) ? businesses : []).length > 0 && (
                     <div>
                       <div className="flex items-center justify-between mb-5">
                         <h3 className="font-bold text-slate-900 text-lg">
-                          Businesses ({businesses.length})
+                          Businesses ({(Array.isArray(businesses) ? businesses : []).length})
                         </h3>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {businesses.map((biz) => (
+                        {(Array.isArray(businesses) ? businesses : []).map((biz) => (
                           <BusinessCard key={biz.id} business={biz} />
                         ))}
                       </div>
@@ -249,15 +249,15 @@ export default function SearchPage() {
                   )}
 
                   {/* Events */}
-                  {(activeTab === 'all' || activeTab === 'events') && events.length > 0 && (
+                  {(activeTab === 'all' || activeTab === 'events') && (Array.isArray(events) ? events : []).length > 0 && (
                     <div>
                       <div className="flex items-center justify-between mb-5">
                         <h3 className="font-bold text-slate-900 text-lg">
-                          Events ({events.length})
+                          Events ({(Array.isArray(events) ? events : []).length})
                         </h3>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        {events.map((ev) => (
+                        {(Array.isArray(events) ? events : []).map((ev) => (
                           <EventCard key={ev.id} event={ev} />
                         ))}
                       </div>

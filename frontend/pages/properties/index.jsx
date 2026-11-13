@@ -36,7 +36,7 @@ export default function PropertiesPage() {
       title: '3 BHK Deluxe Flat in Gated Apartment Complex',
       type: 'Apartment',
       rent: 14000,
-      deposit: 30000,
+      deposit: 30100,
       bedrooms: 3,
       bathrooms: 3,
       area: '1,550 sqft',

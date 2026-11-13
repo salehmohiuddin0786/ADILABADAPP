@@ -21,9 +21,16 @@ export default function AdminBannersPage() {
   const fetchBanners = async () => {
     try {
       const res = await apiFetch('/banners/admin/list');
-      if (res.success) setBanners(res.data);
+      if (res && res.success && Array.isArray(res.data)) {
+        setBanners(res.data);
+      } else if (res && Array.isArray(res)) {
+        setBanners(res);
+      } else {
+        setBanners([]);
+      }
     } catch (err) {
       addToast(err.message, 'error');
+      setBanners([]);
     }
   };
 
@@ -111,7 +118,7 @@ export default function AdminBannersPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {banners.map((b) => (
+          {(Array.isArray(banners) ? banners : []).map((b) => (
             <div key={b.id} className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between">
               <div className="relative aspect-[21/9] bg-slate-900">
                 <img src={b.image_url} alt={b.title} className="w-full h-full object-cover" />

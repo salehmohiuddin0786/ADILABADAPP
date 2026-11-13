@@ -43,12 +43,17 @@ export default function AdminAdvertisementsPage() {
 
     try {
       const res = await apiFetch(`/advertisements/admin/list?${query.toString()}`);
-      if (res.success) {
+      if (res && res.success && Array.isArray(res.data)) {
         setAds(res.data);
-        setPagination(res.pagination);
+        if (res.pagination) setPagination(res.pagination);
+      } else if (res && Array.isArray(res)) {
+        setAds(res);
+      } else {
+        setAds([]);
       }
     } catch (err) {
       addToast(err.message, 'error');
+      setAds([]);
     } finally {
       setLoading(false);
     }
@@ -57,7 +62,11 @@ export default function AdminAdvertisementsPage() {
   useEffect(() => {
     apiFetch('/categories')
       .then((res) => {
-        if (res.success) setCategories(res.data);
+        if (res && res.success && Array.isArray(res.data)) {
+          setCategories(res.data);
+        } else if (res && Array.isArray(res)) {
+          setCategories(res);
+        }
       })
       .catch(() => {});
     fetchAds(1);
@@ -173,7 +182,7 @@ export default function AdminAdvertisementsPage() {
               className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <option value="">All Categories</option>
-              {categories.map((c) => (
+              {(Array.isArray(categories) ? categories : []).map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -213,8 +222,8 @@ export default function AdminAdvertisementsPage() {
                       Loading advertisements...
                     </td>
                   </tr>
-                ) : ads.length > 0 ? (
-                  ads.map((ad) => (
+                ) : (Array.isArray(ads) ? ads : []).length > 0 ? (
+                  (Array.isArray(ads) ? ads : []).map((ad) => (
                     <tr key={ad.id} className="hover:bg-slate-50/70 transition">
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">

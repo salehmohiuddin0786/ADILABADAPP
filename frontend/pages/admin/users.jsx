@@ -16,9 +16,16 @@ export default function AdminUsersPage() {
     try {
       const q = search ? `?search=${encodeURIComponent(search)}` : '';
       const res = await apiFetch(`/admin/users${q}`);
-      if (res.success) setUsers(res.data);
+      if (res && res.success && Array.isArray(res.data)) {
+        setUsers(res.data);
+      } else if (res && Array.isArray(res)) {
+        setUsers(res);
+      } else {
+        setUsers([]);
+      }
     } catch (err) {
       addToast(err.message, 'error');
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -95,7 +102,7 @@ export default function AdminUsersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {users.map((u) => (
+                {(Array.isArray(users) ? users : []).map((u) => (
                   <tr key={u.id} className="hover:bg-slate-50/70 transition">
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">

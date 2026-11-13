@@ -136,7 +136,7 @@ export default function BusinessDetailPage({ business }) {
               </div>
 
               {/* Services Offered */}
-              {business.services && business.services.length > 0 && (
+              {Array.isArray(business?.services) && business.services.length > 0 && (
                 <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-4">
                   <h2 className="text-lg font-bold text-slate-900">Key Services & Highlights</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -156,7 +156,7 @@ export default function BusinessDetailPage({ business }) {
               )}
 
               {/* Related Ads from this business */}
-              {business.advertisements && business.advertisements.length > 0 && (
+              {Array.isArray(business?.advertisements) && business.advertisements.length > 0 && (
                 <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-4">
                   <h2 className="text-lg font-bold text-slate-900">Advertisements by this Business</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -229,7 +229,7 @@ export default function BusinessDetailPage({ business }) {
               </div>
 
               {/* Opening Hours Card */}
-              {business.hours && business.hours.length > 0 && (
+              {Array.isArray(business?.hours) && business.hours.length > 0 && (
                 <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
                   <div className="flex items-center gap-2 font-bold text-slate-900 text-base">
                     <Clock className="w-4 h-4 text-brand-600" />
@@ -237,7 +237,7 @@ export default function BusinessDetailPage({ business }) {
                   </div>
 
                   <div className="divide-y divide-slate-100 text-xs">
-                    {business.hours.map((h) => (
+                    {(Array.isArray(business.hours) ? business.hours : []).map((h) => (
                       <div key={h.day_of_week} className="py-2 flex items-center justify-between">
                         <span className="font-semibold text-slate-700">{daysOfWeek[h.day_of_week]}</span>
                         <span className={h.is_closed ? 'text-rose-600 font-bold' : 'text-slate-500'}>

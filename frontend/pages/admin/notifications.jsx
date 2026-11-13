@@ -20,9 +20,16 @@ export default function AdminNotificationsPage() {
   const fetchNotifs = async () => {
     try {
       const res = await apiFetch('/notifications/admin/list');
-      if (res.success) setNotifications(res.data);
+      if (res && res.success && Array.isArray(res.data)) {
+        setNotifications(res.data);
+      } else if (res && Array.isArray(res)) {
+        setNotifications(res);
+      } else {
+        setNotifications([]);
+      }
     } catch (err) {
       addToast(err.message, 'error');
+      setNotifications([]);
     } finally {
       setLoading(false);
     }
@@ -164,7 +171,7 @@ export default function AdminNotificationsPage() {
           <h3 className="font-bold text-slate-900 text-base">Broadcast History ({notifications.length})</h3>
 
           <div className="divide-y divide-slate-100">
-            {notifications.map((n) => (
+            {(Array.isArray(notifications) ? notifications : []).map((n) => (
               <div key={n.id} className="py-3.5 flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1">

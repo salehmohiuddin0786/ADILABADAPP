@@ -17,9 +17,16 @@ export default function AdminBusinessesPage() {
     try {
       const q = search ? `?search=${encodeURIComponent(search)}` : '';
       const res = await apiFetch(`/businesses/admin/list${q}`);
-      if (res.success) setBusinesses(res.data);
+      if (res && res.success && Array.isArray(res.data)) {
+        setBusinesses(res.data);
+      } else if (res && Array.isArray(res)) {
+        setBusinesses(res);
+      } else {
+        setBusinesses([]);
+      }
     } catch (err) {
       addToast(err.message, 'error');
+      setBusinesses([]);
     } finally {
       setLoading(false);
     }
@@ -104,7 +111,7 @@ export default function AdminBusinessesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {businesses.map((biz) => (
+                {(Array.isArray(businesses) ? businesses : []).map((biz) => (
                   <tr key={biz.id} className="hover:bg-slate-50/70 transition">
                     <td className="py-4 px-6 font-bold text-slate-900">
                       <Link href={`/businesses/${biz.slug}`} target="_blank" className="hover:text-brand-600">

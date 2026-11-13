@@ -99,7 +99,7 @@ export default function BusinessesPage({ initialData, categories = [], locations
             >
               <span>All Categories ({pagination.total})</span>
             </button>
-            {categories.map((c) => {
+            {(Array.isArray(categories) ? categories : []).map((c) => {
               const isSelected = selectedCategory === c.slug;
               return (
                 <button
@@ -148,7 +148,7 @@ export default function BusinessesPage({ initialData, categories = [], locations
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
                 >
                   <option value="">All Categories</option>
-                  {categories.map((c) => (
+                  {(Array.isArray(categories) ? categories : []).map((c) => (
                     <option key={c.id} value={c.slug}>
                       {c.name}
                     </option>
@@ -163,7 +163,7 @@ export default function BusinessesPage({ initialData, categories = [], locations
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
                 >
                   <option value="">All Localities</option>
-                  {locations.map((l) => (
+                  {(Array.isArray(locations) ? locations : []).map((l) => (
                     <option key={l.id} value={l.slug}>
                       {l.name}
                     </option>
@@ -204,7 +204,7 @@ export default function BusinessesPage({ initialData, categories = [], locations
             </div>
           ) : businesses.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {businesses.map((biz) => (
+              {(Array.isArray(businesses) ? businesses : []).map((biz) => (
                 <BusinessCard key={biz.id} business={biz} />
               ))}
             </div>

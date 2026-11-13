@@ -58,8 +58,10 @@ export default function CreateAdvertisementPage() {
   useEffect(() => {
     Promise.all([apiFetch('/categories'), apiFetch('/locations')])
       .then(([cats, locs]) => {
-        if (cats.success && cats.data) setCategories(cats.data);
-        if (locs.success && locs.data) setLocations(locs.data);
+        if (cats && cats.success && Array.isArray(cats.data)) setCategories(cats.data);
+        else if (cats && Array.isArray(cats)) setCategories(cats);
+        if (locs && locs.success && Array.isArray(locs.data)) setLocations(locs.data);
+        else if (locs && Array.isArray(locs)) setLocations(locs);
       })
       .catch((err) => console.error(err));
   }, []);
@@ -249,7 +251,7 @@ export default function CreateAdvertisementPage() {
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
                     <option value="">Select Category</option>
-                    {categories.map((c) => (
+                    {(Array.isArray(categories) ? categories : []).map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.name}
                       </option>
@@ -383,7 +385,7 @@ export default function CreateAdvertisementPage() {
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
                     <option value="">Select Locality</option>
-                    {locations.map((l) => (
+                    {(Array.isArray(locations) ? locations : []).map((l) => (
                       <option key={l.id} value={l.id}>
                         {l.name}
                       </option>

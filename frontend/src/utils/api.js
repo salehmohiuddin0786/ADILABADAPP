@@ -53,30 +53,45 @@ export function getMockResponse(endpoint, options = {}) {
   }
 
   // 1. Categories
-  if (urlWithoutQuery === '/categories') {
+  if (urlWithoutQuery === '/categories' || urlWithoutQuery === '/categories/admin/list') {
     return { success: true, data: MOCK_CATEGORIES };
   }
-  if (urlWithoutQuery.startsWith('/categories/detail/') || urlWithoutQuery.startsWith('/categories/')) {
+  if (urlWithoutQuery.startsWith('/categories/admin/create')) {
+    return { success: true, message: 'Category created successfully.', data: { id: Date.now(), slug: 'new-cat' } };
+  }
+  if (urlWithoutQuery.startsWith('/categories/admin/update')) {
+    return { success: true, message: 'Category updated successfully.' };
+  }
+  if (urlWithoutQuery.startsWith('/categories/admin/delete')) {
+    return { success: true, message: 'Category deleted successfully.' };
+  }
+  if (urlWithoutQuery.startsWith('/categories/detail/') || (urlWithoutQuery.startsWith('/categories/') && !urlWithoutQuery.includes('/admin/'))) {
     const slug = urlWithoutQuery.replace('/categories/detail/', '').replace('/categories/', '');
     const cat = MOCK_CATEGORIES.find(c => c.slug === slug || c.id == slug) || MOCK_CATEGORIES[0];
     return { success: true, data: cat };
   }
 
   // 2. Locations
-  if (urlWithoutQuery === '/locations') {
+  if (urlWithoutQuery === '/locations' || urlWithoutQuery.startsWith('/locations/')) {
     return { success: true, data: MOCK_LOCATIONS };
   }
 
   // 3. Banners
-  if (urlWithoutQuery === '/banners') {
+  if (urlWithoutQuery === '/banners' || urlWithoutQuery === '/banners/admin/list') {
     return { success: true, data: MOCK_BANNERS };
+  }
+  if (urlWithoutQuery.startsWith('/banners/admin/create') || urlWithoutQuery.startsWith('/banners/admin/update') || urlWithoutQuery.startsWith('/banners/admin/delete')) {
+    return { success: true, message: 'Banner updated successfully.' };
   }
 
   // 4. Advertisements
   if (urlWithoutQuery === '/advertisements/admin/list' || urlWithoutQuery === '/advertisements') {
     return filterMockAdvertisements(params);
   }
-  if (urlWithoutQuery.startsWith('/advertisements/detail/') || urlWithoutQuery.startsWith('/advertisements/')) {
+  if (urlWithoutQuery.startsWith('/advertisements/admin/delete') || urlWithoutQuery.includes('/status') || urlWithoutQuery.includes('/feature')) {
+    return { success: true, message: 'Advertisement updated successfully.' };
+  }
+  if (urlWithoutQuery.startsWith('/advertisements/detail/') || (urlWithoutQuery.startsWith('/advertisements/') && !urlWithoutQuery.includes('/admin/'))) {
     const slugOrId = urlWithoutQuery.replace('/advertisements/detail/', '').replace('/advertisements/', '');
     if (slugOrId.endsWith('/click')) {
       return { success: true, message: 'Click tracked (Demo Mode)' };
@@ -87,10 +102,13 @@ export function getMockResponse(endpoint, options = {}) {
   }
 
   // 5. Businesses
-  if (urlWithoutQuery === '/businesses') {
+  if (urlWithoutQuery === '/businesses' || urlWithoutQuery === '/businesses/admin/list') {
     return filterMockBusinesses(params);
   }
-  if (urlWithoutQuery.startsWith('/businesses/detail/') || urlWithoutQuery.startsWith('/businesses/')) {
+  if (urlWithoutQuery.startsWith('/businesses/admin/delete') || urlWithoutQuery.startsWith('/businesses/admin/update')) {
+    return { success: true, message: 'Business updated successfully.' };
+  }
+  if (urlWithoutQuery.startsWith('/businesses/detail/') || (urlWithoutQuery.startsWith('/businesses/') && !urlWithoutQuery.includes('/admin/'))) {
     const slugOrId = urlWithoutQuery.replace('/businesses/detail/', '').replace('/businesses/', '');
     const biz = MOCK_BUSINESSES.find(b => b.slug === slugOrId || b.id == slugOrId) || MOCK_BUSINESSES[0];
     const bizAds = MOCK_ADVERTISEMENTS.filter(a => a.business_name === biz.name || a.category_id === biz.category_id);
@@ -98,10 +116,13 @@ export function getMockResponse(endpoint, options = {}) {
   }
 
   // 6. Events
-  if (urlWithoutQuery === '/events') {
+  if (urlWithoutQuery === '/events' || urlWithoutQuery === '/events/admin/list') {
     return filterMockEvents(params);
   }
-  if (urlWithoutQuery.startsWith('/events/detail/') || urlWithoutQuery.startsWith('/events/')) {
+  if (urlWithoutQuery.startsWith('/events/admin/delete') || urlWithoutQuery.startsWith('/events/admin/update')) {
+    return { success: true, message: 'Event updated successfully.' };
+  }
+  if (urlWithoutQuery.startsWith('/events/detail/') || (urlWithoutQuery.startsWith('/events/') && !urlWithoutQuery.includes('/admin/'))) {
     const slugOrId = urlWithoutQuery.replace('/events/detail/', '').replace('/events/', '');
     const ev = MOCK_EVENTS.find(e => e.slug === slugOrId || e.id == slugOrId) || MOCK_EVENTS[0];
     const upcoming = MOCK_EVENTS.filter(e => e.id !== ev.id);

@@ -201,13 +201,13 @@ export default function EventDetailPage({ event }) {
           </div>
 
           {/* OTHER UPCOMING EVENTS */}
-          {event.upcoming && event.upcoming.length > 0 && (
+          {Array.isArray(event?.upcoming) && event.upcoming.length > 0 && (
             <div className="mt-16 pt-12 border-t border-slate-200">
               <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-8">
                 More Upcoming Events
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                {event.upcoming.map((ev) => (
+                {(Array.isArray(event.upcoming) ? event.upcoming : []).map((ev) => (
                   <EventCard key={ev.id} event={ev} />
                 ))}
               </div>

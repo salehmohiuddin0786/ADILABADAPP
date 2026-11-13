@@ -53,7 +53,7 @@ npm start
 cd frontend
 npm install
 
-# Production build and run (runs on http://localhost:3000)
+# Production build and run (runs on http://localhost:3010)
 npm run build
 npm run start
 
@@ -65,7 +65,7 @@ npm run dev
 
 ## 🗺️ Website Routes & Structure
 
-### 🌐 Public Portal (`http://localhost:3000`)
+### 🌐 Public Portal (`http://localhost:3010`)
 - `/` — Homepage featuring Hero Search, Categories, Featured Ads, Latest Ads, Businesses, Events, and Explore Adilabad
 - `/advertisements` — Full advertisement catalog with category/location filtering, sorting, and pagination
 - `/advertisements/[slug]` — High-impact advertisement details with multi-image gallery, lightbox, phone/WhatsApp CTA, map directions, sharing, bookmarking, and fraud reporting
@@ -85,7 +85,7 @@ npm run dev
 - `/privacy-policy` — Platform privacy policy
 - `/terms` — Terms of service
 
-### 🛡️ Admin Dashboard (`http://localhost:3000/admin`)
+### 🛡️ Admin Dashboard (`http://localhost:3010/admin`)
 - `/admin/login` — Dedicated secure administrator login
 - `/admin` — Overview Dashboard with KPI stats, activity feed, and growth metrics
 - `/admin/advertisements` — Full advertisement management (Draft, Scheduled, Published, Expired, Archived)

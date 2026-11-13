@@ -101,7 +101,7 @@ export default function EventsPage({ initialData, locations = [], initialQuery }
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
                 >
                   <option value="">All Localities</option>
-                  {locations.map((l) => (
+                  {(Array.isArray(locations) ? locations : []).map((l) => (
                     <option key={l.id} value={l.slug}>
                       {l.name}
                     </option>
@@ -142,7 +142,7 @@ export default function EventsPage({ initialData, locations = [], initialQuery }
             </div>
           ) : events.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((ev) => (
+              {(Array.isArray(events) ? events : []).map((ev) => (
                 <EventCard key={ev.id} event={ev} />
               ))}
             </div>

@@ -82,9 +82,9 @@ export default function CategoryDetailPage({ category, adsData, locations = [] }
               </h2>
             </div>
 
-            {ads.length > 0 ? (
+            {(Array.isArray(ads) ? ads : []).length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {ads.map((ad) => (
+                {(Array.isArray(ads) ? ads : []).map((ad) => (
                   <AdvertisementCard key={ad.id} ad={ad} />
                 ))}
               </div>

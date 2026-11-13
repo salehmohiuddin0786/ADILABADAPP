@@ -17,9 +17,16 @@ export default function AdminEventsPage() {
     try {
       const q = search ? `?search=${encodeURIComponent(search)}` : '';
       const res = await apiFetch(`/events/admin/list${q}`);
-      if (res.success) setEvents(res.data);
+      if (res && res.success && Array.isArray(res.data)) {
+        setEvents(res.data);
+      } else if (res && Array.isArray(res)) {
+        setEvents(res);
+      } else {
+        setEvents([]);
+      }
     } catch (err) {
       addToast(err.message, 'error');
+      setEvents([]);
     } finally {
       setLoading(false);
     }
@@ -83,7 +90,7 @@ export default function AdminEventsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {events.map((ev) => (
+                {(Array.isArray(events) ? events : []).map((ev) => (
                   <tr key={ev.id} className="hover:bg-slate-50/70 transition">
                     <td className="py-4 px-6 font-bold text-slate-900">
                       <Link href={`/events/${ev.slug}`} target="_blank" className="hover:text-brand-600">

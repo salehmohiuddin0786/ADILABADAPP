@@ -123,9 +123,9 @@ export default function FavoritesPage() {
               {loading ? (
                 <div className="py-16 text-center text-slate-400">Loading saved items...</div>
               ) : activeTab === 'advertisements' ? (
-                data.advertisements?.length > 0 ? (
+                (Array.isArray(data.advertisements) ? data.advertisements : []).length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {data.advertisements.map((ad) => (
+                    {(Array.isArray(data.advertisements) ? data.advertisements : []).map((ad) => (
                       <AdvertisementCard key={ad.id} ad={ad} />
                     ))}
                   </div>
@@ -138,9 +138,9 @@ export default function FavoritesPage() {
                   />
                 )
               ) : activeTab === 'businesses' ? (
-                data.businesses?.length > 0 ? (
+                (Array.isArray(data.businesses) ? data.businesses : []).length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {data.businesses.map((biz) => (
+                    {(Array.isArray(data.businesses) ? data.businesses : []).map((biz) => (
                       <BusinessCard key={biz.id} business={biz} />
                     ))}
                   </div>
@@ -153,9 +153,9 @@ export default function FavoritesPage() {
                   />
                 )
               ) : activeTab === 'events' ? (
-                data.events?.length > 0 ? (
+                (Array.isArray(data.events) ? data.events : []).length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    {data.events.map((ev) => (
+                    {(Array.isArray(data.events) ? data.events : []).map((ev) => (
                       <EventCard key={ev.id} event={ev} />
                     ))}
                   </div>

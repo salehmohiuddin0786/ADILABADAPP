@@ -23,9 +23,18 @@ export default function AdminCategoriesPage() {
     setLoading(true);
     try {
       const res = await apiFetch('/categories/admin/list');
-      if (res.success) setCategories(res.data);
+      if (res && res.success && Array.isArray(res.data)) {
+        setCategories(res.data);
+      } else if (res && Array.isArray(res)) {
+        setCategories(res);
+      } else if (res && res.data && typeof res.data === 'object') {
+        setCategories(Array.isArray(res.data) ? res.data : [res.data]);
+      } else {
+        setCategories([]);
+      }
     } catch (err) {
       addToast(err.message, 'error');
+      setCategories([]);
     } finally {
       setLoading(false);
     }
@@ -40,7 +49,7 @@ export default function AdminCategoriesPage() {
     setName('');
     setIcon('Tag');
     setDescription('');
-    setDisplayOrder(categories.length + 1);
+    setDisplayOrder((Array.isArray(categories) ? categories.length : 0) + 1);
     setModalOpen(true);
   };
 
@@ -105,7 +114,7 @@ export default function AdminCategoriesPage() {
         <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
           <div>
             <h2 className="text-xl font-black text-slate-900 tracking-tight">
-              Categories ({categories.length})
+              Categories ({(Array.isArray(categories) ? categories.length : 0)})
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
               Control category ordering, icons, and classifications.
@@ -136,7 +145,7 @@ export default function AdminCategoriesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {categories.map((c) => (
+                {(Array.isArray(categories) ? categories : []).map((c) => (
                   <tr key={c.id} className="hover:bg-slate-50/70 transition">
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
