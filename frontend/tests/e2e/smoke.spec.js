@@ -41,6 +41,24 @@ test.describe('Adilabad App — Core Hyperlocal Navigation & Responsiveness', ()
     // Should redirect to /owner/dashboard
     await page.waitForURL('**/owner/dashboard');
     await expect(page.locator('text=Commercial Management Dashboard').first()).toBeVisible();
+
+    // Test Owner Panel links - zero 404s!
+    const testLinks = [
+      '/owner/verification',
+      '/owner/businesses',
+      '/owner/advertisements',
+      '/owner/rentals',
+      '/owner/rental-requests',
+      '/owner/booking-calendar',
+      '/owner/analytics',
+      '/owner/settings'
+    ];
+
+    for (const href of testLinks) {
+      const response = await page.goto(href);
+      expect(response.status()).toBe(200);
+      await expect(page.locator('text=404')).toHaveCount(0);
+    }
   });
 
   test('Mobile viewport displays sticky bottom navigation', async ({ page, isMobile }) => {

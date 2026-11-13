@@ -1,0 +1,29 @@
+import React from 'react';
+import Head from 'next/head';
+import { LifeBuoy } from 'lucide-react';
+import StaffLayout from '../../src/panels/staff-panel/StaffLayout';
+
+export default function StaffSupportTicketsPage() {
+  return (
+    <StaffLayout title="Resident Support Tickets">
+      <Head>
+        <title>Support Tickets — Adilabad Staff Panel</title>
+      </Head>
+
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">User Assistance Desk</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Tickets submitted by shoppers, renters, and local businesses.</p>
+        </div>
+
+        <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm text-center">
+          <LifeBuoy className="w-10 h-10 text-emerald-600 mx-auto mb-2" />
+          <h3 className="font-bold text-slate-900 text-base">Support Queue Clear</h3>
+          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+            Average resolution turnaround time: <strong>under 15 minutes</strong> across Adilabad district.
+          </p>
+        </div>
+      </div>
+    </StaffLayout>
+  );
+}
