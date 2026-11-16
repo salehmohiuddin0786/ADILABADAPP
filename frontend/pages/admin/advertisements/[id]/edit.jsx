@@ -137,21 +137,21 @@ export default function EditAdvertisementPage() {
       <div className="max-w-4xl mx-auto space-y-6">
         <Link
           href="/admin/advertisements"
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition"
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Advertisements</span>
         </Link>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
-            <h3 className="font-bold text-slate-900 text-base border-b border-slate-100 pb-3">
+          <div className="bg-slate-900/90 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-4 text-white">
+            <h3 className="font-bold text-white text-base border-b border-slate-800 pb-3">
               Edit Advertisement Information
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Title *
                 </label>
                 <input
@@ -159,12 +159,12 @@ export default function EditAdvertisementPage() {
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Business Name *
                 </label>
                 <input
@@ -172,22 +172,22 @@ export default function EditAdvertisementPage() {
                   required
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Category *
                 </label>
                 <select
                   required
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
                   {(Array.isArray(categories) ? categories : []).map((c) => (
-                    <option key={c.id} value={c.id}>
+                    <option key={c.id} value={c.id} className="bg-slate-900 text-white">
                       {c.name}
                     </option>
                   ))}
@@ -195,7 +195,7 @@ export default function EditAdvertisementPage() {
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Description *
                 </label>
                 <textarea
@@ -203,32 +203,32 @@ export default function EditAdvertisementPage() {
                   rows={4}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
-            <h3 className="font-bold text-slate-900 text-base border-b border-slate-100 pb-3">
+          <div className="bg-slate-900/90 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-4 text-white">
+            <h3 className="font-bold text-white text-base border-b border-slate-800 pb-3">
               Pricing, Contacts & Location
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Price Display
                 </label>
                 <input
                   type="text"
                   value={priceDisplay}
                   onChange={(e) => setPriceDisplay(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Phone *
                 </label>
                 <input
@@ -236,24 +236,24 @@ export default function EditAdvertisementPage() {
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   WhatsApp
                 </label>
                 <input
                   type="text"
                   value={whatsapp}
                   onChange={(e) => setWhatsapp(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Address in Adilabad *
                 </label>
                 <input
@@ -261,22 +261,22 @@ export default function EditAdvertisementPage() {
                   required
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Locality
                 </label>
                 <select
                   value={locationId}
                   onChange={(e) => setLocationId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
                   <option value="">Select Locality</option>
                   {(Array.isArray(locations) ? locations : []).map((l) => (
-                    <option key={l.id} value={l.id}>
+                    <option key={l.id} value={l.id} className="bg-slate-900 text-white">
                       {l.name}
                     </option>
                   ))}
@@ -285,26 +285,26 @@ export default function EditAdvertisementPage() {
             </div>
           </div>
 
-          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
-            <h3 className="font-bold text-slate-900 text-base border-b border-slate-100 pb-3">
+          <div className="bg-slate-900/90 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-4 text-white">
+            <h3 className="font-bold text-white text-base border-b border-slate-800 pb-3">
               Status & Featured
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Status
                 </label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
-                  <option value="published">Published</option>
-                  <option value="draft">Draft</option>
-                  <option value="scheduled">Scheduled</option>
-                  <option value="expired">Expired</option>
-                  <option value="archived">Archived</option>
+                  <option value="published" className="bg-slate-900 text-white">Published</option>
+                  <option value="draft" className="bg-slate-900 text-white">Draft</option>
+                  <option value="scheduled" className="bg-slate-900 text-white">Scheduled</option>
+                  <option value="expired" className="bg-slate-900 text-white">Expired</option>
+                  <option value="archived" className="bg-slate-900 text-white">Archived</option>
                 </select>
               </div>
 
@@ -314,9 +314,9 @@ export default function EditAdvertisementPage() {
                     type="checkbox"
                     checked={isFeatured}
                     onChange={(e) => setIsFeatured(e.target.checked)}
-                    className="w-5 h-5 rounded text-amber-500"
+                    className="w-5 h-5 rounded text-amber-500 focus:ring-amber-500 border-slate-700 bg-slate-950"
                   />
-                  <span className="text-sm font-bold text-slate-800">
+                  <span className="text-sm font-bold text-slate-200">
                     Featured Advertisement
                   </span>
                 </label>
@@ -327,14 +327,14 @@ export default function EditAdvertisementPage() {
           <div className="flex items-center justify-end gap-3 pt-4">
             <Link
               href="/admin/advertisements"
-              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-sm"
+              className="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-bold text-sm hover:bg-slate-800 transition"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md transition disabled:opacity-50"
+              className="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm shadow-md transition disabled:opacity-50"
             >
               {submitting ? 'Saving Changes...' : 'Save Changes'}
             </button>

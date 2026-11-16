@@ -58,20 +58,20 @@ export default function AdminReportsPage() {
       </Head>
 
       <div className="space-y-6">
-        <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-6 rounded-3xl shadow-xl">
           <div>
-            <h2 className="text-xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-xl font-black text-white tracking-tight">
               Advertisement Reports ({reports.length})
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Review visitor reports for fake listings, incorrect contacts, spam, or scam complaints.
+            <p className="text-xs text-slate-400 mt-0.5">
+              Review visitor reports for fake listings, incorrect contacts, spam, or scam complaints in Adilabad.
             </p>
           </div>
 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold bg-white"
+            className="px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <option value="">All Reports</option>
             <option value="pending">Pending</option>
@@ -81,10 +81,10 @@ export default function AdminReportsPage() {
           </select>
         </div>
 
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">
+            <table className="w-full text-left text-sm text-slate-300">
+              <thead className="bg-slate-950/80 border-b border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
                 <tr>
                   <th className="py-4 px-6">Advertisement</th>
                   <th className="py-4 px-4">Reason</th>
@@ -94,35 +94,35 @@ export default function AdminReportsPage() {
                   <th className="py-4 px-6 text-right">Moderation Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-800/80">
                 {(Array.isArray(reports) ? reports : []).map((r) => (
-                  <tr key={r.id} className="hover:bg-slate-50/70 transition">
+                  <tr key={r.id} className="hover:bg-slate-800/60 transition">
                     <td className="py-4 px-6">
-                      <p className="font-bold text-slate-900 text-sm">{r.advertisement_title || 'Ad ID: ' + r.advertisement_id}</p>
+                      <p className="font-bold text-white text-sm">{r.advertisement_title || 'Ad ID: ' + r.advertisement_id}</p>
                       <p className="text-xs text-slate-400">{r.business_name}</p>
                     </td>
 
                     <td className="py-4 px-4">
-                      <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-950/60 text-rose-300 border border-rose-800/60">
                         {r.reason?.replace('_', ' ')}
                       </span>
                     </td>
 
-                    <td className="py-4 px-4 text-xs text-slate-600 max-w-xs truncate">
+                    <td className="py-4 px-4 text-xs text-slate-300 max-w-xs truncate">
                       {r.description || 'No description provided'}
                     </td>
 
-                    <td className="py-4 px-4 text-xs text-slate-500">
+                    <td className="py-4 px-4 text-xs text-slate-400">
                       {r.reporter_name || 'Anonymous'} ({r.reporter_contact || 'No contact'})
                     </td>
 
                     <td className="py-4 px-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
                         r.status === 'pending'
-                          ? 'bg-amber-100 text-amber-800'
+                          ? 'bg-amber-950/60 text-amber-300 border-amber-800/60'
                           : r.status === 'resolved'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-slate-100 text-slate-700'
+                          ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60'
+                          : 'bg-slate-800 text-slate-300 border-slate-700'
                       }`}>
                         {r.status}
                       </span>
@@ -133,14 +133,14 @@ export default function AdminReportsPage() {
                         <>
                           <button
                             onClick={() => handleUpdate(r.id, 'resolved', true)}
-                            className="px-3 py-1.5 rounded-lg bg-rose-600 text-white font-bold text-xs hover:bg-rose-700"
+                            className="px-3 py-1.5 rounded-lg bg-rose-600 text-white font-bold text-xs hover:bg-rose-500 transition shadow"
                             title="Disable ad and mark resolved"
                           >
                             Disable Ad
                           </button>
                           <button
                             onClick={() => handleUpdate(r.id, 'dismissed', false)}
-                            className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-100"
+                            className="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 font-bold text-xs hover:bg-slate-700 transition"
                           >
                             Dismiss
                           </button>

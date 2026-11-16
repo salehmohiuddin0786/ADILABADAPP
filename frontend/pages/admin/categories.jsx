@@ -111,19 +111,19 @@ export default function AdminCategoriesPage() {
       </Head>
 
       <div className="space-y-6">
-        <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-6 rounded-3xl shadow-xl">
           <div>
-            <h2 className="text-xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-xl font-black text-white tracking-tight">
               Categories ({(Array.isArray(categories) ? categories.length : 0)})
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5">
               Control category ordering, icons, and classifications.
             </p>
           </div>
 
           <button
             onClick={openCreateModal}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition shrink-0"
           >
             <Plus className="w-4 h-4" />
             <span>Add Category</span>
@@ -131,10 +131,10 @@ export default function AdminCategoriesPage() {
         </div>
 
         {/* Categories Table */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">
+            <table className="w-full text-left text-sm text-slate-300">
+              <thead className="bg-slate-950/80 border-b border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
                 <tr>
                   <th className="py-4 px-6">Icon & Name</th>
                   <th className="py-4 px-4">Slug</th>
@@ -144,38 +144,38 @@ export default function AdminCategoriesPage() {
                   <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-800/80">
                 {(Array.isArray(categories) ? categories : []).map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-50/70 transition">
+                  <tr key={c.id} className="hover:bg-slate-800/60 transition">
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-brand-950/80 border border-brand-700/60 text-brand-300 flex items-center justify-center shrink-0 shadow">
                           {getCategoryIcon(c.icon, 'w-5 h-5')}
                         </div>
                         <div>
-                          <span className="font-bold text-slate-900 block">{c.name}</span>
+                          <span className="font-bold text-white block">{c.name}</span>
                           <span className="text-xs text-slate-400 line-clamp-1">{c.description}</span>
                         </div>
                       </div>
                     </td>
 
-                    <td className="py-4 px-4 font-mono text-xs text-slate-500">{c.slug}</td>
-                    <td className="py-4 px-4 font-bold text-xs text-slate-800">{c.display_order}</td>
-                    <td className="py-4 px-4 font-bold text-xs text-brand-600">{c.total_ads || 0}</td>
-                    <td className="py-4 px-4 font-bold text-xs text-slate-700">{c.total_businesses || 0}</td>
+                    <td className="py-4 px-4 font-mono text-xs text-slate-400">{c.slug}</td>
+                    <td className="py-4 px-4 font-bold text-xs text-slate-300">{c.display_order}</td>
+                    <td className="py-4 px-4 font-bold text-xs text-brand-400">{c.total_ads || 0}</td>
+                    <td className="py-4 px-4 font-bold text-xs text-slate-300">{c.total_businesses || 0}</td>
 
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => openEditModal(c)}
-                          className="p-2 text-slate-600 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition"
+                          className="p-2 text-slate-400 hover:text-brand-300 hover:bg-slate-800 rounded-lg transition"
                           title="Edit"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(c.id, c.name)}
-                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                          className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -192,15 +192,15 @@ export default function AdminCategoriesPage() {
 
       {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200">
-            <h3 className="font-bold text-slate-900 text-lg mb-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-800 text-white">
+            <h3 className="font-bold text-white text-lg mb-4">
               {editingCategory ? 'Edit Category' : 'Create Category'}
             </h3>
 
             <form onSubmit={handleSave} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Name *
                 </label>
                 <input
@@ -208,12 +208,12 @@ export default function AdminCategoriesPage() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Lucide Icon Name
                 </label>
                 <input
@@ -221,31 +221,31 @@ export default function AdminCategoriesPage() {
                   value={icon}
                   onChange={(e) => setIcon(e.target.value)}
                   placeholder="e.g. Briefcase, Home, Car, Utensils"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Description
                 </label>
                 <textarea
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Display Order
                 </label>
                 <input
                   type="number"
                   value={displayOrder}
                   onChange={(e) => setDisplayOrder(parseInt(e.target.value, 10) || 0)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
@@ -253,13 +253,13 @@ export default function AdminCategoriesPage() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md"
+                  className="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm shadow-md transition"
                 >
                   Save Category
                 </button>

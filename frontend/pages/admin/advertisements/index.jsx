@@ -127,19 +127,19 @@ export default function AdminAdvertisementsPage() {
 
       <div className="space-y-6">
         {/* Action Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-6 rounded-3xl shadow-xl">
           <div>
-            <h2 className="text-xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-xl font-black text-white tracking-tight">
               Advertisements ({pagination.total})
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Only published advertisements are visible on the public website.
+            <p className="text-xs text-slate-400 mt-0.5">
+              Only approved & published advertisements are visible on the public website.
             </p>
           </div>
 
           <Link
             href="/admin/advertisements/create"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition shrink-0"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition shrink-0"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Create New Advertisement</span>
@@ -147,7 +147,7 @@ export default function AdminAdvertisementsPage() {
         </div>
 
         {/* Filters bar */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm grid grid-cols-1 md:grid-cols-12 gap-3">
+        <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl shadow-sm grid grid-cols-1 md:grid-cols-12 gap-3">
           <div className="md:col-span-5 relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
             <input
@@ -156,7 +156,7 @@ export default function AdminAdvertisementsPage() {
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && fetchAds(1)}
               placeholder="Search title, business, phone..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -164,7 +164,7 @@ export default function AdminAdvertisementsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <option value="">All Statuses</option>
               <option value="published">Published</option>
@@ -179,7 +179,7 @@ export default function AdminAdvertisementsPage() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <option value="">All Categories</option>
               {(Array.isArray(categories) ? categories : []).map((c) => (
@@ -193,7 +193,7 @@ export default function AdminAdvertisementsPage() {
           <div className="md:col-span-1">
             <button
               onClick={() => fetchAds(1)}
-              className="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition"
+              className="w-full py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition shadow-sm"
             >
               Filter
             </button>
@@ -201,10 +201,10 @@ export default function AdminAdvertisementsPage() {
         </div>
 
         {/* Data Table */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+            <table className="w-full text-left text-sm text-slate-300">
+              <thead className="bg-slate-950/80 border-b border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
                 <tr>
                   <th className="py-4 px-6">Advertisement</th>
                   <th className="py-4 px-4">Category</th>
@@ -215,7 +215,7 @@ export default function AdminAdvertisementsPage() {
                   <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-800/80">
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-slate-400">
@@ -224,44 +224,44 @@ export default function AdminAdvertisementsPage() {
                   </tr>
                 ) : (Array.isArray(ads) ? ads : []).length > 0 ? (
                   (Array.isArray(ads) ? ads : []).map((ad) => (
-                    <tr key={ad.id} className="hover:bg-slate-50/70 transition">
+                    <tr key={ad.id} className="hover:bg-slate-800/60 transition">
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
                           <img
                             src={ad.primary_image || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=150&q=80'}
                             alt={ad.title}
-                            className="w-12 h-12 rounded-xl object-cover shrink-0 bg-slate-100"
+                            className="w-12 h-12 rounded-xl object-cover shrink-0 bg-slate-800 border border-slate-700/80"
                           />
                           <div className="min-w-0 max-w-xs">
                             <Link
                               href={`/advertisements/${ad.slug}`}
                               target="_blank"
-                              className="font-bold text-slate-900 hover:text-brand-600 transition truncate block"
+                              className="font-bold text-white hover:text-brand-400 transition truncate block"
                             >
                               {ad.title}
                             </Link>
-                            <p className="text-xs text-slate-500 truncate">
+                            <p className="text-xs text-slate-400 truncate">
                               {ad.business_name} • {ad.location_name || 'Adilabad'}
                             </p>
                           </div>
                         </div>
                       </td>
 
-                      <td className="py-4 px-4 text-xs font-semibold text-slate-600">
+                      <td className="py-4 px-4 text-xs font-semibold text-slate-300">
                         {ad.category_name}
                       </td>
 
-                      <td className="py-4 px-4 text-xs font-bold text-slate-900">
+                      <td className="py-4 px-4 text-xs font-bold text-brand-400">
                         {ad.price_display || '—'}
                       </td>
 
                       <td className="py-4 px-4">
                         <button
                           onClick={() => handleToggleFeatured(ad.id, ad.is_featured)}
-                          className={`p-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 ${
+                          className={`p-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 border ${
                             ad.is_featured === 1
-                              ? 'bg-amber-100 text-amber-800'
-                              : 'bg-slate-100 text-slate-400 hover:text-slate-700'
+                              ? 'bg-amber-950/60 text-amber-300 border-amber-800/60'
+                              : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-white'
                           }`}
                           title="Toggle Featured"
                         >
@@ -274,41 +274,41 @@ export default function AdminAdvertisementsPage() {
                         <select
                           value={ad.status}
                           onChange={(e) => handleToggleStatus(ad.id, e.target.value)}
-                          className={`text-xs font-bold px-2.5 py-1 rounded-full border-0 focus:ring-2 focus:ring-brand-500 cursor-pointer ${
+                          className={`text-xs font-bold px-2.5 py-1 rounded-full border cursor-pointer ${
                             ad.status === 'published'
-                              ? 'bg-emerald-100 text-emerald-800'
+                              ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60'
                               : ad.status === 'draft'
-                              ? 'bg-slate-100 text-slate-700'
+                              ? 'bg-slate-800 text-slate-300 border-slate-700'
                               : ad.status === 'expired'
-                              ? 'bg-rose-100 text-rose-800'
-                              : 'bg-amber-100 text-amber-800'
+                              ? 'bg-rose-950/60 text-rose-300 border-rose-800/60'
+                              : 'bg-amber-950/60 text-amber-300 border-amber-800/60'
                           }`}
                         >
-                          <option value="published">Published</option>
-                          <option value="draft">Draft</option>
-                          <option value="scheduled">Scheduled</option>
-                          <option value="expired">Expired</option>
-                          <option value="archived">Archived</option>
+                          <option value="published" className="bg-slate-900 text-white">Published</option>
+                          <option value="draft" className="bg-slate-900 text-white">Draft</option>
+                          <option value="scheduled" className="bg-slate-900 text-white">Scheduled</option>
+                          <option value="expired" className="bg-slate-900 text-white">Expired</option>
+                          <option value="archived" className="bg-slate-900 text-white">Archived</option>
                         </select>
                       </td>
 
-                      <td className="py-4 px-4 text-xs text-slate-600">
-                        <span className="font-bold text-slate-800">{ad.views_count}</span> views •{' '}
-                        <span className="font-bold text-emerald-600">{ad.clicks_count}</span> clicks
+                      <td className="py-4 px-4 text-xs text-slate-400">
+                        <span className="font-bold text-white">{ad.views_count}</span> views •{' '}
+                        <span className="font-bold text-emerald-400">{ad.clicks_count}</span> clicks
                       </td>
 
                       <td className="py-4 px-6 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <Link
                             href={`/admin/advertisements/${ad.id}/edit`}
-                            className="p-2 rounded-lg text-slate-600 hover:text-brand-600 hover:bg-brand-50 transition"
+                            className="p-2 rounded-lg text-slate-300 hover:text-brand-300 hover:bg-slate-800 transition"
                             title="Edit Advertisement"
                           >
                             <Edit className="w-4 h-4" />
                           </Link>
                           <button
                             onClick={() => handleDelete(ad.id, ad.title)}
-                            className="p-2 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                            className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition"
                             title="Delete Advertisement"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -330,22 +330,22 @@ export default function AdminAdvertisementsPage() {
 
           {/* Pagination */}
           {pagination.totalPages > 1 && (
-            <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span className="text-slate-500">
+            <div className="p-4 border-t border-slate-800 flex items-center justify-between text-xs">
+              <span className="text-slate-400">
                 Page {page} of {pagination.totalPages} ({pagination.total} ads)
               </span>
               <div className="flex items-center gap-2">
                 <button
                   disabled={page <= 1}
                   onClick={() => fetchAds(page - 1)}
-                  className="px-3 py-1.5 rounded-lg border border-slate-200 disabled:opacity-40"
+                  className="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-200 disabled:opacity-40"
                 >
                   Previous
                 </button>
                 <button
                   disabled={page >= pagination.totalPages}
                   onClick={() => fetchAds(page + 1)}
-                  className="px-3 py-1.5 rounded-lg border border-slate-200 disabled:opacity-40"
+                  className="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-200 disabled:opacity-40"
                 >
                   Next
                 </button>

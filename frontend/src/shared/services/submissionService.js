@@ -436,5 +436,16 @@ export const submissionService = {
       changes_requested: items.filter((i) => i.status === 'CHANGES_REQUESTED').length,
       rejected: items.filter((i) => i.status === 'REJECTED').length
     };
+  },
+
+  /**
+   * Reset to initial seed data with fresh pending items for testing
+   */
+  resetToInitialSeed() {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SUBMISSIONS));
+      window.dispatchEvent(new Event('adilabad_submissions_updated'));
+    }
+    return INITIAL_SUBMISSIONS;
   }
 };

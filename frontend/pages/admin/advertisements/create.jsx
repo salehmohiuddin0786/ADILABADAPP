@@ -167,7 +167,7 @@ export default function CreateAdvertisementPage() {
         <div className="flex items-center justify-between">
           <Link
             href="/admin/advertisements"
-            className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition"
+            className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Advertisements</span>
@@ -176,7 +176,7 @@ export default function CreateAdvertisementPage() {
           <button
             type="button"
             onClick={() => setPreviewMode(!previewMode)}
-            className="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5"
           >
             <Eye className="w-4 h-4" />
             <span>{previewMode ? 'Back to Editor' : 'Preview Live Card'}</span>
@@ -185,35 +185,35 @@ export default function CreateAdvertisementPage() {
 
         {/* Live Preview Card */}
         {previewMode ? (
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-lg max-w-sm mx-auto">
+          <div className="bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-xl max-w-sm mx-auto text-white">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 text-center">
               Preview Representation
             </h4>
-            <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+            <div className="border border-slate-800 rounded-2xl overflow-hidden shadow-sm bg-slate-950">
               <img
                 src={images[0] || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=600&q=80'}
                 alt="Preview"
                 className="w-full aspect-[16/10] object-cover"
               />
               <div className="p-4 space-y-2">
-                {priceDisplay && <p className="text-lg font-black text-brand-600">{priceDisplay}</p>}
-                <h3 className="font-bold text-slate-900 text-base">{title || 'Untitled Advertisement'}</h3>
-                <p className="text-xs text-slate-500 font-semibold">{businessName || 'Business Name'}</p>
-                <p className="text-xs text-slate-400">{address || 'Adilabad, Telangana'}</p>
+                {priceDisplay && <p className="text-lg font-black text-brand-400">{priceDisplay}</p>}
+                <h3 className="font-bold text-white text-base">{title || 'Untitled Advertisement'}</h3>
+                <p className="text-xs text-slate-400 font-semibold">{businessName || 'Business Name'}</p>
+                <p className="text-xs text-slate-500">{address || 'Adilabad, Telangana'}</p>
               </div>
             </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* 1. Basic Info */}
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
-              <h3 className="font-bold text-slate-900 text-base border-b border-slate-100 pb-3">
+            <div className="bg-slate-900/90 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-4">
+              <h3 className="font-bold text-white text-base border-b border-slate-800 pb-3">
                 1. Advertisement & Business Information
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Advertisement Title *
                   </label>
                   <input
@@ -222,12 +222,12 @@ export default function CreateAdvertisementPage() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g., Shree Balaji Mega Festival Electronics Sale"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Business / Person Name *
                   </label>
                   <input
@@ -236,23 +236,23 @@ export default function CreateAdvertisementPage() {
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
                     placeholder="e.g., Shree Balaji Electronics"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Category *
                   </label>
                   <select
                     required
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
                     <option value="">Select Category</option>
                     {(Array.isArray(categories) ? categories : []).map((c) => (
-                      <option key={c.id} value={c.id}>
+                      <option key={c.id} value={c.id} className="bg-slate-900 text-white">
                         {c.name}
                       </option>
                     ))}
@@ -260,7 +260,7 @@ export default function CreateAdvertisementPage() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Full Description *
                   </label>
                   <textarea
@@ -269,21 +269,21 @@ export default function CreateAdvertisementPage() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Provide complete specifications, features, warranty, pricing terms..."
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
             </div>
 
             {/* 2. Pricing & Contact */}
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
-              <h3 className="font-bold text-slate-900 text-base border-b border-slate-100 pb-3">
+            <div className="bg-slate-900/90 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-4">
+              <h3 className="font-bold text-white text-base border-b border-slate-800 pb-3">
                 2. Pricing & Direct Contact Lines
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Numeric Price (Optional)
                   </label>
                   <input
@@ -292,29 +292,29 @@ export default function CreateAdvertisementPage() {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     placeholder="25000"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Price Type
                   </label>
                   <select
                     value={priceType}
                     onChange={(e) => setPriceType(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
-                    <option value="fixed">Fixed Price</option>
-                    <option value="negotiable">Negotiable</option>
-                    <option value="starting_at">Starting At</option>
-                    <option value="contact_for_price">Contact for Price</option>
-                    <option value="free">Free</option>
+                    <option value="fixed" className="bg-slate-900 text-white">Fixed Price</option>
+                    <option value="negotiable" className="bg-slate-900 text-white">Negotiable</option>
+                    <option value="starting_at" className="bg-slate-900 text-white">Starting At</option>
+                    <option value="contact_for_price" className="bg-slate-900 text-white">Contact for Price</option>
+                    <option value="free" className="bg-slate-900 text-white">Free</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Display Label
                   </label>
                   <input
@@ -322,12 +322,12 @@ export default function CreateAdvertisementPage() {
                     value={priceDisplay}
                     onChange={(e) => setPriceDisplay(e.target.value)}
                     placeholder="e.g. ₹24,990 onwards"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Phone Number (for 1-click calls) *
                   </label>
                   <input
@@ -336,12 +336,12 @@ export default function CreateAdvertisementPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+91 94401 23456"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     WhatsApp Number
                   </label>
                   <input
@@ -349,12 +349,12 @@ export default function CreateAdvertisementPage() {
                     value={whatsapp}
                     onChange={(e) => setWhatsapp(e.target.value)}
                     placeholder="+91 94401 23456"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Website URL
                   </label>
                   <input
@@ -362,31 +362,31 @@ export default function CreateAdvertisementPage() {
                     value={website}
                     onChange={(e) => setWebsite(e.target.value)}
                     placeholder="https://example.com"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
             </div>
 
             {/* 3. Location & Address */}
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
-              <h3 className="font-bold text-slate-900 text-base border-b border-slate-100 pb-3">
+            <div className="bg-slate-900/90 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-4">
+              <h3 className="font-bold text-white text-base border-b border-slate-800 pb-3">
                 3. Adilabad Location & Physical Address
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Locality in Adilabad
                   </label>
                   <select
                     value={locationId}
                     onChange={(e) => setLocationId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
                     <option value="">Select Locality</option>
                     {(Array.isArray(locations) ? locations : []).map((l) => (
-                      <option key={l.id} value={l.id}>
+                      <option key={l.id} value={l.id} className="bg-slate-900 text-white">
                         {l.name}
                       </option>
                     ))}
@@ -394,7 +394,7 @@ export default function CreateAdvertisementPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Physical Address in Adilabad *
                   </label>
                   <input
@@ -403,26 +403,26 @@ export default function CreateAdvertisementPage() {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="e.g. Cinema Road, Opposite Geeta Theatre, Adilabad"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
             </div>
 
             {/* 4. Images Upload & Management */}
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
-              <h3 className="font-bold text-slate-900 text-base border-b border-slate-100 pb-3">
+            <div className="bg-slate-900/90 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-4">
+              <h3 className="font-bold text-white text-base border-b border-slate-800 pb-3">
                 4. Images & Media (First image will be Primary)
               </h3>
 
               {/* Upload input & URL input */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl border-2 border-dashed border-slate-300 hover:border-brand-500 bg-slate-50 flex flex-col items-center justify-center text-center cursor-pointer relative">
-                  <Upload className="w-6 h-6 text-brand-600 mb-1" />
-                  <span className="text-xs font-bold text-slate-800">
+                <div className="p-4 rounded-2xl border-2 border-dashed border-slate-700 hover:border-brand-500 bg-slate-950 flex flex-col items-center justify-center text-center cursor-pointer relative">
+                  <Upload className="w-6 h-6 text-brand-400 mb-1" />
+                  <span className="text-xs font-bold text-slate-200">
                     {uploadingFiles ? 'Uploading images...' : 'Upload Image Files (Max 5MB)'}
                   </span>
-                  <span className="text-[10px] text-slate-400">JPEG, PNG, WEBP</span>
+                  <span className="text-[10px] text-slate-500">JPEG, PNG, WEBP</span>
                   <input
                     type="file"
                     multiple
@@ -433,7 +433,7 @@ export default function CreateAdvertisementPage() {
                 </div>
 
                 <div className="flex flex-col justify-center space-y-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
                     Or Add Image via Web URL:
                   </label>
                   <div className="flex items-center gap-2">
@@ -442,12 +442,12 @@ export default function CreateAdvertisementPage() {
                       value={newImageUrl}
                       onChange={(e) => setNewImageUrl(e.target.value)}
                       placeholder="https://example.com/photo.jpg"
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                     <button
                       type="button"
                       onClick={handleAddImageUrl}
-                      className="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs shrink-0"
+                      className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shrink-0 transition"
                     >
                       Add
                     </button>
@@ -460,7 +460,7 @@ export default function CreateAdvertisementPage() {
                 {images.map((url, idx) => (
                   <div
                     key={idx}
-                    className="relative aspect-[16/10] rounded-xl overflow-hidden border border-slate-200 group bg-slate-100"
+                    className="relative aspect-[16/10] rounded-xl overflow-hidden border border-slate-700 group bg-slate-950"
                   >
                     <img src={url} alt="Uploaded" className="w-full h-full object-cover" />
                     {idx === 0 && (
@@ -481,24 +481,24 @@ export default function CreateAdvertisementPage() {
             </div>
 
             {/* 5. Publishing Controls */}
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
-              <h3 className="font-bold text-slate-900 text-base border-b border-slate-100 pb-3">
+            <div className="bg-slate-900/90 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-4">
+              <h3 className="font-bold text-white text-base border-b border-slate-800 pb-3">
                 5. Publishing Status & Promotion
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Publication Status *
                   </label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
-                    <option value="published">Published (Visible Publicly)</option>
-                    <option value="draft">Draft (Hidden)</option>
-                    <option value="scheduled">Scheduled</option>
+                    <option value="published" className="bg-slate-900 text-white">Published (Visible Publicly)</option>
+                    <option value="draft" className="bg-slate-900 text-white">Draft (Hidden)</option>
+                    <option value="scheduled" className="bg-slate-900 text-white">Scheduled</option>
                   </select>
                 </div>
 
@@ -508,10 +508,10 @@ export default function CreateAdvertisementPage() {
                       type="checkbox"
                       checked={isFeatured}
                       onChange={(e) => setIsFeatured(e.target.checked)}
-                      className="w-5 h-5 rounded text-amber-500 focus:ring-amber-500 border-slate-300"
+                      className="w-5 h-5 rounded text-amber-500 focus:ring-amber-500 border-slate-700 bg-slate-950"
                     />
-                    <span className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-amber-500 fill-current" />
+                    <span className="text-sm font-bold text-slate-200 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-amber-400 fill-current" />
                       Mark as Featured Advertisement (Top Homepage Placement)
                     </span>
                   </label>
@@ -523,14 +523,14 @@ export default function CreateAdvertisementPage() {
             <div className="flex items-center justify-end gap-3 pt-4">
               <Link
                 href="/admin/advertisements"
-                className="px-5 py-3 rounded-xl border border-slate-200 text-slate-700 font-bold text-sm hover:bg-slate-50 transition"
+                className="px-5 py-3 rounded-xl border border-slate-700 text-slate-300 font-bold text-sm hover:bg-slate-800 transition"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-8 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-lg shadow-brand-600/30 transition disabled:opacity-50"
+                className="px-8 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm shadow-lg shadow-brand-600/30 transition disabled:opacity-50"
               >
                 {submitting ? 'Publishing Advertisement...' : 'Create & Publish Advertisement'}
               </button>

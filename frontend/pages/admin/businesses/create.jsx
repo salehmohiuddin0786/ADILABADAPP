@@ -91,20 +91,20 @@ export default function CreateBusinessPage() {
       <div className="max-w-3xl mx-auto space-y-6">
         <Link
           href="/admin/businesses"
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition"
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Businesses</span>
         </Link>
 
-        <form onSubmit={handleSubmit} className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-5">
-          <h3 className="font-bold text-slate-900 text-lg border-b border-slate-100 pb-3">
+        <form onSubmit={handleSubmit} className="bg-slate-900/90 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-5 text-white">
+          <h3 className="font-bold text-white text-lg border-b border-slate-800 pb-3">
             Business Directory Details
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Business Name *
               </label>
               <input
@@ -113,23 +113,23 @@ export default function CreateBusinessPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Kakatiya Automobiles & Service"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Category *
               </label>
               <select
                 required
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="">Select Category</option>
                 {(Array.isArray(categories) ? categories : []).map((c) => (
-                  <option key={c.id} value={c.id}>
+                  <option key={c.id} value={c.id} className="bg-slate-900 text-white">
                     {c.name}
                   </option>
                 ))}
@@ -137,17 +137,17 @@ export default function CreateBusinessPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Locality
               </label>
               <select
                 value={locationId}
                 onChange={(e) => setLocationId(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="">Select Locality</option>
                 {(Array.isArray(locations) ? locations : []).map((l) => (
-                  <option key={l.id} value={l.id}>
+                  <option key={l.id} value={l.id} className="bg-slate-900 text-white">
                     {l.name}
                   </option>
                 ))}
@@ -155,7 +155,7 @@ export default function CreateBusinessPage() {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Address in Adilabad *
               </label>
               <input
@@ -164,12 +164,12 @@ export default function CreateBusinessPage() {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Shop No. 5, Near Shivaji Chowk, Adilabad"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Phone Number *
               </label>
               <input
@@ -177,24 +177,24 @@ export default function CreateBusinessPage() {
                 required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 WhatsApp Number
               </label>
               <input
                 type="text"
                 value={whatsapp}
                 onChange={(e) => setWhatsapp(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Description *
               </label>
               <textarea
@@ -202,12 +202,12 @@ export default function CreateBusinessPage() {
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Logo Image URL
               </label>
               <input
@@ -215,12 +215,12 @@ export default function CreateBusinessPage() {
                 value={logoUrl}
                 onChange={(e) => setLogoUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Cover Image URL
               </label>
               <input
@@ -228,22 +228,22 @@ export default function CreateBusinessPage() {
                 value={coverUrl}
                 onChange={(e) => setCoverUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
             <Link
               href="/admin/businesses"
-              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-sm"
+              className="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-bold text-sm hover:bg-slate-800 transition"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md transition disabled:opacity-50"
+              className="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm shadow-md transition disabled:opacity-50"
             >
               {submitting ? 'Creating...' : 'Create Business'}
             </button>

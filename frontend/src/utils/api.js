@@ -495,13 +495,49 @@ export function getMockResponse(endpoint, options = {}) {
   if (urlWithoutQuery === '/admin/reports') {
     return { success: true, data: [] };
   }
+
+  if (urlWithoutQuery.startsWith('/admin/users/') && urlWithoutQuery.endsWith('/status')) {
+    const idStr = urlWithoutQuery.replace('/admin/users/', '').replace('/status', '');
+    const id = parseInt(idStr, 10);
+    const DEFAULT_USERS = [
+      { id: 1, name: 'Adilabad Admin', email: 'admin@adilabadapp.com', phone: '+91 94401 88990', role: 'admin', is_active: 1, favorites_count: 8, created_at: '2026-01-01' },
+      { id: 2, name: 'Ramesh Kumar', email: 'user@adilabadapp.com', phone: '+91 98480 12345', role: 'user', is_active: 1, favorites_count: 4, created_at: '2026-02-15' },
+      { id: 3, name: 'Sunita Reddy', email: 'sunita@adilabadapp.com', phone: '+91 99887 66554', role: 'owner', is_active: 1, favorites_count: 12, created_at: '2026-03-10' },
+      { id: 4, name: 'Mohammed Farooq', email: 'farooq@adilabadapp.com', phone: '+91 91234 56789', role: 'user', is_active: 1, favorites_count: 3, created_at: '2026-04-05' }
+    ];
+    let users = DEFAULT_USERS;
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('adilabad_admin_users');
+        if (raw) users = JSON.parse(raw);
+      } catch (e) {}
+      users = users.map((u) => (u.id === id ? { ...u, is_active: u.is_active === 1 ? 0 : 1 } : u));
+      localStorage.setItem('adilabad_admin_users', JSON.stringify(users));
+    }
+    return { success: true, message: 'User account status updated successfully!' };
+  }
+
   if (urlWithoutQuery === '/admin/users') {
+    const DEFAULT_USERS = [
+      { id: 1, name: 'Adilabad Admin', email: 'admin@adilabadapp.com', phone: '+91 94401 88990', role: 'admin', is_active: 1, favorites_count: 8, created_at: '2026-01-01' },
+      { id: 2, name: 'Ramesh Kumar', email: 'user@adilabadapp.com', phone: '+91 98480 12345', role: 'user', is_active: 1, favorites_count: 4, created_at: '2026-02-15' },
+      { id: 3, name: 'Sunita Reddy', email: 'sunita@adilabadapp.com', phone: '+91 99887 66554', role: 'owner', is_active: 1, favorites_count: 12, created_at: '2026-03-10' },
+      { id: 4, name: 'Mohammed Farooq', email: 'farooq@adilabadapp.com', phone: '+91 91234 56789', role: 'user', is_active: 1, favorites_count: 3, created_at: '2026-04-05' }
+    ];
+    let users = DEFAULT_USERS;
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('adilabad_admin_users');
+        if (raw) {
+          users = JSON.parse(raw);
+        } else {
+          localStorage.setItem('adilabad_admin_users', JSON.stringify(DEFAULT_USERS));
+        }
+      } catch (e) {}
+    }
     return {
       success: true,
-      data: [
-        { id: 1, name: 'Adilabad Admin', email: 'admin@adilabadapp.com', role: 'admin', created_at: '2026-01-01' },
-        { id: 2, name: 'Ramesh Kumar', email: 'user@adilabadapp.com', role: 'user', created_at: '2026-02-15' }
-      ]
+      data: users
     };
   }
   if (urlWithoutQuery === '/admin/settings') {

@@ -89,20 +89,20 @@ export default function CreateEventPage() {
       <div className="max-w-3xl mx-auto space-y-6">
         <Link
           href="/admin/events"
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition"
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Events</span>
         </Link>
 
-        <form onSubmit={handleSubmit} className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-5">
-          <h3 className="font-bold text-slate-900 text-lg border-b border-slate-100 pb-3">
+        <form onSubmit={handleSubmit} className="bg-slate-900/90 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-5 text-white">
+          <h3 className="font-bold text-white text-lg border-b border-slate-800 pb-3">
             Local Event Information
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Event Title *
               </label>
               <input
@@ -111,12 +111,12 @@ export default function CreateEventPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Adilabad Open Badminton Cup 2026"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Event Date *
               </label>
               <input
@@ -124,12 +124,12 @@ export default function CreateEventPage() {
                 required
                 value={eventDate}
                 onChange={(e) => setEventDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Event Timing *
               </label>
               <input
@@ -138,12 +138,12 @@ export default function CreateEventPage() {
                 value={eventTime}
                 onChange={(e) => setEventTime(e.target.value)}
                 placeholder="e.g. 09:00 AM - 05:00 PM"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Venue Name *
               </label>
               <input
@@ -152,22 +152,22 @@ export default function CreateEventPage() {
                 value={venue}
                 onChange={(e) => setVenue(e.target.value)}
                 placeholder="Indira Priyadarshini Stadium"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Locality
               </label>
               <select
                 value={locationId}
                 onChange={(e) => setLocationId(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="">Select Locality</option>
                 {(Array.isArray(locations) ? locations : []).map((l) => (
-                  <option key={l.id} value={l.id}>
+                  <option key={l.id} value={l.id} className="bg-slate-900 text-white">
                     {l.name}
                   </option>
                 ))}
@@ -175,7 +175,7 @@ export default function CreateEventPage() {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Full Address in Adilabad *
               </label>
               <input
@@ -184,12 +184,12 @@ export default function CreateEventPage() {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Stadium Road, Near Shivaji Chowk, Adilabad"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Event Description *
               </label>
               <textarea
@@ -197,12 +197,12 @@ export default function CreateEventPage() {
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Organizer Name *
               </label>
               <input
@@ -211,36 +211,36 @@ export default function CreateEventPage() {
                 value={organizer}
                 onChange={(e) => setOrganizer(e.target.value)}
                 placeholder="Adilabad Youth Association"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Organizer Contact Phone
               </label>
               <input
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Cover Image URL
               </label>
               <input
                 type="url"
                 value={coverUrl}
                 onChange={(e) => setCoverUrl(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Online Registration / Tickets URL (Optional)
               </label>
               <input
@@ -248,22 +248,22 @@ export default function CreateEventPage() {
                 value={registrationUrl}
                 onChange={(e) => setRegistrationUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
             <Link
               href="/admin/events"
-              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-sm"
+              className="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-bold text-sm hover:bg-slate-800 transition"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md transition disabled:opacity-50"
+              className="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm shadow-md transition disabled:opacity-50"
             >
               {submitting ? 'Creating Event...' : 'Publish Event'}
             </button>

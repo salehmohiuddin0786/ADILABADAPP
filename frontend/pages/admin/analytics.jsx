@@ -45,18 +45,18 @@ export default function AdminAnalyticsPage() {
       </Head>
 
       <div className="space-y-8">
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
-          <h2 className="text-xl font-black text-slate-900 tracking-tight">
+        <div className="bg-slate-900/90 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl">
+          <h2 className="text-xl font-black text-white tracking-tight">
             Adilabad Advertising Telemetry
           </h2>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             Real user interactions tracked across calls, WhatsApp conversations, map directions, and shares.
           </p>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 mt-6 border-t border-slate-100">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 mt-6 border-t border-slate-800/80">
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Impressions</span>
-              <span className="text-3xl font-black text-slate-900 tracking-tight mt-1 block">
+              <span className="text-3xl font-black text-white tracking-tight mt-1 block">
                 {stats.advertisements?.views || 0}
               </span>
               <span className="text-[11px] text-slate-400">Total ad page views</span>
@@ -64,7 +64,7 @@ export default function AdminAnalyticsPage() {
 
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Customer Leads</span>
-              <span className="text-3xl font-black text-emerald-600 tracking-tight mt-1 block">
+              <span className="text-3xl font-black text-emerald-400 tracking-tight mt-1 block">
                 {stats.advertisements?.clicks || 0}
               </span>
               <span className="text-[11px] text-slate-400">Call & WhatsApp clicks</span>
@@ -72,7 +72,7 @@ export default function AdminAnalyticsPage() {
 
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Shares</span>
-              <span className="text-3xl font-black text-brand-600 tracking-tight mt-1 block">
+              <span className="text-3xl font-black text-brand-400 tracking-tight mt-1 block">
                 {stats.advertisements?.shares || 0}
               </span>
               <span className="text-[11px] text-slate-400">Word-of-mouth referral</span>
@@ -80,7 +80,7 @@ export default function AdminAnalyticsPage() {
 
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Lead Conversion</span>
-              <span className="text-3xl font-black text-purple-600 tracking-tight mt-1 block">
+              <span className="text-3xl font-black text-purple-400 tracking-tight mt-1 block">
                 {stats.advertisements?.views > 0
                   ? ((stats.advertisements.clicks / stats.advertisements.views) * 100).toFixed(1)
                   : '0'}%
@@ -91,41 +91,41 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* Lead Channels Breakdown */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-          <h3 className="font-bold text-slate-900 text-lg">Lead Generation by Channel</h3>
+        <div className="bg-slate-900/90 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl space-y-6">
+          <h3 className="font-bold text-white text-lg">Lead Generation by Channel</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-100 space-y-2">
+            <div className="p-5 rounded-2xl bg-emerald-950/40 border border-emerald-800/50 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-emerald-800 text-sm">Direct Phone Calls</span>
-                <Phone className="w-5 h-5 text-emerald-600" />
+                <span className="font-bold text-emerald-300 text-sm">Direct Phone Calls</span>
+                <Phone className="w-5 h-5 text-emerald-400" />
               </div>
-              <p className="text-2xl font-black text-emerald-900">
+              <p className="text-2xl font-black text-white">
                 {clicks.find((c) => c.click_type === 'call')?.count || 24}
               </p>
-              <p className="text-xs text-emerald-700">1-click caller connections</p>
+              <p className="text-xs text-emerald-400">1-click caller connections</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-green-50 border border-green-100 space-y-2">
+            <div className="p-5 rounded-2xl bg-green-950/40 border border-green-800/50 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-green-800 text-sm">WhatsApp Messages</span>
-                <MessageCircle className="w-5 h-5 text-green-600" />
+                <span className="font-bold text-green-300 text-sm">WhatsApp Messages</span>
+                <MessageCircle className="w-5 h-5 text-green-400" />
               </div>
-              <p className="text-2xl font-black text-green-900">
+              <p className="text-2xl font-black text-white">
                 {clicks.find((c) => c.click_type === 'whatsapp')?.count || 32}
               </p>
-              <p className="text-xs text-green-700">Direct chats on WhatsApp</p>
+              <p className="text-xs text-green-400">Direct chats on WhatsApp</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-blue-50 border border-blue-100 space-y-2">
+            <div className="p-5 rounded-2xl bg-blue-950/40 border border-blue-800/50 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-blue-800 text-sm">Google Maps Directions</span>
-                <Navigation className="w-5 h-5 text-blue-600" />
+                <span className="font-bold text-blue-300 text-sm">Google Maps Directions</span>
+                <Navigation className="w-5 h-5 text-blue-400" />
               </div>
-              <p className="text-2xl font-black text-blue-900">
+              <p className="text-2xl font-black text-white">
                 {clicks.find((c) => c.click_type === 'directions')?.count || 18}
               </p>
-              <p className="text-xs text-blue-700">Store visits guided via Maps</p>
+              <p className="text-xs text-blue-400">Store visits guided via Maps</p>
             </div>
           </div>
         </div>

@@ -325,8 +325,30 @@ export default function AdminModerationCenter() {
               <ShieldCheck className="w-12 h-12 text-slate-600" />
               <h3 className="text-base font-bold text-white">No Submissions Found in Current Filter</h3>
               <p className="text-xs text-slate-400 max-w-sm">
-                No items match the selected tab and filters. Owners can submit new items anytime from the Owner Portal.
+                {activeTab === 'pending' && counts.published > 0
+                  ? `All ${counts.published} submissions have been approved and published live in the marketplace!`
+                  : 'No items match the selected tab and filters. Owners can submit new items anytime from the Owner Portal.'}
               </p>
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                {activeTab === 'pending' && counts.published > 0 && (
+                  <button
+                    onClick={() => setActiveTab('published')}
+                    className="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-black text-xs transition shadow"
+                  >
+                    View {counts.published} Live Published Items &rarr;
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    submissionService.resetToInitialSeed();
+                    loadSubmissions();
+                    addToast('Reset demo submissions queue with pending approvals!', 'success');
+                  }}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition"
+                >
+                  Load Sample Pending Submissions
+                </button>
+              </div>
             </div>
           ) : (
             <div className="overflow-x-auto">

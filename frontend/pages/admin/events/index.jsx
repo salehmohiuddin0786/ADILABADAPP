@@ -56,19 +56,19 @@ export default function AdminEventsPage() {
       </Head>
 
       <div className="space-y-6">
-        <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-6 rounded-3xl shadow-xl">
           <div>
-            <h2 className="text-xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-xl font-black text-white tracking-tight">
               Events ({events.length})
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Admin-controlled festivals, cricket championships, exhibitions, and consumer expos.
+            <p className="text-xs text-slate-400 mt-0.5">
+              Admin-controlled festivals, cricket championships, exhibitions, and consumer expos in Adilabad.
             </p>
           </div>
 
           <Link
             href="/admin/events/create"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition shrink-0"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Create Event</span>
@@ -76,10 +76,10 @@ export default function AdminEventsPage() {
         </div>
 
         {/* Events Table */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">
+            <table className="w-full text-left text-sm text-slate-300">
+              <thead className="bg-slate-950/80 border-b border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
                 <tr>
                   <th className="py-4 px-6">Event Title</th>
                   <th className="py-4 px-4">Date & Time</th>
@@ -89,28 +89,28 @@ export default function AdminEventsPage() {
                   <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-800/80">
                 {(Array.isArray(events) ? events : []).map((ev) => (
-                  <tr key={ev.id} className="hover:bg-slate-50/70 transition">
-                    <td className="py-4 px-6 font-bold text-slate-900">
-                      <Link href={`/events/${ev.slug}`} target="_blank" className="hover:text-brand-600">
+                  <tr key={ev.id} className="hover:bg-slate-800/60 transition">
+                    <td className="py-4 px-6 font-bold text-white">
+                      <Link href={`/events/${ev.slug}`} target="_blank" className="hover:text-brand-400 transition">
                         {ev.title}
                       </Link>
                     </td>
-                    <td className="py-4 px-4 text-xs font-semibold text-slate-600">
+                    <td className="py-4 px-4 text-xs font-semibold text-slate-300">
                       {ev.event_date} ({ev.event_time})
                     </td>
-                    <td className="py-4 px-4 text-xs text-slate-500">{ev.venue}</td>
-                    <td className="py-4 px-4 text-xs font-medium text-slate-700">{ev.organizer}</td>
+                    <td className="py-4 px-4 text-xs text-slate-400">{ev.venue}</td>
+                    <td className="py-4 px-4 text-xs font-medium text-slate-300">{ev.organizer}</td>
                     <td className="py-4 px-4">
-                      <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-950/60 text-emerald-400 border border-emerald-800/60">
                         {ev.status}
                       </span>
                     </td>
                     <td className="py-4 px-6 text-right">
                       <button
                         onClick={() => handleDelete(ev.id, ev.title)}
-                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                        className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

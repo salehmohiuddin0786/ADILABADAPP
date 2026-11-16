@@ -98,19 +98,19 @@ export default function AdminBannersPage() {
       </Head>
 
       <div className="space-y-6">
-        <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-6 rounded-3xl shadow-xl">
           <div>
-            <h2 className="text-xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-xl font-black text-white tracking-tight">
               Promotional Banners ({banners.length})
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5">
               Control the prominent hero and seasonal banners displayed on the homepage.
             </p>
           </div>
 
           <button
             onClick={openCreate}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-md"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition shrink-0"
           >
             <Plus className="w-4 h-4" />
             <span>Add Banner</span>
@@ -119,22 +119,22 @@ export default function AdminBannersPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {(Array.isArray(banners) ? banners : []).map((b) => (
-            <div key={b.id} className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between">
-              <div className="relative aspect-[21/9] bg-slate-900">
+            <div key={b.id} className="bg-slate-900/90 rounded-3xl overflow-hidden border border-slate-800 shadow-xl flex flex-col justify-between">
+              <div className="relative aspect-[21/9] bg-slate-950">
                 <img src={b.image_url} alt={b.title} className="w-full h-full object-cover" />
-                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-900/80 text-white text-xs font-bold">
+                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-900/90 text-white text-xs font-bold border border-slate-700/60">
                   Priority: {b.priority}
                 </div>
               </div>
               <div className="p-6 space-y-2">
-                <h3 className="font-bold text-slate-900 text-base">{b.title}</h3>
-                <p className="text-xs text-slate-500">{b.subtitle}</p>
-                <p className="text-xs text-brand-600 font-mono pt-1">Link: {b.link_url}</p>
+                <h3 className="font-bold text-white text-base">{b.title}</h3>
+                <p className="text-xs text-slate-400">{b.subtitle}</p>
+                <p className="text-xs text-brand-400 font-mono pt-1">Link: {b.link_url}</p>
 
-                <div className="pt-4 flex items-center justify-end gap-2">
+                <div className="pt-4 flex items-center justify-end gap-2 border-t border-slate-800/80">
                   <button
                     onClick={() => handleDelete(b.id)}
-                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                    className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -146,14 +146,14 @@ export default function AdminBannersPage() {
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200">
-            <h3 className="font-bold text-slate-900 text-lg mb-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-800 text-white">
+            <h3 className="font-bold text-white text-lg mb-4">
               {editingBanner ? 'Edit Banner' : 'Create Banner'}
             </h3>
             <form onSubmit={handleSave} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Title *
                 </label>
                 <input
@@ -161,24 +161,24 @@ export default function AdminBannersPage() {
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Subtitle
                 </label>
                 <textarea
                   rows={2}
                   value={subtitle}
                   onChange={(e) => setSubtitle(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                   Image URL *
                 </label>
                 <input
@@ -186,13 +186,13 @@ export default function AdminBannersPage() {
                   required
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Link URL *
                   </label>
                   <input
@@ -200,18 +200,18 @@ export default function AdminBannersPage() {
                     required
                     value={linkUrl}
                     onChange={(e) => setLinkUrl(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
                     Priority
                   </label>
                   <input
                     type="number"
                     value={priority}
                     onChange={(e) => setPriority(parseInt(e.target.value, 10) || 0)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
@@ -220,13 +220,13 @@ export default function AdminBannersPage() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md"
+                  className="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm shadow-md transition"
                 >
                   Save Banner
                 </button>

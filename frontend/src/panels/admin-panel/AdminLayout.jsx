@@ -28,11 +28,31 @@ import {
   Plus
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { submissionService } from '../../shared/services/submissionService';
 
 export default function AdminLayout({ children, title = 'Super Admin Command Center' }) {
   const router = useRouter();
   const { user, isAdmin, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  const updatePendingCount = () => {
+    try {
+      const pending = submissionService.getSubmissions({ status: 'PENDING_APPROVAL' });
+      setPendingCount(pending ? pending.length : 0);
+    } catch {
+      setPendingCount(0);
+    }
+  };
+
+  useEffect(() => {
+    updatePendingCount();
+    const handleUpdate = () => updatePendingCount();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('adilabad_submissions_updated', handleUpdate);
+      return () => window.removeEventListener('adilabad_submissions_updated', handleUpdate);
+    }
+  }, []);
 
   // Seamless fallback to Super Admin root session if viewing in preview/demo mode
   const activeAdmin = (user && isAdmin) ? user : {
@@ -50,7 +70,12 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
       heading: 'COMMAND & CONTROL',
       items: [
         { name: 'Executive Overview', href: '/admin', icon: LayoutDashboard },
-        { name: 'Moderation Queue', href: '/admin/moderation', icon: Inbox, badge: '2 Pending' }
+        {
+          name: 'Moderation Queue',
+          href: '/admin/moderation',
+          icon: Inbox,
+          badge: pendingCount > 0 ? `${pendingCount} Pending` : null
+        }
       ]
     },
     {
