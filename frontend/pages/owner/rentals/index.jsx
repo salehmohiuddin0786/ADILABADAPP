@@ -17,6 +17,7 @@ import {
 import OwnerLayout from '../../../src/panels/owner-panel/OwnerLayout';
 import { useToast } from '../../../src/context/ToastContext';
 import { apiFetch } from '../../../src/utils/api';
+import { submissionService } from '../../../src/shared/services/submissionService';
 
 export default function OwnerRentalsListPage() {
   const { addToast } = useToast();
@@ -27,11 +28,15 @@ export default function OwnerRentalsListPage() {
   const loadRentals = async () => {
     setLoading(true);
     try {
-      // 1. Fetch from apiFetch (which queries mock / real backend)
+      // 1. Fetch from unified submission service for latest approval statuses
+      const subRes = await submissionService.getSubmissions({ module: 'rentals' });
+      const subItems = Array.isArray(subRes?.data) ? subRes.data : [];
+
+      // 2. Fetch from apiFetch (which queries mock / real backend)
       const res = await apiFetch('/api/v1/rentals');
       let items = Array.isArray(res?.data) ? res.data : [];
 
-      // 2. Also ensure local storage items are included if not present
+      // 3. Ensure local storage items are included if not present
       if (typeof window !== 'undefined') {
         try {
           const stored = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
@@ -43,7 +48,37 @@ export default function OwnerRentalsListPage() {
         } catch (e) {}
       }
 
-      setRentals(items);
+      // 4. Merge submissions with rental fleet to reflect true statuses (e.g. PENDING_APPROVAL / PUBLISHED)
+      const mergedMap = new Map();
+      items.forEach((item) => mergedMap.set(item.title, item));
+      subItems.forEach((sub) => {
+        const existing = mergedMap.get(sub.title);
+        if (existing) {
+          mergedMap.set(sub.title, {
+            ...existing,
+            status: sub.status === 'PUBLISHED' ? (existing.status || 'AVAILABLE') : sub.status,
+            review_notes: sub.review_notes,
+            submission_id: sub.id
+          });
+        } else {
+          mergedMap.set(sub.title, {
+            id: sub.id,
+            submission_id: sub.id,
+            title: sub.title,
+            category_name: sub.category,
+            daily_rate: sub.daily_rate || 1000,
+            security_deposit: sub.security_deposit || 0,
+            location: sub.location,
+            status: sub.status,
+            review_notes: sub.review_notes,
+            is_user_uploaded: true,
+            media: [{ media_url: sub.image_url }],
+            description: sub.description
+          });
+        }
+      });
+
+      setRentals(Array.from(mergedMap.values()));
     } catch (err) {
       console.error('Failed to load rentals:', err);
     } finally {
@@ -53,6 +88,11 @@ export default function OwnerRentalsListPage() {
 
   useEffect(() => {
     loadRentals();
+    const handleSync = () => loadRentals();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('adilabad_submissions_updated', handleSync);
+      return () => window.removeEventListener('adilabad_submissions_updated', handleSync);
+    }
   }, []);
 
   const toggleStatus = async (id) => {
@@ -233,6 +273,11 @@ export default function OwnerRentalsListPage() {
                               <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">
                                 {item.description || 'Verified local handover'}
                               </p>
+                              {item.review_notes && (
+                                <p className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md mt-1 inline-block">
+                                  <strong>Super Admin Note:</strong> {item.review_notes}
+                                </p>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -259,14 +304,18 @@ export default function OwnerRentalsListPage() {
                         <td className="py-4 px-4">
                           <span
                             className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                              item.status === 'AVAILABLE'
+                              item.status === 'AVAILABLE' || item.status === 'PUBLISHED'
                                 ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                                 : item.status === 'RENTED'
                                 ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                                : item.status === 'CHANGES_REQUESTED'
+                                ? 'bg-orange-100 text-orange-800 border border-orange-200'
+                                : item.status === 'REJECTED'
+                                ? 'bg-rose-100 text-rose-800 border border-rose-200'
                                 : 'bg-amber-100 text-amber-800 border border-amber-200'
                             }`}
                           >
-                            {item.status || 'AVAILABLE'}
+                            {item.status === 'AVAILABLE' ? 'PUBLISHED' : item.status || 'PUBLISHED'}
                           </span>
                         </td>
 

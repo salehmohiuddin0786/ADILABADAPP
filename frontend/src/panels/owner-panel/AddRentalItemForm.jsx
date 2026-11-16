@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import { apiFetch } from '../../utils/api';
+import { submissionService } from '../../shared/services/submissionService';
 
 export default function AddRentalItemForm() {
   const router = useRouter();
@@ -87,36 +88,33 @@ export default function AddRentalItemForm() {
         media_urls: [finalImg]
       };
 
-      const res = await apiFetch('/api/v1/rentals', {
-        method: 'POST',
-        body: JSON.stringify(payload)
+      // 1. Submit through unified submission service so Super Admin immediately receives it in Moderation Queue
+      await submissionService.createSubmission({
+        module: 'rentals',
+        title: formData.title,
+        category: selectedCat ? selectedCat.name : 'Equipment',
+        daily_rate: parseFloat(formData.daily_rate),
+        security_deposit: parseFloat(formData.security_deposit || 0),
+        location: formData.location || 'Cinema Road, Adilabad',
+        pickup_address: formData.pickup_address,
+        image_url: finalImg,
+        description: formData.description || formData.title,
+        specs: {
+          condition: formData.item_condition,
+          is_delivery_available: formData.is_delivery_available,
+          delivery_charge: formData.delivery_charge
+        }
       });
 
-      // Also ensure direct fallback persistence in localStorage
-      if (typeof window !== 'undefined') {
-        try {
-          const currentList = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
-          const itemToSave = res?.data || {
-            id: Date.now(),
-            title: formData.title,
-            slug: formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString().slice(-4),
-            category_name: selectedCat ? selectedCat.name : 'Equipment',
-            daily_rate: parseFloat(formData.daily_rate),
-            security_deposit: parseFloat(formData.security_deposit || 0),
-            location: formData.location || 'Cinema Road, Adilabad',
-            status: 'AVAILABLE',
-            media: [{ media_url: finalImg }],
-            description: formData.description || formData.title,
-            created_at: new Date().toISOString()
-          };
-          if (!currentList.some(i => i.id === itemToSave.id)) {
-            currentList.unshift(itemToSave);
-            localStorage.setItem('adilabad_rentals', JSON.stringify(currentList));
-          }
-        } catch (e) {}
-      }
+      // 2. Also try backend endpoint
+      try {
+        await apiFetch('/api/v1/rentals', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {}
 
-      showToast(`Rental item "${formData.title}" listed successfully! Now live in your inventory & marketplace.`, 'success');
+      showToast(`Rental item "${formData.title}" submitted successfully for Super Admin approval & publishing!`, 'success');
       router.push('/owner/rentals');
     } catch (err) {
       showToast(err.message || 'Submission failed. Saved to draft.', 'error');

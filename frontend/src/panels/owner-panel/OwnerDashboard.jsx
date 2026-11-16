@@ -17,20 +17,29 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { submissionService } from '../../shared/services/submissionService';
 
 export default function OwnerDashboard() {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [totalRentals, setTotalRentals] = useState(3);
+  const [subCounts, setSubCounts] = useState({ pending: 0, published: 0, changes_requested: 0 });
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    async function loadStats() {
       try {
-        const stored = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
-        if (Array.isArray(stored)) {
-          setTotalRentals(3 + stored.length);
+        const c = await submissionService.getCounts();
+        setSubCounts(c);
+        const subRes = await submissionService.getSubmissions({ module: 'rentals' });
+        if (Array.isArray(subRes?.data)) {
+          setTotalRentals(subRes.data.length);
         }
       } catch (e) {}
+    }
+    loadStats();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('adilabad_submissions_updated', loadStats);
+      return () => window.removeEventListener('adilabad_submissions_updated', loadStats);
     }
   }, []);
 
@@ -112,16 +121,16 @@ export default function OwnerDashboard() {
           <span className="text-[11px] text-emerald-600 font-semibold mt-1 block">Active on Marketplace</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+        <Link href="/owner/rentals" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-amber-300 transition block">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase">Pending Proposals</span>
+            <span className="text-xs font-bold text-slate-500 uppercase">Pending Approvals</span>
             <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
               <Inbox className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-black text-slate-900 mt-2">2</p>
-          <span className="text-[11px] text-amber-600 font-semibold mt-1 block">Action Required</span>
-        </div>
+          <p className="text-2xl font-black text-slate-900 mt-2">{subCounts.pending}</p>
+          <span className="text-[11px] text-amber-600 font-semibold mt-1 block">In Super Admin Queue →</span>
+        </Link>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div className="flex items-center justify-between">

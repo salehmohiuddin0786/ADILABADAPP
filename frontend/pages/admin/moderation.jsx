@@ -22,477 +22,574 @@ import {
   Phone,
   Eye,
   Download,
-  Sparkles
+  Sparkles,
+  RefreshCw,
+  Layers,
+  Tag,
+  Calendar,
+  MessageSquare,
+  Trash2
 } from 'lucide-react';
 import AdminLayout from '../../src/components/layout/AdminLayout';
+import { submissionService } from '../../src/shared/services/submissionService';
+import { useToast } from '../../src/context/ToastContext';
 
 export default function AdminModerationCenter() {
-  const [activeTab, setActiveTab] = useState('all');
+  const { addToast } = useToast();
+  const [activeTab, setActiveTab] = useState('pending');
+  const [selectedModule, setSelectedModule] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMandal, setSelectedMandal] = useState('all');
   const [selectedItems, setSelectedItems] = useState([]);
-  const [actionNotice, setActionNotice] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [submissions, setSubmissions] = useState([]);
+  const [reviewModalItem, setReviewModalItem] = useState(null);
+  const [changeRequestText, setChangeRequestText] = useState('');
+  const [showChangeDialog, setShowChangeDialog] = useState(false);
+  const [counts, setCounts] = useState({ total: 0, pending: 0, published: 0, changes_requested: 0, rejected: 0 });
 
-  const [queue, setQueue] = useState([
-    {
-      id: 'MOD-101',
-      type: 'MERCHANT_KYC',
-      typeLabel: 'Merchant KYC Verification',
-      title: 'Adilabad Media Works & Camera Rentals',
-      applicant: 'Syed Usama',
-      phone: '+91 98480 22334',
-      mandal: 'Adilabad Urban',
-      address: 'Cinema Road, Opp. Geeta Theatre, Adilabad - 504001',
-      docType: 'Telangana Shop Act & GST Registration',
-      docNumber: 'TS-ADB-2024-88419',
-      submittedAt: 'Today at 10:15 AM',
-      riskScore: 'Low (0.02)',
-      status: 'pending',
-      details: 'Applying for Tier-1 Commercial Merchant certification for professional mirrorless camera gear rentals.'
-    },
-    {
-      id: 'MOD-102',
-      type: 'STOREFRONT',
-      typeLabel: 'New Business Storefront',
-      title: 'Shree Balaji Electronics & Appliances',
-      applicant: 'Ramesh Balaji',
-      phone: '+91 94401 23456',
-      mandal: 'Adilabad Urban',
-      address: 'Opposite Geeta Theatre, Cinema Road, Adilabad',
-      docType: 'Adilabad Municipality Trade License',
-      docNumber: 'ADB-MUNC-TL-4912',
-      submittedAt: 'Today at 09:40 AM',
-      riskScore: 'Low (0.01)',
-      status: 'pending',
-      details: 'New retail storefront listing with multi-brand electronics, Bajaj Finserv finance desk, and brand warranty center.'
-    },
-    {
-      id: 'MOD-103',
-      type: 'RENTAL_ITEM',
-      typeLabel: 'Heavy Equipment Rental',
-      title: 'John Deere 5050D Tractor with Cultivator',
-      applicant: 'Telangana Agri Hub',
-      phone: '+91 98499 11223',
-      mandal: 'Utnoor Road',
-      address: 'Utnoor Highway Crossing, Adilabad Rural',
-      docType: 'Vehicle RC & Commercial Insurance',
-      docNumber: 'TS-01-EA-4910',
-      submittedAt: 'Yesterday at 04:20 PM',
-      riskScore: 'Low (0.03)',
-      status: 'pending',
-      details: 'Listing 50HP tractor with cultivator attachment. Security deposit ₹8,000, daily hire ₹3,200.'
-    },
-    {
-      id: 'MOD-104',
-      type: 'FLAGGED_AD',
-      typeLabel: 'Citizen Flagged Content',
-      title: 'Residential Plot Sale 200 Sq Yds - Boath Road',
-      applicant: 'Private Seller (Unverified)',
-      phone: '+91 91234 56789',
-      mandal: 'Boath',
-      address: 'Survey No. 42/B, Boath Mandal, Adilabad',
-      docType: 'Gram Panchayat Layout Approval',
-      docNumber: 'Pending Verification',
-      submittedAt: 'Yesterday at 02:10 PM',
-      riskScore: 'Medium (0.48)',
-      status: 'pending',
-      details: 'Reported by 2 users for unverified layout permission. Needs DTCP or Gram Panchayat documentation.'
-    },
-    {
-      id: 'MOD-105',
-      type: 'MERCHANT_KYC',
-      typeLabel: 'Merchant KYC Verification',
-      title: 'Hotel Mehfil & Family Restaurant',
-      applicant: 'Mohammed Farooq',
-      phone: '+91 94401 55667',
-      mandal: 'Shivaji Chowk',
-      address: 'Main Road, Shivaji Chowk, Adilabad',
-      docType: 'FSSAI Food Safety License',
-      docNumber: 'FSSAI-13624001000492',
-      submittedAt: '2 days ago',
-      riskScore: 'Low (0.01)',
-      status: 'pending',
-      details: 'Dining and family restaurant verified catering license renewal for seasonal promotions.'
+  const loadSubmissions = async () => {
+    setLoading(true);
+    try {
+      const res = await submissionService.getSubmissions();
+      setSubmissions(Array.isArray(res.data) ? res.data : []);
+      const c = await submissionService.getCounts();
+      setCounts(c);
+    } catch (e) {
+      console.error('Failed to load submissions in admin:', e);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
   useEffect(() => {
+    loadSubmissions();
+    const handleSync = () => loadSubmissions();
     if (typeof window !== 'undefined') {
-      try {
-        const stored = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
-        if (Array.isArray(stored) && stored.length > 0) {
-          const userRentals = stored.map((r) => ({
-            id: `MOD-RENT-${r.id}`,
-            type: 'RENTAL_ITEM',
-            typeLabel: 'User Rental Upload',
-            title: r.title,
-            applicant: r.owner_name || 'Verified Merchant',
-            phone: r.owner_phone || '+91 98480 22334',
-            mandal: r.location || 'Adilabad Urban',
-            address: r.pickup_address || r.location || 'Adilabad, Telangana',
-            docType: 'Owner Equipment Declaration & ID',
-            docNumber: `RENT-REG-${String(r.id).slice(-6)}`,
-            submittedAt: r.created_at ? new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently',
-            riskScore: 'Low (0.01)',
-            status: r.status === 'AVAILABLE' ? 'approved' : 'pending',
-            details: `${r.category_name || 'Equipment'} • Daily: ₹${r.daily_rate} • Deposit: ₹${r.security_deposit} • ${r.description || ''}`
-          }));
-
-          setQueue((prev) => {
-            const existingIds = new Set(prev.map((p) => p.id));
-            const newOnes = userRentals.filter((u) => !existingIds.has(u.id));
-            return [...newOnes, ...prev];
-          });
-        }
-      } catch (e) {}
+      window.addEventListener('adilabad_submissions_updated', handleSync);
+      return () => window.removeEventListener('adilabad_submissions_updated', handleSync);
     }
   }, []);
 
-  const showNotice = (msg) => {
-    setActionNotice(msg);
-    setTimeout(() => setActionNotice(null), 3500);
+  const handleApprove = async (id) => {
+    const res = await submissionService.approveAndPublish(id);
+    if (res.success) {
+      addToast(res.message, 'success');
+      loadSubmissions();
+      if (reviewModalItem?.id === id) setReviewModalItem(null);
+    }
   };
 
-  const handleApprove = (id) => {
-    setQueue((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, status: 'approved' } : item))
-    );
-    showNotice(`Item ${id} approved & published successfully.`);
+  const handleReject = async (id) => {
+    const reason = prompt('Please enter rejection reason for this submission:', 'Does not meet district content guidelines.');
+    if (!reason) return;
+    const res = await submissionService.rejectSubmission(id, reason);
+    if (res.success) {
+      addToast(res.message, 'info');
+      loadSubmissions();
+      if (reviewModalItem?.id === id) setReviewModalItem(null);
+    }
   };
 
-  const handleReject = (id) => {
-    setQueue((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, status: 'rejected' } : item))
-    );
-    showNotice(`Item ${id} marked as rejected. Submitter notified.`);
+  const handleRequestChanges = async (id) => {
+    const note = changeRequestText.trim() || prompt('Enter change instructions for the owner:', 'Please upload clearer item photo and confirm pickup address.');
+    if (!note) return;
+    const res = await submissionService.requestChanges(id, note);
+    if (res.success) {
+      addToast(res.message, 'info');
+      setShowChangeDialog(false);
+      setChangeRequestText('');
+      loadSubmissions();
+      if (reviewModalItem?.id === id) setReviewModalItem(null);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to permanently delete this submission?')) return;
+    const res = await submissionService.deleteSubmission(id);
+    if (res.success) {
+      addToast(res.message, 'info');
+      loadSubmissions();
+      if (reviewModalItem?.id === id) setReviewModalItem(null);
+    }
   };
 
   const toggleSelect = (id) => {
-    setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+    setSelectedItems((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
   };
 
-  const handleBatchApprove = () => {
+  const handleBatchApprove = async () => {
     if (selectedItems.length === 0) return;
-    setQueue((prev) =>
-      prev.map((item) =>
-        selectedItems.includes(item.id) ? { ...item, status: 'approved' } : item
-      )
-    );
-    showNotice(`Batch approved ${selectedItems.length} selected items.`);
+    for (const id of selectedItems) {
+      await submissionService.approveAndPublish(id);
+    }
+    addToast(`Batch approved & published ${selectedItems.length} submissions!`, 'success');
     setSelectedItems([]);
+    loadSubmissions();
   };
 
-  const filteredQueue = queue.filter((item) => {
-    if (activeTab === 'pending' && item.status !== 'pending') return false;
-    if (activeTab === 'approved' && item.status !== 'approved') return false;
-    if (activeTab === 'rejected' && item.status !== 'rejected') return false;
-    if (activeTab === 'kyc' && item.type !== 'MERCHANT_KYC') return false;
-    if (activeTab === 'flagged' && item.type !== 'FLAGGED_AD') return false;
+  const filtered = submissions.filter((item) => {
+    if (activeTab === 'pending' && item.status !== 'PENDING_APPROVAL') return false;
+    if (activeTab === 'published' && item.status !== 'PUBLISHED') return false;
+    if (activeTab === 'changes' && item.status !== 'CHANGES_REQUESTED') return false;
+    if (activeTab === 'rejected' && item.status !== 'REJECTED') return false;
 
-    if (selectedMandal !== 'all' && item.mandal !== selectedMandal) return false;
+    if (selectedModule !== 'all' && item.module !== selectedModule) return false;
+    if (selectedMandal !== 'all' && !item.location?.toLowerCase().includes(selectedMandal.toLowerCase())) return false;
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return (
-        item.title.toLowerCase().includes(q) ||
-        item.applicant.toLowerCase().includes(q) ||
-        item.id.toLowerCase().includes(q) ||
-        item.docNumber.toLowerCase().includes(q)
+        item.title?.toLowerCase().includes(q) ||
+        item.owner_name?.toLowerCase().includes(q) ||
+        item.category?.toLowerCase().includes(q) ||
+        item.id?.toLowerCase().includes(q)
       );
     }
     return true;
   });
 
-  const pendingCount = queue.filter((i) => i.status === 'pending').length;
-  const approvedCount = queue.filter((i) => i.status === 'approved').length;
-  const rejectedCount = queue.filter((i) => i.status === 'rejected').length;
-
   return (
-    <AdminLayout title="Moderation & Verification Center">
+    <AdminLayout title="Approval & Moderation Centre">
       <Head>
-        <title>Moderation Center — Super Admin Adilabad App</title>
+        <title>Approval & Moderation Centre — Super Admin Adilabad App</title>
       </Head>
-
-      {/* Floating Action Toast Notification */}
-      {actionNotice && (
-        <div className="fixed bottom-6 right-6 z-50 bg-emerald-950/90 text-emerald-200 border border-emerald-600/50 px-5 py-3 rounded-2xl shadow-2xl backdrop-blur-md flex items-center space-x-3 text-xs font-bold animate-in fade-in slide-in-from-bottom-3">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>{actionNotice}</span>
-        </div>
-      )}
 
       <div className="space-y-6">
         {/* Header Ribbon & KPI Matrix */}
         <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl backdrop-blur-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
             <div>
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-6 h-6 text-brand-400" />
-                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                  District Moderation & Compliance Center
-                </h2>
+              <div className="flex items-center space-x-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
+                  Central District Approval Engine
+                </span>
               </div>
-              <p className="text-xs text-slate-400 mt-1">
-                Authoritative verification of merchant shop licenses, government GSTINs, land layout titles, and community reports.
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white mt-1">
+                Super Admin Submission & Moderation Centre
+              </h1>
+              <p className="text-xs text-slate-400 mt-1 max-w-2xl">
+                Review, approve, request changes, or reject listings submitted by Adilabad owners across rentals, advertisements, business profiles, and events.
               </p>
             </div>
 
-            {selectedItems.length > 0 && (
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={loadSubmissions}
+                className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
+                title="Refresh Submissions"
+              >
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-brand-400' : ''}`} />
+              </button>
+              {selectedItems.length > 0 && (
                 <button
                   onClick={handleBatchApprove}
-                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-600/25 transition flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition flex items-center space-x-1.5"
                 >
                   <Check className="w-4 h-4" />
-                  <span>Approve Selected ({selectedItems.length})</span>
+                  <span>Batch Approve ({selectedItems.length})</span>
                 </button>
-                <button
-                  onClick={() => setSelectedItems([])}
-                  className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-xs"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Quick Metrics Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Pending Review</span>
-                <p className="text-2xl font-black text-amber-400 mt-0.5">{pendingCount}</p>
+          {/* Quick Metrics */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-5">
+            <button
+              onClick={() => setActiveTab('pending')}
+              className={`p-3.5 rounded-2xl border text-left transition ${
+                activeTab === 'pending'
+                  ? 'bg-amber-500/10 border-amber-500/50 shadow-lg'
+                  : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase text-amber-400 font-mono">Pending Review</span>
+                <Clock className="w-4 h-4 text-amber-400" />
               </div>
-              <Clock className="w-6 h-6 text-amber-500/40" />
-            </div>
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Approved Today</span>
-                <p className="text-2xl font-black text-emerald-400 mt-0.5">{approvedCount}</p>
+              <p className="text-2xl font-black text-white mt-1">{counts.pending}</p>
+              <span className="text-[10px] text-slate-400">Awaiting your approval</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('published')}
+              className={`p-3.5 rounded-2xl border text-left transition ${
+                activeTab === 'published'
+                  ? 'bg-emerald-500/10 border-emerald-500/50 shadow-lg'
+                  : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase text-emerald-400 font-mono">Published Live</span>
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               </div>
-              <CheckCircle2 className="w-6 h-6 text-emerald-500/40" />
-            </div>
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Rejected / Escalated</span>
-                <p className="text-2xl font-black text-rose-400 mt-0.5">{rejectedCount}</p>
+              <p className="text-2xl font-black text-white mt-1">{counts.published}</p>
+              <span className="text-[10px] text-slate-400">Live in marketplace</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('changes')}
+              className={`p-3.5 rounded-2xl border text-left transition ${
+                activeTab === 'changes'
+                  ? 'bg-orange-500/10 border-orange-500/50 shadow-lg'
+                  : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase text-orange-400 font-mono">Changes Requested</span>
+                <AlertTriangle className="w-4 h-4 text-orange-400" />
               </div>
-              <XCircle className="w-6 h-6 text-rose-500/40" />
-            </div>
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Avg Resolution SLA</span>
-                <p className="text-2xl font-black text-white mt-0.5">14 <span className="text-sm font-semibold text-slate-400">mins</span></p>
+              <p className="text-2xl font-black text-white mt-1">{counts.changes_requested}</p>
+              <span className="text-[10px] text-slate-400">Waiting for owner update</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('rejected')}
+              className={`p-3.5 rounded-2xl border text-left transition ${
+                activeTab === 'rejected'
+                  ? 'bg-rose-500/10 border-rose-500/50 shadow-lg'
+                  : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase text-rose-400 font-mono">Rejected</span>
+                <XCircle className="w-4 h-4 text-rose-400" />
               </div>
-              <Sparkles className="w-6 h-6 text-brand-400/40" />
-            </div>
+              <p className="text-2xl font-black text-white mt-1">{counts.rejected}</p>
+              <span className="text-[10px] text-slate-400">Declined submissions</span>
+            </button>
           </div>
         </div>
 
-        {/* Filter Bar & Tabs */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-          {/* Tab Selector */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-            {[
-              { id: 'all', label: 'All Items' },
-              { id: 'pending', label: `Pending (${pendingCount})` },
-              { id: 'kyc', label: 'Merchant KYC' },
-              { id: 'flagged', label: 'Flagged Content' },
-              { id: 'approved', label: 'Approved' }
-            ].map((tab) => (
+        {/* Filters and Search Bar */}
+        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            {['all', 'pending', 'published', 'changes', 'rejected'].map((tab) => (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-brand-600 text-white shadow'
-                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition ${
+                  activeTab === tab
+                    ? 'bg-brand-500 text-slate-950 shadow'
+                    : 'bg-slate-800 text-slate-400 hover:text-white'
                 }`}
               >
-                {tab.label}
+                {tab === 'changes' ? 'Changes Requested' : tab}
               </button>
             ))}
           </div>
 
-          {/* Search & Mandal Filter */}
-          <div className="flex items-center gap-2.5">
-            <div className="relative flex-1 sm:w-64">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <div className="flex items-center gap-2 flex-1 max-w-xl">
+            {/* Module Filter */}
+            <select
+              value={selectedModule}
+              onChange={(e) => setSelectedModule(e.target.value)}
+              className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-brand-500"
+            >
+              <option value="all">All Modules</option>
+              <option value="rentals">Rentals & Fleet</option>
+              <option value="advertisements">Advertisements</option>
+              <option value="businesses">Business Profiles</option>
+              <option value="events">Events & Expos</option>
+              <option value="offers">Offers & Coupons</option>
+              <option value="buy-sell">Buy & Sell</option>
+              <option value="services">Services</option>
+              <option value="jobs">Jobs</option>
+              <option value="properties">Properties</option>
+            </select>
+
+            {/* Search */}
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search business, applicant, doc #..."
+                placeholder="Search submission title, owner, category, or ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-brand-500"
               />
             </div>
-
-            <select
-              value={selectedMandal}
-              onChange={(e) => setSelectedMandal(e.target.value)}
-              className="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 focus:outline-none focus:border-brand-500"
-            >
-              <option value="all">All Mandals</option>
-              <option value="Adilabad Urban">Adilabad Urban</option>
-              <option value="Cinema Road">Cinema Road</option>
-              <option value="Utnoor Road">Utnoor Road</option>
-              <option value="Shivaji Chowk">Shivaji Chowk</option>
-              <option value="Boath">Boath</option>
-            </select>
           </div>
         </div>
 
-        {/* Moderation Queue Stream Cards */}
-        <div className="space-y-4">
-          {filteredQueue.length === 0 ? (
-            <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-12 text-center flex flex-col items-center gap-3">
-              <CheckCircle2 className="w-12 h-12 text-emerald-400" />
-              <h3 className="text-base font-bold text-white">No Items Matching Filter</h3>
+        {/* Submissions List / Table */}
+        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+          {loading ? (
+            <div className="py-20 text-center flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-3 border-brand-400 border-t-transparent rounded-full animate-spin" />
+              <p className="text-xs font-mono text-slate-400">Loading submissions across district modules...</p>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="py-20 text-center flex flex-col items-center gap-3">
+              <ShieldCheck className="w-12 h-12 text-slate-600" />
+              <h3 className="text-base font-bold text-white">No Submissions Found in Current Filter</h3>
               <p className="text-xs text-slate-400 max-w-sm">
-                No active verification requests matching the selected category or search query.
+                No items match the selected tab and filters. Owners can submit new items anytime from the Owner Portal.
               </p>
             </div>
           ) : (
-            filteredQueue.map((item) => {
-              const isSelected = selectedItems.includes(item.id);
-              return (
-                <div
-                  key={item.id}
-                  className={`bg-slate-900/90 border rounded-3xl p-5 sm:p-6 shadow-xl transition-all ${
-                    isSelected
-                      ? 'border-brand-500 bg-brand-950/20'
-                      : item.status === 'approved'
-                      ? 'border-emerald-800/60 bg-emerald-950/10'
-                      : item.status === 'rejected'
-                      ? 'border-rose-800/60 bg-rose-950/10'
-                      : 'border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    {/* Item Information */}
-                    <div className="flex items-start gap-4">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950/90 border-b border-slate-800 text-slate-400 uppercase font-mono font-bold text-[10px]">
+                  <tr>
+                    <th className="py-3.5 px-4 w-10 text-center">
                       <input
                         type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleSelect(item.id)}
-                        className="mt-1 rounded border-slate-700 text-brand-600 focus:ring-brand-500 w-4 h-4 bg-slate-950 cursor-pointer"
+                        checked={selectedItems.length > 0 && selectedItems.length === filtered.length}
+                        onChange={() => {
+                          if (selectedItems.length === filtered.length) setSelectedItems([]);
+                          else setSelectedItems(filtered.map((f) => f.id));
+                        }}
+                        className="rounded border-slate-700 bg-slate-900 text-brand-500 focus:ring-0"
                       />
+                    </th>
+                    <th className="py-3.5 px-4">Item & Module</th>
+                    <th className="py-3.5 px-4">Owner / Contact</th>
+                    <th className="py-3.5 px-4">Rates / Pricing</th>
+                    <th className="py-3.5 px-4">Location</th>
+                    <th className="py-3.5 px-4">Status</th>
+                    <th className="py-3.5 px-6 text-right">Approval Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/80">
+                  {filtered.map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-800/40 transition">
+                      <td className="py-4 px-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.id)}
+                          onChange={() => toggleSelect(item.id)}
+                          className="rounded border-slate-700 bg-slate-900 text-brand-500 focus:ring-0"
+                        />
+                      </td>
 
-                      <div className="space-y-1.5">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-brand-950 text-brand-300 border border-brand-800">
-                            {item.typeLabel}
-                          </span>
-                          <span className="text-[10px] font-mono text-slate-400">
-                            ID: {item.id}
-                          </span>
-                          <span className="text-[10px] text-slate-400">
-                            • {item.submittedAt}
-                          </span>
-                          {item.status === 'approved' && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 flex items-center gap-1">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                              Approved
-                            </span>
-                          )}
-                          {item.status === 'rejected' && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-800 flex items-center gap-1">
-                              <XCircle className="w-3 h-3 text-rose-400" />
-                              Rejected
-                            </span>
-                          )}
-                        </div>
-
-                        <h3 className="text-base sm:text-lg font-black text-white tracking-tight">
-                          {item.title}
-                        </h3>
-
-                        <p className="text-xs text-slate-300 leading-relaxed">
-                          {item.details}
-                        </p>
-
-                        <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-slate-400 pt-1 font-medium">
-                          <span className="flex items-center gap-1">
-                            <UserCheck className="w-3.5 h-3.5 text-slate-500" />
-                            {item.applicant}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Phone className="w-3.5 h-3.5 text-slate-500" />
-                            {item.phone}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                            {item.mandal}
-                          </span>
-                        </div>
-
-                        {/* Government & Compliance Document Bar */}
-                        <div className="mt-3 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
-                          <div className="flex items-center gap-2">
-                            <FileText className="w-4 h-4 text-amber-400 shrink-0" />
-                            <div>
-                              <span className="text-slate-300 font-bold">{item.docType}: </span>
-                              <span className="font-mono text-amber-300 font-semibold">{item.docNumber}</span>
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={item.image_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=100'}
+                            alt={item.title}
+                            className="w-11 h-11 rounded-xl object-cover bg-slate-800 border border-slate-700 shrink-0"
+                          />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-white text-xs">{item.title}</span>
+                              <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 text-[9px] font-mono font-bold uppercase border border-slate-700">
+                                {item.moduleLabel || item.module}
+                              </span>
                             </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-slate-400 font-mono">
-                              Risk Index: <strong className="text-emerald-400">{item.riskScore}</strong>
-                            </span>
-                            <button
-                              onClick={() => showNotice(`Simulating document preview for ${item.docNumber}`)}
-                              className="text-[11px] font-bold text-brand-400 hover:text-brand-300 flex items-center gap-1"
-                            >
-                              <span>Inspect Proof</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </button>
+                            <p className="text-[10px] text-slate-400 mt-0.5 font-mono">
+                              ID: {item.id} • {item.category}
+                            </p>
+                            {item.review_notes && (
+                              <p className="text-[10px] text-amber-300 bg-amber-950/60 border border-amber-800/80 px-2 py-0.5 rounded mt-1 inline-block">
+                                <strong>Note:</strong> {item.review_notes}
+                              </p>
+                            )}
                           </div>
                         </div>
-                      </div>
-                    </div>
+                      </td>
 
-                    {/* Action Buttons */}
-                    <div className="flex lg:flex-col items-center gap-2 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-800">
-                      {item.status === 'pending' ? (
-                        <>
-                          <button
-                            onClick={() => handleApprove(item.id)}
-                            className="flex-1 lg:w-36 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-1.5"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Approve & Verify</span>
-                          </button>
-                          <button
-                            onClick={() => handleReject(item.id)}
-                            className="flex-1 lg:w-36 py-2 px-3 rounded-xl bg-slate-800 hover:bg-rose-950/60 text-slate-300 hover:text-rose-300 font-bold text-xs border border-slate-700 hover:border-rose-700 transition flex items-center justify-center gap-1.5"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                            <span>Reject Notice</span>
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setQueue((prev) =>
-                              prev.map((i) => (i.id === item.id ? { ...i, status: 'pending' } : i))
-                            );
-                            showNotice(`Reopened item ${item.id} for moderation.`);
-                          }}
-                          className="w-full lg:w-36 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 transition"
+                      <td className="py-4 px-4">
+                        <p className="font-semibold text-white">{item.owner_name}</p>
+                        <p className="text-[10px] text-slate-400 font-mono mt-0.5">{item.owner_phone}</p>
+                      </td>
+
+                      <td className="py-4 px-4 font-mono font-bold text-emerald-400">
+                        {item.pricing || (item.daily_rate ? `₹${item.daily_rate}/day` : '—')}
+                        {item.security_deposit ? (
+                          <span className="block text-[10px] text-amber-400 font-normal">
+                            Deposit: ₹{item.security_deposit}
+                          </span>
+                        ) : null}
+                      </td>
+
+                      <td className="py-4 px-4 text-slate-400 font-medium">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
+                          <span className="truncate max-w-[130px]">{item.location}</span>
+                        </span>
+                      </td>
+
+                      <td className="py-4 px-4">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black uppercase tracking-wider ${
+                            item.status === 'PUBLISHED'
+                              ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                              : item.status === 'CHANGES_REQUESTED'
+                              ? 'bg-orange-950 text-orange-300 border border-orange-800'
+                              : item.status === 'REJECTED'
+                              ? 'bg-rose-950 text-rose-300 border border-rose-800'
+                              : 'bg-amber-950 text-amber-300 border border-amber-800'
+                          }`}
                         >
-                          Reopen Review
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })
+                          {item.status}
+                        </span>
+                      </td>
+
+                      <td className="py-4 px-6 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => setReviewModalItem(item)}
+                            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 transition"
+                            title="Inspect Details"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+
+                          {item.status !== 'PUBLISHED' && (
+                            <button
+                              onClick={() => handleApprove(item.id)}
+                              className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow transition flex items-center gap-1"
+                              title="Approve & Publish Live"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Approve</span>
+                            </button>
+                          )}
+
+                          {item.status === 'PENDING_APPROVAL' && (
+                            <button
+                              onClick={() => {
+                                setReviewModalItem(item);
+                                setShowChangeDialog(true);
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-bold border border-amber-500/40 transition"
+                              title="Request Changes"
+                            >
+                              Revise
+                            </button>
+                          )}
+
+                          {item.status !== 'REJECTED' && (
+                            <button
+                              onClick={() => handleReject(item.id)}
+                              className="px-2 py-1 rounded-lg hover:bg-rose-950/40 text-rose-400 text-xs font-bold transition"
+                              title="Reject Submission"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="p-1 rounded-lg text-slate-500 hover:text-rose-400 transition"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>
+
+      {/* Review & Inspection Modal */}
+      {reviewModalItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div>
+                <span className="text-[10px] font-mono uppercase text-brand-400 font-bold">
+                  {reviewModalItem.moduleLabel} Inspection
+                </span>
+                <h3 className="text-lg font-black text-white">{reviewModalItem.title}</h3>
+              </div>
+              <button
+                onClick={() => setReviewModalItem(null)}
+                className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <img
+                src={reviewModalItem.image_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600'}
+                alt={reviewModalItem.title}
+                className="w-full h-48 rounded-2xl object-cover bg-slate-950 border border-slate-800"
+              />
+              <div className="space-y-2 text-xs text-slate-300">
+                <p><strong>Module:</strong> {reviewModalItem.moduleLabel}</p>
+                <p><strong>Category:</strong> {reviewModalItem.category}</p>
+                <p><strong>Pricing:</strong> {reviewModalItem.pricing || `₹${reviewModalItem.daily_rate}/day`}</p>
+                <p><strong>Security Deposit:</strong> ₹{reviewModalItem.security_deposit || 0}</p>
+                <p><strong>Location:</strong> {reviewModalItem.location}</p>
+                <p><strong>Owner Name:</strong> {reviewModalItem.owner_name}</p>
+                <p><strong>Owner Phone:</strong> {reviewModalItem.owner_phone}</p>
+                <p><strong>Status:</strong> <span className="font-mono font-bold text-amber-400">{reviewModalItem.status}</span></p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-1">
+              <span className="font-bold text-white block">Description:</span>
+              <p>{reviewModalItem.description || 'No description provided.'}</p>
+            </div>
+
+            {showChangeDialog ? (
+              <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-800/80 space-y-3">
+                <span className="text-xs font-bold text-amber-300 block">Feedback / Change Instructions for Owner:</span>
+                <textarea
+                  rows={3}
+                  value={changeRequestText}
+                  onChange={(e) => setChangeRequestText(e.target.value)}
+                  placeholder="e.g. Please upload an invoice or clear photo of the serial number..."
+                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-amber-500"
+                />
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => setShowChangeDialog(false)}
+                    className="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-400 text-xs font-bold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleRequestChanges(reviewModalItem.id)}
+                    className="px-4 py-1.5 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold shadow"
+                  >
+                    Send Change Request
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+              <button
+                onClick={() => handleDelete(reviewModalItem.id)}
+                className="text-xs font-bold text-rose-400 hover:text-rose-300"
+              >
+                Delete Permanently
+              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowChangeDialog(!showChangeDialog)}
+                  className="px-4 py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30 transition"
+                >
+                  Request Changes
+                </button>
+                <button
+                  onClick={() => handleReject(reviewModalItem.id)}
+                  className="px-4 py-2 rounded-xl bg-rose-600/30 text-rose-300 border border-rose-500/50 text-xs font-bold hover:bg-rose-600/50 transition"
+                >
+                  Reject
+                </button>
+                <button
+                  onClick={() => handleApprove(reviewModalItem.id)}
+                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg transition flex items-center gap-1.5"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Approve & Publish</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }

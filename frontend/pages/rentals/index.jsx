@@ -16,6 +16,7 @@ import {
 import PublicLayout from '../../src/panels/public-website/PublicLayout';
 import { apiFetch } from '../../src/utils/api';
 import { useLanguage } from '../../src/shared/contexts/LanguageContext';
+import { submissionService } from '../../src/shared/services/submissionService';
 
 export default function RentalsPage() {
   const { t } = useLanguage();
@@ -33,37 +34,71 @@ export default function RentalsPage() {
     { id: 'Home Appliances', name: 'Appliances & Coolers' }
   ];
 
-  useEffect(() => {
-    async function loadRentals() {
-      try {
-        setLoading(true);
-        const data = await apiFetch('/api/v1/rentals');
-        let rentalList = Array.isArray(data?.data) ? data.data : [];
+  const loadRentals = async () => {
+    try {
+      setLoading(true);
+      // 1. Fetch from unified submission service (published items)
+      const subRes = await submissionService.getSubmissions({ module: 'rentals' });
+      const publishedSubs = (Array.isArray(subRes?.data) ? subRes.data : []).filter(
+        (s) => s.status === 'PUBLISHED' || s.status === 'AVAILABLE'
+      );
 
-        // Check local storage directly
-        if (typeof window !== 'undefined') {
-          try {
-            const stored = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
-            if (Array.isArray(stored) && stored.length > 0) {
-              const existingIds = new Set(rentalList.map((i) => i.id));
-              const missing = stored.filter((s) => !existingIds.has(s.id));
-              rentalList = [...missing, ...rentalList];
-            }
-          } catch (e) {}
-        }
+      // 2. Fetch from apiFetch
+      const data = await apiFetch('/api/v1/rentals');
+      let rentalList = Array.isArray(data?.data) ? data.data : [];
 
-        setItems(rentalList);
-      } catch (err) {
-        console.error('Failed to load rentals:', err);
-      } finally {
-        setLoading(false);
+      // 3. Check local storage directly
+      if (typeof window !== 'undefined') {
+        try {
+          const stored = JSON.parse(localStorage.getItem('adilabad_rentals') || '[]');
+          if (Array.isArray(stored) && stored.length > 0) {
+            const existingIds = new Set(rentalList.map((i) => i.id));
+            const missing = stored.filter((s) => !existingIds.has(s.id));
+            rentalList = [...missing, ...rentalList];
+          }
+        } catch (e) {}
       }
+
+      // 4. Merge published submissions so newly approved items are guaranteed to appear
+      const mergedMap = new Map();
+      rentalList.forEach((r) => mergedMap.set(r.title, r));
+      publishedSubs.forEach((sub) => {
+        if (!mergedMap.has(sub.title)) {
+          mergedMap.set(sub.title, {
+            id: sub.id,
+            title: sub.title,
+            slug: sub.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + sub.id,
+            category_name: sub.category,
+            daily_rate: sub.daily_rate || 1000,
+            security_deposit: sub.security_deposit || 0,
+            location: sub.location,
+            status: 'AVAILABLE',
+            media: [{ media_url: sub.image_url }],
+            description: sub.description
+          });
+        }
+      });
+
+      setItems(Array.from(mergedMap.values()));
+    } catch (err) {
+      console.error('Failed to load rentals:', err);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     loadRentals();
+    const handleSync = () => loadRentals();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('adilabad_submissions_updated', handleSync);
+      return () => window.removeEventListener('adilabad_submissions_updated', handleSync);
+    }
   }, []);
 
   const filteredItems = items.filter((item) => {
-    const matchCat = categoryFilter === 'all' || item.category_name?.toLowerCase().includes(categoryFilter.toLowerCase());
+    const cat = (item.category_name || item.category || '').toLowerCase();
+    const matchCat = categoryFilter === 'all' || cat.includes(categoryFilter.toLowerCase());
     const matchSearch = !searchQuery || item.title?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCat && matchSearch;
   });

@@ -380,6 +380,56 @@ export function getMockResponse(endpoint, options = {}) {
     };
   }
 
+  // 7b. Unified Submissions & Approvals (Owner <-> Super Admin)
+  if (urlWithoutQuery.includes('/submissions')) {
+    let subs = [];
+    if (typeof window !== 'undefined') {
+      try {
+        subs = JSON.parse(localStorage.getItem('adilabad_unified_submissions') || '[]');
+      } catch (e) {}
+    }
+
+    if (method === 'POST') {
+      const newSub = {
+        id: `SUB-${Date.now().toString().slice(-6)}`,
+        module: body.module || 'rentals',
+        title: body.title || 'Untitled Submission',
+        category: body.category || 'General',
+        pricing: body.pricing || 'Contact for Price',
+        location: body.location || 'Adilabad',
+        owner_name: body.owner_name || 'Owner',
+        owner_phone: body.owner_phone || '+91 98480 22334',
+        status: 'PENDING_APPROVAL',
+        submitted_at: new Date().toISOString(),
+        image_url: body.image_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800',
+        description: body.description || ''
+      };
+      subs.unshift(newSub);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('adilabad_unified_submissions', JSON.stringify(subs));
+      }
+      return { success: true, message: 'Submission created for approval', data: newSub };
+    }
+
+    if (method === 'PATCH' || method === 'PUT') {
+      const match = urlWithoutQuery.match(/\/submissions\/([^/]+)/);
+      const subId = match ? match[1] : null;
+      if (subId && typeof window !== 'undefined') {
+        subs = subs.map(s => s.id === subId ? { ...s, status: body.status || 'PUBLISHED', review_notes: body.review_notes || '' } : s);
+        localStorage.setItem('adilabad_unified_submissions', JSON.stringify(subs));
+      }
+      return { success: true, message: 'Submission status updated successfully.' };
+    }
+
+    if (params.status && params.status !== 'all') {
+      subs = subs.filter(s => s.status === params.status);
+    }
+    if (params.module && params.module !== 'all') {
+      subs = subs.filter(s => s.module === params.module);
+    }
+    return { success: true, data: subs, total: subs.length };
+  }
+
   // 8. Global Search
   if (urlWithoutQuery === '/search') {
     return getMockSearch(params.q || params.search || '', params.location || '');

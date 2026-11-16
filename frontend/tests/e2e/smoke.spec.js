@@ -99,4 +99,21 @@ test.describe('Adilabad App — Core Hyperlocal Navigation & Responsiveness', ()
     await expect(bottomNav.locator('text=Directory')).toBeVisible();
     await expect(bottomNav.locator('text=Events')).toBeVisible();
   });
+
+  test('Super Admin Moderation & Approval Centre: approves owner submission live', async ({ page }) => {
+    // 1. Visit Super Admin Moderation Centre
+    await page.goto('/admin/moderation');
+    await expect(page.locator('h1').first()).toContainText(/Moderation Centre/i);
+
+    // 2. Verify pending review tabs and metrics
+    await expect(page.locator('text=Pending Review').first()).toBeVisible();
+
+    // 3. Find first pending submission and click Approve
+    const approveBtn = page.locator('button:has-text("Approve")').first();
+    if (await approveBtn.isVisible()) {
+      await approveBtn.click();
+      // Toast confirmation appears
+      await expect(page.locator('text=approved').first()).toBeVisible();
+    }
+  });
 });

@@ -40,6 +40,7 @@ import {
 } from 'lucide-react';
 import AdminLayout from '../../src/components/layout/AdminLayout';
 import { apiFetch } from '../../src/utils/api';
+import { submissionService } from '../../src/shared/services/submissionService';
 
 const ADILABAD_MANDALS = [
   { id: 'all', name: 'All District (18 Mandals)', count: 86 },
@@ -118,36 +119,56 @@ export default function SuperAdminDashboard() {
     loadDashboardData();
   }, []);
 
-  const loadDashboardData = () => {
+  const loadDashboardData = async () => {
     setLoading(true);
-    apiFetch('/admin/analytics/overview')
-      .then((res) => {
-        if (res.success && res.data) {
-          setStats(res.data);
-          if (Array.isArray(res.data.top_advertisements)) {
-            setTopAds(res.data.top_advertisements);
-          } else {
-            setTopAds([
-              { id: 1, title: 'Prime Commercial Shop for Rent - Cinema Road', business_name: 'Adilabad Prime Properties', mandal: 'Adilabad Urban', views: 1240, clicks: 184, revenue: '₹4,500', status: 'published', is_featured: true },
-              { id: 2, title: 'Royal Enfield Classic 350 - Stealth Black (2022)', business_name: 'Adilabad MotoHub', mandal: 'Bus Stand Road', views: 980, clicks: 142, revenue: '₹2,500', status: 'published', is_featured: true },
-              { id: 3, title: 'Authentic Hyderabadi Dum Biryani Family Pack', business_name: 'Hotel Mehfil & Family Restaurant', mandal: 'Shivaji Chowk', views: 750, clicks: 110, revenue: '₹1,800', status: 'published', is_featured: false },
-              { id: 4, title: 'John Deere 5050D Tractor with Cultivator', business_name: 'Telangana Agri Hub', mandal: 'Utnoor Road', views: 620, clicks: 94, revenue: '₹3,200', status: 'published', is_featured: false }
-            ]);
-          }
+    try {
+      // 1. Load real pending submissions from unified submission service
+      const subRes = await submissionService.getSubmissions({ status: 'PENDING_APPROVAL' });
+      if (Array.isArray(subRes?.data) && subRes.data.length > 0) {
+        const queueFormatted = subRes.data.map((s) => ({
+          id: s.id,
+          type: s.module === 'rentals' ? 'RENTAL_LISTING' : s.module === 'advertisements' ? 'COMMERCIAL_AD' : s.module === 'businesses' ? 'NEW_BUSINESS' : 'LISTING_PROPOSAL',
+          title: s.title,
+          submitter: `${s.owner_name} (Owner)`,
+          mandal: s.location || 'Adilabad Urban',
+          docType: s.category || 'Owner Listing',
+          time: 'Pending Review',
+          priority: 'normal',
+          status: 'pending'
+        }));
+        setPendingQueue(queueFormatted);
+      }
+
+      const res = await apiFetch('/admin/analytics/overview');
+      if (res.success && res.data) {
+        setStats(res.data);
+        if (Array.isArray(res.data.top_advertisements)) {
+          setTopAds(res.data.top_advertisements);
+        } else {
+          setTopAds([
+            { id: 1, title: 'Prime Commercial Shop for Rent - Cinema Road', business_name: 'Adilabad Prime Properties', mandal: 'Adilabad Urban', views: 1240, clicks: 184, revenue: '₹4,500', status: 'published', is_featured: true },
+            { id: 2, title: 'Royal Enfield Classic 350 - Stealth Black (2022)', business_name: 'Adilabad MotoHub', mandal: 'Bus Stand Road', views: 980, clicks: 142, revenue: '₹2,500', status: 'published', is_featured: true },
+            { id: 3, title: 'Authentic Hyderabadi Dum Biryani Family Pack', business_name: 'Hotel Mehfil & Family Restaurant', mandal: 'Shivaji Chowk', views: 750, clicks: 110, revenue: '₹1,800', status: 'published', is_featured: false },
+            { id: 4, title: 'John Deere 5050D Tractor with Cultivator', business_name: 'Telangana Agri Hub', mandal: 'Utnoor Road', views: 620, clicks: 94, revenue: '₹3,200', status: 'published', is_featured: false }
+          ]);
         }
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleApprove = (id) => {
-    setPendingQueue((prev) => prev.filter((item) => item.id !== id));
+  const handleApprove = async (id) => {
     const approvedItem = pendingQueue.find((i) => i.id === id);
+    setPendingQueue((prev) => prev.filter((item) => item.id !== id));
     if (approvedItem) {
+      await submissionService.approveAndPublish(id);
       setAuditStream((prev) => [
         {
           id: Date.now(),
-          action: 'Item Approved',
+          action: 'Item Approved & Published',
           actor: 'Super Admin',
           target: approvedItem.title,
           time: 'Just now',
@@ -155,14 +176,15 @@ export default function SuperAdminDashboard() {
         },
         ...prev
       ]);
-      showNotice(`Approved: ${approvedItem.title}`);
+      showNotice(`Approved & Published: ${approvedItem.title}`);
     }
   };
 
-  const handleReject = (id) => {
+  const handleReject = async (id) => {
     const rejectedItem = pendingQueue.find((i) => i.id === id);
     setPendingQueue((prev) => prev.filter((item) => item.id !== id));
     if (rejectedItem) {
+      await submissionService.rejectSubmission(id, 'Declined by Super Admin from Overview.');
       setAuditStream((prev) => [
         {
           id: Date.now(),

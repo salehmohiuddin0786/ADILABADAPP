@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { Layers, ShieldCheck, MapPin, Search, Filter, CheckCircle2, Clock, DollarSign, ExternalLink, RefreshCw } from 'lucide-react';
+import { Layers, ShieldCheck, MapPin, Search, Filter, CheckCircle2, Clock, DollarSign, ExternalLink, RefreshCw, Check, Trash2 } from 'lucide-react';
 import AdminLayout from '../../src/components/layout/AdminLayout';
 import { apiFetch } from '../../src/utils/api';
+import { submissionService } from '../../src/shared/services/submissionService';
+import { useToast } from '../../src/context/ToastContext';
 
 export default function AdminRentalsManagementPage() {
+  const { addToast } = useToast();
   const [rentals, setRentals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,6 +16,11 @@ export default function AdminRentalsManagementPage() {
   const loadRentals = async () => {
     setLoading(true);
     try {
+      // 1. Fetch from unified submission service
+      const subRes = await submissionService.getSubmissions({ module: 'rentals' });
+      const subItems = Array.isArray(subRes?.data) ? subRes.data : [];
+
+      // 2. Fetch from apiFetch (which queries mock / real backend)
       const res = await apiFetch('/api/v1/rentals');
       let items = Array.isArray(res?.data) ? res.data : [];
 
@@ -27,7 +35,34 @@ export default function AdminRentalsManagementPage() {
         } catch (e) {}
       }
 
-      setRentals(items);
+      // Merge and sync statuses
+      const mergedMap = new Map();
+      items.forEach((item) => mergedMap.set(item.title, item));
+      subItems.forEach((sub) => {
+        const existing = mergedMap.get(sub.title);
+        if (existing) {
+          mergedMap.set(sub.title, {
+            ...existing,
+            status: sub.status === 'PUBLISHED' ? (existing.status || 'AVAILABLE') : sub.status,
+            submission_id: sub.id
+          });
+        } else {
+          mergedMap.set(sub.title, {
+            id: sub.id,
+            submission_id: sub.id,
+            title: sub.title,
+            category_name: sub.category,
+            daily_rate: sub.daily_rate || 1000,
+            security_deposit: sub.security_deposit || 0,
+            location: sub.location,
+            status: sub.status,
+            owner_name: sub.owner_name,
+            media: [{ media_url: sub.image_url }]
+          });
+        }
+      });
+
+      setRentals(Array.from(mergedMap.values()));
     } catch (e) {
       console.error(e);
     } finally {
@@ -37,7 +72,27 @@ export default function AdminRentalsManagementPage() {
 
   useEffect(() => {
     loadRentals();
+    const handleSync = () => loadRentals();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('adilabad_submissions_updated', handleSync);
+      return () => window.removeEventListener('adilabad_submissions_updated', handleSync);
+    }
   }, []);
+
+  const handleApprove = async (item) => {
+    const subId = item.submission_id || item.id;
+    await submissionService.approveAndPublish(subId);
+    addToast(`"${item.title}" approved and published to the live marketplace fleet!`, 'success');
+    loadRentals();
+  };
+
+  const handleDelete = async (item) => {
+    if (!confirm(`Delete rental listing "${item.title}"?`)) return;
+    const subId = item.submission_id || item.id;
+    await submissionService.deleteSubmission(subId);
+    addToast(`"${item.title}" removed.`, 'info');
+    loadRentals();
+  };
 
   const filtered = rentals.filter((r) => {
     if (!searchQuery.trim()) return true;
@@ -129,19 +184,45 @@ export default function AdminRentalsManagementPage() {
                     <td className="py-3.5 px-4 font-mono text-amber-300">₹{item.security_deposit || 0}</td>
                     <td className="py-3.5 px-4 text-slate-400">{item.location}</td>
                     <td className="py-3.5 px-4">
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-mono font-bold">
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                          item.status === 'AVAILABLE' || item.status === 'PUBLISHED'
+                            ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                            : item.status === 'PENDING_APPROVAL'
+                            ? 'bg-amber-950 text-amber-300 border border-amber-800'
+                            : 'bg-slate-800 text-slate-300 border border-slate-700'
+                        }`}
+                      >
                         {item.status || 'AVAILABLE'}
                       </span>
                     </td>
                     <td className="py-3.5 px-6 text-right">
-                      <Link
-                        href={`/rentals/${item.slug || item.id}`}
-                        target="_blank"
-                        className="text-xs font-bold text-brand-400 hover:text-brand-300 inline-flex items-center gap-1"
-                      >
-                        <span>Marketplace</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </Link>
+                      <div className="flex items-center justify-end gap-2">
+                        {item.status === 'PENDING_APPROVAL' && (
+                          <button
+                            onClick={() => handleApprove(item)}
+                            className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow flex items-center gap-1"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Approve</span>
+                          </button>
+                        )}
+                        <Link
+                          href={`/rentals/${item.slug || item.id}`}
+                          target="_blank"
+                          className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-brand-400 font-bold text-xs inline-flex items-center gap-1 border border-slate-700"
+                        >
+                          <span>Live</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(item)}
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition"
+                          title="Delete Listing"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
