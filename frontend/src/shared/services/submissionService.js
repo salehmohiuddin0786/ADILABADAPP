@@ -120,6 +120,125 @@ const INITIAL_SUBMISSIONS = [
     image_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
     description: 'Three-day agriculture machinery exhibition, seed suppliers conference, and organic farming workshops.',
     specs: { start_date: '2026-11-28', end_date: '2026-11-30' }
+  },
+  {
+    id: 'SUB-1007',
+    module: 'services',
+    moduleLabel: 'Commercial Service',
+    title: 'Adilabad Professional CCTV & Biometric Security Systems Installation',
+    category: 'Home & Commercial Services',
+    pricing: '₹499 Inspection Fee',
+    location: 'Gandhi Chowk, Adilabad',
+    owner_id: 3,
+    owner_name: 'Telangana Smart Surveillance & IT Sol',
+    owner_phone: '+91 98480 22334',
+    status: 'PUBLISHED',
+    submitted_at: '2026-11-15T09:00:00.000Z',
+    image_url: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=800',
+    description: 'Expert HD and IP CCTV setup, DVR/NVR configuration, mobile app remote view and biometric attendance machine deployment for shops and godowns.',
+    specs: { experience: '8+ Years', turnaround_time: '24 Hours' }
+  },
+  {
+    id: 'SUB-1008',
+    module: 'services',
+    moduleLabel: 'Commercial Service',
+    title: 'Sri Sai Electrician & Submersible Borewell Motor Rewinding Works',
+    category: 'Electrical & Plumbing',
+    pricing: '₹350 Service Visit',
+    location: 'Netaji Chowk, Adilabad',
+    owner_id: 3,
+    owner_name: 'K. Ramesh Electricals',
+    owner_phone: '+91 94401 88776',
+    status: 'PENDING_APPROVAL',
+    submitted_at: '2026-11-16T14:30:00.000Z',
+    image_url: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800',
+    description: 'Three-phase agricultural pump rewinding, domestic copper rewiring, MCB & inverter fault repairs with guaranteed 6-month warranty on motor coils.',
+    specs: { emergency_service: true, tools: 'Advanced Testing Kit' }
+  },
+  {
+    id: 'SUB-1009',
+    module: 'buy-sell',
+    moduleLabel: 'Pre-Owned Buy & Sell',
+    title: 'Pre-Owned Massey Ferguson 241 DI Tractor (2022 Model, Single Owner)',
+    category: 'Agricultural Machinery',
+    pricing: '₹4,85,000 (Negotiable)',
+    location: 'Utnoor Road, Adilabad',
+    owner_id: 3,
+    owner_name: 'Sardar Balwinder Singh',
+    owner_phone: '+91 98492 11223',
+    status: 'PUBLISHED',
+    submitted_at: '2026-11-14T15:20:00.000Z',
+    image_url: 'https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=800',
+    description: 'Only 840 hours run, clean engine, brand new rear MRF tyres, comprehensive insurance valid until Oct 2027. RC and NOC ready for immediate transfer.',
+    specs: { condition: 'excellent', model_year: '2022', ownership: '1st Owner' }
+  },
+  {
+    id: 'SUB-1010',
+    module: 'buy-sell',
+    moduleLabel: 'Pre-Owned Buy & Sell',
+    title: 'Apple iPhone 14 Pro Max 256GB Deep Purple (Battery 94% with Bill & Box)',
+    category: 'Smartphones & Gadgets',
+    pricing: '₹68,500',
+    location: 'Cinema Road, Adilabad',
+    owner_id: 3,
+    owner_name: 'Adilabad Mobile Zone',
+    owner_phone: '+91 94401 23456',
+    status: 'PENDING_APPROVAL',
+    submitted_at: '2026-11-16T15:10:00.000Z',
+    image_url: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800',
+    description: 'Immaculate scratchless condition with genuine Apple fast charger cable, bill, original box and tempered glass pre-installed.',
+    specs: { condition: 'like_new', warranty: '3 Months Shop Warranty' }
+  },
+  {
+    id: 'SUB-1011',
+    module: 'properties',
+    moduleLabel: 'Commercial Property',
+    title: 'Prime 2,400 Sq.Ft Commercial Ground Floor Showroom on Cinema Road',
+    category: 'Commercial Rental',
+    pricing: '₹65,000 / month',
+    location: 'Cinema Road, Opp. Municipal Complex, Adilabad',
+    owner_id: 3,
+    owner_name: 'Adilabad Commercial Estates',
+    owner_phone: '+91 98480 77889',
+    status: 'PUBLISHED',
+    submitted_at: '2026-11-15T11:40:00.000Z',
+    image_url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
+    description: 'Corner facing 40ft wide frontage, three-phase commercial power, designated customer parking for 12 cars, ideal for bank branch, clothing brand or hospital diagnostic lab.',
+    specs: { area_sqft: 2400, property_type: 'Showroom', parking: 'Dedicated' }
+  },
+  {
+    id: 'SUB-1012',
+    module: 'jobs',
+    moduleLabel: 'Job Vacancy',
+    title: 'Senior Accountant & Tally Prime Specialist with GST Filing',
+    category: 'Accounting & Finance',
+    pricing: '₹25,000 - ₹32,000 / month',
+    location: 'Gandhi Chowk, Adilabad',
+    owner_id: 3,
+    owner_name: 'Adilabad Cotton Heritage Group',
+    owner_phone: '+91 98480 22334',
+    status: 'PUBLISHED',
+    submitted_at: '2026-11-15T16:00:00.000Z',
+    image_url: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800',
+    description: 'Seeking energetic B.Com/M.Com graduate with minimum 3 years experience handling Tally Prime, e-Way bills, GSTR-1, GSTR-3B, TDS and vendor reconciliations.',
+    specs: { job_type: 'Full-time', experience_required: '3+ Years', vacancies: 2 }
+  },
+  {
+    id: 'SUB-1013',
+    module: 'offers',
+    moduleLabel: 'Special Offer',
+    title: 'Flat 25% Off on All Pure Adilabad Cotton Sarees & Handloom Kurtas',
+    category: 'Festive Deals & Fashion',
+    pricing: 'Discount Voucher: ADBCOTTON25',
+    location: 'Gandhi Chowk, Adilabad',
+    owner_id: 3,
+    owner_name: 'Adilabad Cotton Heritage',
+    owner_phone: '+91 98480 22334',
+    status: 'PUBLISHED',
+    submitted_at: '2026-11-15T17:30:00.000Z',
+    image_url: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800',
+    description: 'Show this digital coupon at checkout to claim an exclusive 25% discount on all GI tagged authentic handloom items. Valid up to 30th November 2026.',
+    specs: { coupon_code: 'ADBCOTTON25', discount_pct: 25, valid_until: '2026-11-30' }
   }
 ];
 
@@ -132,7 +251,23 @@ function getStoredSubmissions() {
       return INITIAL_SUBMISSIONS;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_SUBMISSIONS;
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SUBMISSIONS));
+      return INITIAL_SUBMISSIONS;
+    }
+    
+    // Auto backfill any missing default modules if user has an old cache
+    let updated = false;
+    INITIAL_SUBMISSIONS.forEach((initItem) => {
+      if (!parsed.some((p) => p.id === initItem.id || (p.title === initItem.title && p.module === initItem.module))) {
+        parsed.push(initItem);
+        updated = true;
+      }
+    });
+    if (updated) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    }
+    return parsed;
   } catch (e) {
     console.error('Error reading submissions from localStorage:', e);
     return INITIAL_SUBMISSIONS;

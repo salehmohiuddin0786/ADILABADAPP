@@ -25,7 +25,13 @@ import {
   ShieldAlert,
   Inbox,
   Activity,
-  Plus
+  Plus,
+  Wrench,
+  ShoppingBag,
+  Building2,
+  Briefcase,
+  Tag,
+  Truck
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { submissionService } from '../../shared/services/submissionService';
@@ -82,7 +88,12 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
       heading: 'COMMERCIAL & PROMOTIONS',
       items: [
         { name: 'Advertisements', href: '/admin/advertisements', icon: Megaphone },
-        { name: 'Rental Fleet', href: '/admin/rentals', icon: LayoutDashboard },
+        { name: 'Services Directory', href: '/admin/services', icon: Wrench },
+        { name: 'Buy & Sell Market', href: '/admin/buy-sell', icon: ShoppingBag },
+        { name: 'Property Listings', href: '/admin/properties', icon: Building2 },
+        { name: 'Job Vacancies', href: '/admin/jobs', icon: Briefcase },
+        { name: 'Special Offers', href: '/admin/offers', icon: Tag },
+        { name: 'Rental Fleet', href: '/admin/rentals', icon: Truck },
         { name: 'Homepage Banners', href: '/admin/banners', icon: ImageIcon },
         { name: 'Category Schema', href: '/admin/categories', icon: FolderTree }
       ]

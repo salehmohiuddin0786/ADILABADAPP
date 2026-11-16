@@ -36,6 +36,9 @@ export default function AdminBannersPage() {
 
   useEffect(() => {
     fetchBanners();
+    const handleUpdate = () => fetchBanners();
+    window.addEventListener('adilabad_banners_updated', handleUpdate);
+    return () => window.removeEventListener('adilabad_banners_updated', handleUpdate);
   }, []);
 
   const openCreate = () => {
@@ -46,6 +49,17 @@ export default function AdminBannersPage() {
     setLinkUrl('/advertisements');
     setImageUrl('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80');
     setPriority(banners.length + 1);
+    setModalOpen(true);
+  };
+
+  const openEdit = (b) => {
+    setEditingBanner(b);
+    setTitle(b.title || '');
+    setSubtitle(b.subtitle || '');
+    setCtaText(b.cta_text || 'Explore Now');
+    setLinkUrl(b.link_url || '/advertisements');
+    setImageUrl(b.image_url || '');
+    setPriority(b.priority || 1);
     setModalOpen(true);
   };
 
@@ -133,7 +147,15 @@ export default function AdminBannersPage() {
 
                 <div className="pt-4 flex items-center justify-end gap-2 border-t border-slate-800/80">
                   <button
+                    onClick={() => openEdit(b)}
+                    title="Edit Banner"
+                    className="p-2 text-slate-400 hover:text-brand-400 hover:bg-slate-800 rounded-lg transition"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
                     onClick={() => handleDelete(b.id)}
+                    title="Delete Banner"
                     className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -186,6 +208,19 @@ export default function AdminBannersPage() {
                   required
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Button CTA Text
+                </label>
+                <input
+                  type="text"
+                  value={ctaText}
+                  onChange={(e) => setCtaText(e.target.value)}
+                  placeholder="e.g. Explore Now, Book Today"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>

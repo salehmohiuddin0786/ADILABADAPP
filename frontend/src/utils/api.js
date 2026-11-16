@@ -78,10 +78,75 @@ export function getMockResponse(endpoint, options = {}) {
 
   // 3. Banners
   if (urlWithoutQuery === '/banners' || urlWithoutQuery === '/banners/admin/list') {
-    return { success: true, data: MOCK_BANNERS };
+    let banners = MOCK_BANNERS;
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('adilabad_admin_banners');
+        if (raw) {
+          banners = JSON.parse(raw);
+        } else {
+          localStorage.setItem('adilabad_admin_banners', JSON.stringify(MOCK_BANNERS));
+        }
+      } catch (e) {}
+    }
+    return { success: true, data: banners };
   }
-  if (urlWithoutQuery.startsWith('/banners/admin/create') || urlWithoutQuery.startsWith('/banners/admin/update') || urlWithoutQuery.startsWith('/banners/admin/delete')) {
-    return { success: true, message: 'Banner updated successfully.' };
+
+  if (urlWithoutQuery === '/banners/admin/create') {
+    let banners = MOCK_BANNERS;
+    const payload = { ...body, ...params };
+    let newBanner = { 
+      id: Date.now(), 
+      is_active: 1, 
+      title: payload.title || 'Special Promotion',
+      subtitle: payload.subtitle || '',
+      cta_text: payload.cta_text || 'Explore Now',
+      link_url: payload.link_url || '/advertisements',
+      image_url: payload.image_url || 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80',
+      priority: Number(payload.priority) || (banners.length + 1),
+      ...payload 
+    };
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('adilabad_admin_banners');
+        if (raw) banners = JSON.parse(raw);
+      } catch (e) {}
+      banners = [...banners, newBanner];
+      localStorage.setItem('adilabad_admin_banners', JSON.stringify(banners));
+      window.dispatchEvent(new Event('adilabad_banners_updated'));
+    }
+    return { success: true, message: 'Banner created successfully!', data: newBanner };
+  }
+
+  if (urlWithoutQuery.startsWith('/banners/admin/update/')) {
+    const id = parseInt(urlWithoutQuery.replace('/banners/admin/update/', ''), 10);
+    let banners = MOCK_BANNERS;
+    const payload = { ...body, ...params };
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('adilabad_admin_banners');
+        if (raw) banners = JSON.parse(raw);
+      } catch (e) {}
+      banners = banners.map((b) => (b.id === id ? { ...b, ...payload } : b));
+      localStorage.setItem('adilabad_admin_banners', JSON.stringify(banners));
+      window.dispatchEvent(new Event('adilabad_banners_updated'));
+    }
+    return { success: true, message: 'Banner updated successfully!' };
+  }
+
+  if (urlWithoutQuery.startsWith('/banners/admin/delete/')) {
+    const id = parseInt(urlWithoutQuery.replace('/banners/admin/delete/', ''), 10);
+    let banners = MOCK_BANNERS;
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('adilabad_admin_banners');
+        if (raw) banners = JSON.parse(raw);
+      } catch (e) {}
+      banners = banners.filter((b) => b.id !== id);
+      localStorage.setItem('adilabad_admin_banners', JSON.stringify(banners));
+      window.dispatchEvent(new Event('adilabad_banners_updated'));
+    }
+    return { success: true, message: 'Banner deleted successfully!' };
   }
 
   // 4. Advertisements
