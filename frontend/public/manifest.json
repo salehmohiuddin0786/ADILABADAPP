@@ -1,0 +1,64 @@
+{
+  "name": "Adilabad App — Local Marketplace & Super App",
+  "short_name": "Adilabad App",
+  "description": "Discover local advertisements, businesses, rentals, services, buy-sell, and events across Adilabad district.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0F172A",
+  "theme_color": "#0284C7",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["shopping", "business", "lifestyle", "utilities"],
+  "icons": [
+    {
+      "src": "/images/icons/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/maskable-icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Advertisements",
+      "short_name": "Ads",
+      "description": "Explore featured district deals and promotions",
+      "url": "/advertisements",
+      "icons": [{ "src": "/images/icons/icon-192x192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Rental Fleet",
+      "short_name": "Rentals",
+      "description": "Rent cameras, tractors, vehicles, and equipment",
+      "url": "/rentals",
+      "icons": [{ "src": "/images/icons/icon-192x192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Owner Portal",
+      "short_name": "Owner",
+      "description": "Manage listings, rentals and inbound enquiries",
+      "url": "/owner/dashboard",
+      "icons": [{ "src": "/images/icons/icon-192x192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Super Admin",
+      "short_name": "Admin",
+      "description": "Central moderation queue and district command",
+      "url": "/admin",
+      "icons": [{ "src": "/images/icons/icon-192x192.svg", "sizes": "192x192" }]
+    }
+  ]
+}

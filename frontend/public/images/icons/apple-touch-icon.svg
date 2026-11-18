@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="50%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5.3999999999999995" stdDeviation="7.2" flood-color="#0284C7" flood-opacity="0.4" />
+    </filter>
+  </defs>
+  <rect width="180" height="180" rx="40" fill="url(#bgGrad)" />
+  <g filter="url(#glow)">
+    <path d="M90 32.4 C62.99999999999999 32.4 43.199999999999996 54 43.199999999999996 82.8 C43.199999999999996 117 90 151.2 90 151.2 C90 151.2 136.8 117 136.8 82.8 C136.8 54 117 32.4 90 32.4 Z" fill="#FFFFFF" />
+    <circle cx="90" cy="82.8" r="19.8" fill="#0284C7" />
+    <text x="90" y="90" text-anchor="middle" fill="#FFFFFF" font-family="sans-serif" font-weight="900" font-size="25.200000000000003" dy=".1em">A</text>
+  </g>
+  <text x="90" y="169.2" text-anchor="middle" fill="#38BDF8" font-family="sans-serif" font-weight="800" font-size="14" letter-spacing="1.8">ADILABAD APP</text>
+</svg>

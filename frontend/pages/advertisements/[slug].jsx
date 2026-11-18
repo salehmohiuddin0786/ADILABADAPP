@@ -406,6 +406,43 @@ export default function AdvertisementDetailPage({ ad }) {
         </div>
       </div>
 
+      {/* MOBILE STICKY ACTION BAR */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-200 p-3 flex items-center gap-2 shadow-2xl pb-safe" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0.75rem))' }}>
+        <a
+          href={`tel:${ad.phone}`}
+          onClick={() => trackInteraction('call')}
+          className="flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md transition active:scale-95"
+        >
+          <Phone className="w-4 h-4" />
+          <span>Call Now</span>
+        </a>
+
+        {ad.whatsapp && (
+          <a
+            href={`https://wa.me/${ad.whatsapp.replace(/[^0-9]/g, '')}?text=Hi,%20I%20am%20interested%20in%20your%20advertisement%20"${encodeURIComponent(ad.title)}"%20listed%20on%20Adilabad%20App.`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackInteraction('whatsapp')}
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold text-xs sm:text-sm shadow-md transition active:scale-95"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>WhatsApp</span>
+          </a>
+        )}
+
+        <button
+          onClick={handleToggleFavorite}
+          aria-label="Save to favorites"
+          className={`p-3 rounded-xl border transition ${
+            isFav
+              ? 'bg-rose-50 border-rose-200 text-rose-600'
+              : 'bg-slate-100 border-slate-200 text-slate-600'
+          }`}
+        >
+          <Bookmark className={`w-4 h-4 ${isFav ? 'fill-current' : ''}`} />
+        </button>
+      </div>
+
       {/* LIGHTBOX MODAL */}
       <AnimatePresence>
         {lightboxOpen && (

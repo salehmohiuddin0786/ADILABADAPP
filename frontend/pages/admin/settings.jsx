@@ -176,7 +176,7 @@ export default function AdminSettingsPage() {
           </div>
 
           <div className="overflow-x-auto -mx-6 sm:-mx-8">
-            <table className="w-full text-left text-sm text-slate-300">
+            <table className="w-full min-w-[700px] text-left text-sm text-slate-300">
               <thead className="bg-slate-950/80 border-y border-slate-800 text-xs font-bold text-slate-400 uppercase">
                 <tr>
                   <th className="py-3 px-6">Timestamp</th>

@@ -337,7 +337,8 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
       {/* Mobile Bottom Navigation for Super Admin */}
       <nav
         aria-label="Super Admin Mobile Navigation"
-        className="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 text-slate-300 lg:hidden px-3 py-2 shadow-2xl"
+        className="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 text-slate-300 lg:hidden px-3 pt-2 pb-safe shadow-2xl"
+        style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0.5rem))' }}
       >
         <div className="flex items-center justify-around max-w-md mx-auto">
           <Link

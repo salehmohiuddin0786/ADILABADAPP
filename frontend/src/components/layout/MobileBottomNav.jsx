@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 import {
   Home,
   Megaphone,
+  Truck,
   Store,
-  Calendar,
   Bookmark
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -44,15 +44,15 @@ export default function MobileBottomNav() {
       exact: false
     },
     {
-      name: 'Directory',
-      href: '/businesses',
-      icon: Store,
+      name: 'Rentals',
+      href: '/rentals',
+      icon: Truck,
       exact: false
     },
     {
-      name: 'Events',
-      href: '/events',
-      icon: Calendar,
+      name: 'Directory',
+      href: '/businesses',
+      icon: Store,
       exact: false
     },
     {
@@ -60,7 +60,7 @@ export default function MobileBottomNav() {
       href: '/favorites',
       icon: Bookmark,
       exact: false,
-      badge: favorites.length > 0 ? favorites.length : null
+      badge: favorites && favorites.length > 0 ? favorites.length : null
     }
   ];
 
@@ -74,7 +74,8 @@ export default function MobileBottomNav() {
   return (
     <nav
       aria-label="Mobile Navigation"
-      className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-lg border-t border-slate-200/90 shadow-[0_-4px_25px_rgba(0,0,0,0.06)] md:hidden px-2 py-1.5 transition-all"
+      className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-lg border-t border-slate-200/90 shadow-[0_-4px_25px_rgba(0,0,0,0.06)] md:hidden px-2 pt-1.5 pb-safe transition-all"
+      style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0.5rem))' }}
     >
       <div className="flex items-center justify-around max-w-lg mx-auto">
         {navItems.map((item) => {
@@ -85,7 +86,7 @@ export default function MobileBottomNav() {
             <Link
               key={item.name}
               href={item.href}
-              className={`relative flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all duration-200 select-none ${
+              className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all duration-200 select-none ${
                 active
                   ? 'text-brand-600 font-bold'
                   : 'text-slate-500 hover:text-slate-900 font-medium'
