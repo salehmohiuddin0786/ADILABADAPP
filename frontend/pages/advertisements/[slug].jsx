@@ -28,6 +28,7 @@ import ReportModal from '../../src/components/modals/ReportModal';
 import { useAuth } from '../../src/context/AuthContext';
 import { apiFetch } from '../../src/utils/api';
 import { MOCK_ADVERTISEMENTS } from '../../src/data/mockData';
+import { handleImageError, getCategoryFallbackImage } from '../../src/utils/imageFallback';
 
 export default function AdvertisementDetailPage({ ad }) {
   const { isFavorited, toggleFavorite } = useAuth();
@@ -123,8 +124,9 @@ export default function AdvertisementDetailPage({ ad }) {
               <div className="bg-white rounded-3xl p-3 sm:p-4 border border-slate-200/90 shadow-sm overflow-hidden">
                 <div className="relative aspect-[16/10] bg-slate-900 rounded-2xl overflow-hidden group">
                   <img
-                    src={activeImage.image_url}
+                    src={activeImage.image_url || getCategoryFallbackImage(ad.category_name, ad.title)}
                     alt={ad.title}
+                    onError={(e) => handleImageError(e, ad.category_name, ad.title)}
                     className="w-full h-full object-cover"
                   />
 
@@ -180,8 +182,9 @@ export default function AdvertisementDetailPage({ ad }) {
                         }`}
                       >
                         <img
-                          src={img.image_url}
+                          src={img.image_url || getCategoryFallbackImage(ad.category_name, ad.title)}
                           alt="Thumbnail"
+                          onError={(e) => handleImageError(e, ad.category_name, ad.title)}
                           className="w-full h-full object-cover"
                         />
                       </button>

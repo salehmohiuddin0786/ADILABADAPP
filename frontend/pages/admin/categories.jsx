@@ -133,7 +133,7 @@ export default function AdminCategoriesPage() {
         {/* Categories Table */}
         <div className="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
+            <table className="w-full min-w-[650px] text-left text-sm text-slate-300">
               <thead className="bg-slate-950/80 border-b border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
                 <tr>
                   <th className="py-4 px-6">Icon & Name</th>
@@ -193,7 +193,7 @@ export default function AdminCategoriesPage() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-800 text-white">
+          <div className="bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-800 text-white max-h-[90vh] overflow-y-auto">
             <h3 className="font-bold text-white text-lg mb-4">
               {editingCategory ? 'Edit Category' : 'Create Category'}
             </h3>

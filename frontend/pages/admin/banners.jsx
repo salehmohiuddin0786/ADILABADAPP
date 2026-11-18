@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { Image as ImageIcon, Plus, Edit, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import { Image as ImageIcon, Plus, Edit, Trash2, Sparkles, ExternalLink, Eye, RefreshCw } from 'lucide-react';
 import AdminLayout from '../../src/components/layout/AdminLayout';
 import { apiFetch } from '../../src/utils/api';
 import { useToast } from '../../src/context/ToastContext';
@@ -114,52 +115,109 @@ export default function AdminBannersPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-6 rounded-3xl shadow-xl">
           <div>
-            <h2 className="text-xl font-black text-white tracking-tight">
-              Promotional Banners ({banners.length})
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Control the prominent hero and seasonal banners displayed on the homepage.
+            <div className="flex items-center gap-2">
+              <ImageIcon className="w-6 h-6 text-brand-400" />
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                Promotional Banners ({banners.length})
+              </h2>
+            </div>
+            <p className="text-xs text-slate-400 mt-1">
+              Control the prominent rotating hero and promotional banners featured on the Adilabad public homepage.
             </p>
           </div>
 
-          <button
-            onClick={openCreate}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Banner</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              target="_blank"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700"
+            >
+              <ExternalLink className="w-4 h-4 text-brand-400" />
+              <span>View Live Carousel</span>
+            </Link>
+            <button
+              onClick={openCreate}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Banner</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Status Metrics Ribbon */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="p-4 rounded-2xl border bg-slate-900/60 border-slate-800 text-slate-400">
+            <span className="text-[10px] uppercase font-mono block">Active Banners</span>
+            <span className="text-xl font-black text-white mt-1 block">{banners.length} Active</span>
+          </div>
+          <div className="p-4 rounded-2xl border bg-slate-900/60 border-slate-800 text-slate-400">
+            <span className="text-[10px] uppercase font-mono block">Hero Slot (Priority 1)</span>
+            <span className="text-xl font-black text-emerald-400 mt-1 block truncate">
+              {banners.find((b) => b.priority === 1)?.title || 'Assigned'}
+            </span>
+          </div>
+          <div className="p-4 rounded-2xl border bg-slate-900/60 border-slate-800 text-slate-400">
+            <span className="text-[10px] uppercase font-mono block">Rotation Speed</span>
+            <span className="text-xl font-black text-amber-400 mt-1 block">5.5s Cycle</span>
+          </div>
+          <div className="p-4 rounded-2xl border bg-slate-900/60 border-slate-800 text-slate-400">
+            <span className="text-[10px] uppercase font-mono block">Display Location</span>
+            <span className="text-xl font-black text-purple-300 mt-1 block">Homepage Hero</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {(Array.isArray(banners) ? banners : []).map((b) => (
-            <div key={b.id} className="bg-slate-900/90 rounded-3xl overflow-hidden border border-slate-800 shadow-xl flex flex-col justify-between">
-              <div className="relative aspect-[21/9] bg-slate-950">
-                <img src={b.image_url} alt={b.title} className="w-full h-full object-cover" />
-                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-900/90 text-white text-xs font-bold border border-slate-700/60">
-                  Priority: {b.priority}
+            <div key={b.id} className="bg-slate-900/90 rounded-3xl overflow-hidden border border-slate-800 shadow-xl flex flex-col justify-between group hover:border-slate-700 transition">
+              <div className="relative aspect-[21/9] bg-slate-950 overflow-hidden">
+                <img src={b.image_url} alt={b.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
+                <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-900/90 backdrop-blur-md text-brand-300 text-xs font-mono font-bold border border-slate-700/60">
+                  Priority: #{b.priority}
                 </div>
+                {b.cta_text && (
+                  <div className="absolute bottom-3 right-3 px-3 py-1 rounded-xl bg-brand-600/90 backdrop-blur-md text-white text-xs font-black border border-brand-500 shadow">
+                    CTA: {b.cta_text}
+                  </div>
+                )}
               </div>
-              <div className="p-6 space-y-2">
-                <h3 className="font-bold text-white text-base">{b.title}</h3>
-                <p className="text-xs text-slate-400">{b.subtitle}</p>
-                <p className="text-xs text-brand-400 font-mono pt-1">Link: {b.link_url}</p>
+              <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-bold text-white text-base group-hover:text-brand-300 transition-colors">{b.title}</h3>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">{b.subtitle}</p>
+                  <div className="flex items-center gap-1.5 text-xs text-brand-400 font-mono pt-2">
+                    <span className="text-slate-500">Destination:</span>
+                    <span className="truncate">{b.link_url}</span>
+                  </div>
+                </div>
 
-                <div className="pt-4 flex items-center justify-end gap-2 border-t border-slate-800/80">
-                  <button
-                    onClick={() => openEdit(b)}
-                    title="Edit Banner"
-                    className="p-2 text-slate-400 hover:text-brand-400 hover:bg-slate-800 rounded-lg transition"
+                <div className="pt-4 flex items-center justify-between border-t border-slate-800/80">
+                  <Link
+                    href={b.link_url || '/'}
+                    target="_blank"
+                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition flex items-center gap-1.5 border border-slate-700"
                   >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(b.id)}
-                    title="Delete Banner"
-                    className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                    <span>Test CTA</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => openEdit(b)}
+                      title="Edit Banner"
+                      className="p-2 text-slate-400 hover:text-brand-400 hover:bg-slate-800 rounded-lg transition"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(b.id)}
+                      title="Delete Banner"
+                      className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -169,7 +227,7 @@ export default function AdminBannersPage() {
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-800 text-white">
+          <div className="bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-800 text-white max-h-[90vh] overflow-y-auto">
             <h3 className="font-bold text-white text-lg mb-4">
               {editingBanner ? 'Edit Banner' : 'Create Banner'}
             </h3>

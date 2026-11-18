@@ -17,6 +17,7 @@ import PublicLayout from '../../src/panels/public-website/PublicLayout';
 import { apiFetch } from '../../src/utils/api';
 import { useLanguage } from '../../src/shared/contexts/LanguageContext';
 import { submissionService } from '../../src/shared/services/submissionService';
+import { handleImageError, getCategoryFallbackImage } from '../../src/utils/imageFallback';
 
 export default function RentalsPage() {
   const { t } = useLanguage();
@@ -175,8 +176,9 @@ export default function RentalsPage() {
               {/* Image Preview */}
               <div className="relative h-48 bg-slate-100 overflow-hidden">
                 <img
-                  src={item.media?.[0]?.media_url || item.image_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800'}
+                  src={item.media?.[0]?.media_url || item.image_url || getCategoryFallbackImage('rentals', item.title)}
                   alt={item.title}
+                  onError={(e) => handleImageError(e, 'rentals', item.title)}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">

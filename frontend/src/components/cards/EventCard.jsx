@@ -3,12 +3,13 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin, ArrowRight, Bookmark } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { handleImageError, getCategoryFallbackImage } from '../../utils/imageFallback';
 
 export default function EventCard({ event }) {
   const { isFavorited, toggleFavorite } = useAuth();
   const favorited = isFavorited('event', event.id);
 
-  const defaultCover = 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=600&q=80';
+  const defaultCover = getCategoryFallbackImage('events', event.title);
   const coverUrl = event.cover_url || defaultCover;
 
   const handleFavoriteClick = (e) => {
@@ -38,6 +39,7 @@ export default function EventCard({ event }) {
         <img
           src={coverUrl}
           alt={event.title}
+          onError={(e) => handleImageError(e, 'events', event.title)}
           className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 ease-out"
           loading="lazy"
         />

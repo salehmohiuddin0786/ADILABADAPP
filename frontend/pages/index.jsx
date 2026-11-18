@@ -16,6 +16,7 @@ import {
   Store,
   Calendar,
   Layers,
+  ChevronLeft,
   ChevronRight,
   ChevronDown,
   Tag,
@@ -42,6 +43,7 @@ import {
   MOCK_BANNERS,
   MOCK_LOCATIONS
 } from '../src/data/mockData';
+import { handleImageError } from '../src/utils/imageFallback';
 
 const ROTATING_HIGHLIGHTS = [
   'Best Deals & Discounts',
@@ -73,6 +75,40 @@ export default function HomePage({
   const [selectedLocation, setSelectedLocation] = useState('all');
   const [activeTab, setActiveTab] = useState('all');
   const [highlightIndex, setHighlightIndex] = useState(0);
+  const [activeBanners, setActiveBanners] = useState(banners && banners.length > 0 ? banners : MOCK_BANNERS);
+  const [currentBannerIdx, setCurrentBannerIdx] = useState(0);
+
+  // Sync banners with localStorage & listen for admin updates live
+  useEffect(() => {
+    const syncBanners = () => {
+      try {
+        const raw = localStorage.getItem('adilabad_admin_banners');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setActiveBanners(parsed);
+          }
+        }
+      } catch (e) {}
+    };
+    syncBanners();
+    window.addEventListener('adilabad_banners_updated', syncBanners);
+    return () => window.removeEventListener('adilabad_banners_updated', syncBanners);
+  }, []);
+
+  // Auto-rotate promotional banners every 5.5 seconds
+  useEffect(() => {
+    if (activeBanners.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentBannerIdx((prev) => (prev + 1) % activeBanners.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [activeBanners.length]);
+
+  const displayBanners = activeBanners.length > 0 ? activeBanners : MOCK_BANNERS;
+  const currentPromoBanner = displayBanners[currentBannerIdx % displayBanners.length] || displayBanners[0];
+  const nextBanner = () => setCurrentBannerIdx((prev) => (prev + 1) % displayBanners.length);
+  const prevBanner = () => setCurrentBannerIdx((prev) => (prev - 1 + displayBanners.length) % displayBanners.length);
 
   // Dynamic rotating highlight keywords
   useEffect(() => {
@@ -95,7 +131,7 @@ export default function HomePage({
     router.push(queryStr ? `${targetRoute}?${queryStr}` : targetRoute);
   };
 
-  const heroBanner = banners[0] || {
+  const heroBanner = displayBanners[0] || {
     title: "Discover What's Happening in Adilabad",
     subtitle: "Find local businesses, advertisements, offers, events, jobs and more — all in one place."
   };
@@ -438,8 +474,9 @@ export default function HomePage({
                   <div className="flex items-center gap-3.5 mt-3">
                     <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-800 shrink-0 border border-white/15 relative">
                       <img
-                        src={spotlightAd.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=400&q=80'}
+                        src={spotlightAd.images?.[0]?.image_url || '/images/placeholders/electronics.svg'}
                         alt={spotlightAd.title}
+                        onError={(e) => handleImageError(e, spotlightAd.category_name, spotlightAd.title)}
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -649,27 +686,81 @@ export default function HomePage({
         </div>
       </section>
 
-      {/* 5. PROMOTIONAL HIGHLIGHT BANNER (HAIKEI STYLED) */}
-      <section className="py-12 bg-slate-900 text-white relative overflow-hidden haikei-blob-card">
+      {/* 5. PROMOTIONAL BANNERS CAROUSEL & SPOTLIGHT (HAIKEI STYLED) */}
+      <section className="py-12 bg-slate-950 text-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="bg-gradient-to-r from-brand-900/90 to-slate-900/90 rounded-3xl p-8 sm:p-12 border border-brand-500/20 flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="max-w-xl space-y-3">
-              <span className="text-xs font-extrabold uppercase tracking-widest text-brand-400">
-                Local Business Spotlight
-              </span>
-              <h3 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
-                Looking for Top Commercial Showrooms or Independent Homes in Adilabad?
-              </h3>
-              <p className="text-sm sm:text-base text-slate-300">
-                Explore prime spaces along Cinema Road, Teachers Colony, and Dwaraka Nagar verified by our local team.
-              </p>
+          <div className="relative rounded-3xl overflow-hidden border border-brand-500/30 shadow-2xl bg-slate-900">
+            {/* Background Image with Ambient Overlay */}
+            <div className="absolute inset-0 z-0">
+              <img
+                src={currentPromoBanner.image_url}
+                alt={currentPromoBanner.title}
+                onError={(e) => { e.target.src = '/images/placeholders/default.svg'; }}
+                className="w-full h-full object-cover opacity-25 filter brightness-75 scale-105 transition-all duration-700 ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/60" />
             </div>
-            <Link
-              href="/categories/property"
-              className="px-6 py-3.5 rounded-2xl bg-white text-slate-900 hover:bg-brand-50 text-sm sm:text-base font-bold shadow-xl transition shrink-0"
-            >
-              Explore Property Listings &rarr;
-            </Link>
+
+            {/* Banner Content */}
+            <div className="relative z-10 p-8 sm:p-12 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 min-h-[280px]">
+              <div className="max-w-2xl space-y-3.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/40 text-xs font-black tracking-wider uppercase flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+                    District Spotlight #{currentBannerIdx + 1} of {displayBanners.length}
+                  </span>
+                  <span className="text-xs font-mono text-slate-400">
+                    Priority {currentPromoBanner.priority || 1}
+                  </span>
+                </div>
+                <h3 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight text-white drop-shadow-sm">
+                  {currentPromoBanner.title}
+                </h3>
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
+                  {currentPromoBanner.subtitle}
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 shrink-0 w-full sm:w-auto">
+                <Link
+                  href={currentPromoBanner.link_url || '/advertisements'}
+                  className="px-7 py-3.5 rounded-2xl bg-brand-500 hover:bg-brand-400 text-slate-950 text-sm sm:text-base font-black shadow-xl shadow-brand-500/20 transition-all flex items-center justify-center gap-2 group"
+                >
+                  <span>{currentPromoBanner.cta_text || 'Explore Offer'}</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+
+                {/* Slider Controls */}
+                <div className="flex items-center justify-center gap-2 bg-slate-950/70 backdrop-blur-md p-1.5 rounded-2xl border border-slate-800 self-center">
+                  <button
+                    onClick={prevBanner}
+                    title="Previous Promotional Banner"
+                    className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <div className="flex items-center gap-1.5 px-2">
+                    {displayBanners.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentBannerIdx(i)}
+                        className={`h-2 rounded-full transition-all ${
+                          i === currentBannerIdx ? 'w-6 bg-brand-400' : 'w-2 bg-slate-600 hover:bg-slate-400'
+                        }`}
+                        title={`Go to Banner ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    onClick={nextBanner}
+                    title="Next Promotional Banner"
+                    className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -782,6 +873,7 @@ export default function HomePage({
               <img
                 src="https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=800&q=80"
                 alt="Kuntala Waterfalls Adilabad"
+                onError={(e) => { e.target.src = '/images/placeholders/default.svg'; }}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent p-6 flex flex-col justify-end text-white">
@@ -796,6 +888,7 @@ export default function HomePage({
               <img
                 src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
                 alt="Pochera Falls"
+                onError={(e) => { e.target.src = '/images/placeholders/default.svg'; }}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent p-6 flex flex-col justify-end text-white">
@@ -810,6 +903,7 @@ export default function HomePage({
               <img
                 src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=80"
                 alt="Kawal Wildlife & Temples"
+                onError={(e) => { e.target.src = '/images/placeholders/default.svg'; }}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent p-6 flex flex-col justify-end text-white">

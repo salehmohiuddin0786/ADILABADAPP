@@ -21,7 +21,8 @@ import {
   ShieldCheck,
   Building,
   Menu,
-  X
+  X,
+  Bookmark
 } from 'lucide-react';
 import { useLanguage } from '../../shared/contexts/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -29,7 +30,7 @@ import { useAuth } from '../../context/AuthContext';
 export default function PublicHeader({ selectedLocation = 'Adilabad', onSelectLocation }) {
   const router = useRouter();
   const { t, currentLanguage, changeLanguage, supportedLanguages, isRTL } = useLanguage();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, favorites = [] } = useAuth();
 
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
@@ -251,6 +252,19 @@ export default function PublicHeader({ selectedLocation = 'Adilabad', onSelectLo
               className="p-2.5 text-slate-600 hover:text-emerald-800 hover:bg-slate-100 rounded-xl transition-colors"
             >
               <Search className="w-5 h-5" />
+            </Link>
+
+            <Link
+              href="/favorites"
+              aria-label="View Saved Favorites"
+              className="relative p-2.5 text-slate-600 hover:text-emerald-800 hover:bg-slate-100 rounded-xl transition-colors"
+            >
+              <Bookmark className="w-5 h-5" />
+              {favorites && favorites.length > 0 && (
+                <span className="absolute top-1.5 right-1.5 min-w-[17px] h-[17px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center shadow">
+                  {favorites.length}
+                </span>
+              )}
             </Link>
 
             {isAuthenticated ? (

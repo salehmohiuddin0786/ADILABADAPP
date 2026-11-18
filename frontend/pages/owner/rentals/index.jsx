@@ -18,6 +18,7 @@ import OwnerLayout from '../../../src/panels/owner-panel/OwnerLayout';
 import { useToast } from '../../../src/context/ToastContext';
 import { apiFetch } from '../../../src/utils/api';
 import { submissionService } from '../../../src/shared/services/submissionService';
+import { handleImageError, getCategoryFallbackImage } from '../../../src/utils/imageFallback';
 
 export default function OwnerRentalsListPage() {
   const { addToast } = useToast();
@@ -249,7 +250,7 @@ export default function OwnerRentalsListPage() {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {filteredRentals.map((item) => {
-                    const itemImg = item.media?.[0]?.media_url || item.image_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=150';
+                    const itemImg = item.media?.[0]?.media_url || item.image_url || getCategoryFallbackImage('rentals', item.title);
                     const isNew = item.is_user_uploaded || (typeof item.id === 'number' && item.id > 1000);
 
                     return (
@@ -259,6 +260,7 @@ export default function OwnerRentalsListPage() {
                             <img
                               src={itemImg}
                               alt={item.title}
+                              onError={(e) => handleImageError(e, 'rentals', item.title)}
                               className="w-12 h-12 rounded-xl object-cover bg-slate-100 border border-slate-200 shrink-0"
                             />
                             <div>

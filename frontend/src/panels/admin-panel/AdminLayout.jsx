@@ -42,10 +42,10 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
 
-  const updatePendingCount = () => {
+  const updatePendingCount = async () => {
     try {
-      const pending = submissionService.getSubmissions({ status: 'PENDING_APPROVAL' });
-      setPendingCount(pending ? pending.length : 0);
+      const counts = await submissionService.getCounts();
+      setPendingCount(counts ? counts.pending : 0);
     } catch {
       setPendingCount(0);
     }
@@ -276,7 +276,7 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
       </aside>
 
       {/* Main Viewport Content */}
-      <main className="flex-1 flex flex-col min-w-0 bg-slate-900/60">
+      <main className="flex-1 flex flex-col min-w-0 bg-slate-900/60 pb-20 lg:pb-0">
         {/* Executive Header Ribbon */}
         <header className="bg-slate-900/90 backdrop-blur-xl border-b border-slate-800 px-6 py-3.5 hidden lg:flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center space-x-4">
@@ -333,6 +333,67 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
           {children}
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation for Super Admin */}
+      <nav
+        aria-label="Super Admin Mobile Navigation"
+        className="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 text-slate-300 lg:hidden px-3 py-2 shadow-2xl"
+      >
+        <div className="flex items-center justify-around max-w-md mx-auto">
+          <Link
+            href="/admin"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/admin' ? 'text-brand-400 font-black' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <LayoutDashboard className="w-5 h-5 mb-0.5" />
+            <span>Dashboard</span>
+          </Link>
+
+          <Link
+            href="/admin/moderation"
+            className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/admin/moderation' ? 'text-brand-400 font-black' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Inbox className="w-5 h-5 mb-0.5" />
+            {pendingCount > 0 && (
+              <span className="absolute top-0 right-1.5 w-4 h-4 bg-amber-400 text-slate-950 rounded-full text-[9px] font-black flex items-center justify-center shadow">
+                {pendingCount}
+              </span>
+            )}
+            <span>Queue</span>
+          </Link>
+
+          <Link
+            href="/admin/advertisements"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname.startsWith('/admin/advertisements') ? 'text-brand-400 font-black' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Megaphone className="w-5 h-5 mb-0.5" />
+            <span>Ads</span>
+          </Link>
+
+          <Link
+            href="/admin/users"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/admin/users' ? 'text-brand-400 font-black' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Users className="w-5 h-5 mb-0.5" />
+            <span>Users</span>
+          </Link>
+
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold text-slate-400 hover:text-white transition"
+          >
+            <Menu className="w-5 h-5 mb-0.5" />
+            <span>Menu</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }

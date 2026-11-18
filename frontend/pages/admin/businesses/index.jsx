@@ -99,7 +99,7 @@ export default function AdminBusinessesPage() {
         {/* Table */}
         <div className="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
+            <table className="w-full min-w-[700px] text-left text-sm text-slate-300">
               <thead className="bg-slate-950/80 border-b border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
                 <tr>
                   <th className="py-4 px-6">Business</th>

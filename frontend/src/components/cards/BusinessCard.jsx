@@ -3,12 +3,13 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, MessageCircle, Navigation, Star, Sparkles, ArrowRight, Bookmark } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { handleImageError, getCategoryFallbackImage } from '../../utils/imageFallback';
 
 export default function BusinessCard({ business }) {
   const { isFavorited, toggleFavorite } = useAuth();
   const favorited = isFavorited('business', business.id);
 
-  const defaultCover = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80';
+  const defaultCover = getCategoryFallbackImage(business.category_name, business.name);
   const coverUrl = business.cover_url || defaultCover;
 
   const handleFavoriteClick = (e) => {
@@ -33,6 +34,7 @@ export default function BusinessCard({ business }) {
         <img
           src={coverUrl}
           alt={business.name}
+          onError={(e) => handleImageError(e, business.category_name, business.name)}
           className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 ease-out"
           loading="lazy"
         />

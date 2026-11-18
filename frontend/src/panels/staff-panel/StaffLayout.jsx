@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   ChevronRight,
-  ShieldAlert
+  ShieldAlert,
+  CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -50,6 +51,14 @@ export default function StaffLayout({ children, title = 'Staff Operations Hub' }
           Website →
         </Link>
       </div>
+
+      {/* Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 md:hidden"
+        />
+      )}
 
       {/* Staff Sidebar */}
       <aside
@@ -131,7 +140,7 @@ export default function StaffLayout({ children, title = 'Staff Operations Hub' }
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-slate-50">
+      <main className="flex-1 flex flex-col min-w-0 bg-slate-50 pb-20 md:pb-0">
         <header className="bg-white border-b border-slate-200 px-6 py-4 hidden md:flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold text-slate-900">{title}</h1>
@@ -146,6 +155,62 @@ export default function StaffLayout({ children, title = 'Staff Operations Hub' }
           {children}
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation for Staff Workspace */}
+      <nav
+        aria-label="Staff Mobile Navigation"
+        className="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 text-slate-300 md:hidden px-3 py-2 shadow-2xl"
+      >
+        <div className="flex items-center justify-around max-w-md mx-auto">
+          <Link
+            href="/staff/dashboard"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/staff/dashboard' ? 'text-blue-400 font-black' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Inbox className="w-5 h-5 mb-0.5" />
+            <span>Dashboard</span>
+          </Link>
+
+          <Link
+            href="/staff/tasks"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/staff/tasks' ? 'text-blue-400 font-black' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <CheckCircle2 className="w-5 h-5 mb-0.5" />
+            <span>Tasks</span>
+          </Link>
+
+          <Link
+            href="/staff/moderation"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/staff/moderation' ? 'text-blue-400 font-black' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <ShieldCheck className="w-5 h-5 mb-0.5" />
+            <span>Queue</span>
+          </Link>
+
+          <Link
+            href="/staff/disputes"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/staff/disputes' ? 'text-blue-400 font-black' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <AlertTriangle className="w-5 h-5 mb-0.5" />
+            <span>Disputes</span>
+          </Link>
+
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold text-slate-400 hover:text-white transition"
+          >
+            <Menu className="w-5 h-5 mb-0.5" />
+            <span>Menu</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }

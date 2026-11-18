@@ -15,12 +15,18 @@ export default function MobileBottomNav() {
   const router = useRouter();
   const { favorites } = useAuth();
 
-  // If in admin routes or item detail pages, don't show standard bottom nav
+  // Hide on admin, owner, customer, staff portals and item detail pages
   const isDetailPage =
     router.pathname === '/advertisements/[slug]' ||
     router.pathname === '/businesses/[slug]';
 
-  if (router.pathname.startsWith('/admin') || isDetailPage) {
+  if (
+    router.pathname.startsWith('/admin') ||
+    router.pathname.startsWith('/owner') ||
+    router.pathname.startsWith('/customer') ||
+    router.pathname.startsWith('/staff') ||
+    isDetailPage
+  ) {
     return null;
   }
 

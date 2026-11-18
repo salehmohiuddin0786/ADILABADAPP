@@ -19,6 +19,7 @@ import PublicLayout from '../../src/panels/public-website/PublicLayout';
 import { useAuth } from '../../src/context/AuthContext';
 import { useToast } from '../../src/context/ToastContext';
 import { apiFetch } from '../../src/utils/api';
+import { handleImageError, getCategoryFallbackImage } from '../../src/utils/imageFallback';
 
 const DEFAULT_ITEM = {
   id: 101,
@@ -144,7 +145,7 @@ export default function RentalDetailPage() {
     }
   };
 
-  const itemImg = item?.media?.[0]?.media_url || item?.image_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1000';
+  const itemImg = item?.media?.[0]?.media_url || item?.image_url || getCategoryFallbackImage(item?.category_name, item?.title);
 
   return (
     <PublicLayout>
@@ -169,6 +170,7 @@ export default function RentalDetailPage() {
                 <img
                   src={itemImg}
                   alt={item?.title || 'Rental Item'}
+                  onError={(e) => handleImageError(e, item?.category_name, item?.title)}
                   className="w-full h-full object-cover"
                 />
                 <span className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-xl">

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Phone, MessageCircle, Bookmark, Sparkles, Tag, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../utils/api';
+import { handleImageError, getCategoryFallbackImage } from '../../utils/imageFallback';
 
 export default function AdvertisementCard({ ad }) {
   const { isFavorited, toggleFavorite } = useAuth();
@@ -24,7 +25,7 @@ export default function AdvertisementCard({ ad }) {
     }).catch(() => {});
   };
 
-  const defaultImg = 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=600&q=80';
+  const defaultImg = getCategoryFallbackImage(ad.category_name, ad.title);
   const imgUrl = ad.primary_image || defaultImg;
 
   return (
@@ -41,6 +42,7 @@ export default function AdvertisementCard({ ad }) {
         <img
           src={imgUrl}
           alt={ad.title}
+          onError={(e) => handleImageError(e, ad.category_name, ad.title)}
           className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 ease-out"
           loading="lazy"
         />

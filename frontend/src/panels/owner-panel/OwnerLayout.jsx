@@ -121,6 +121,14 @@ export default function OwnerLayout({ children, title = 'Owner Control Center' }
         </Link>
       </div>
 
+      {/* Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 md:hidden"
+        />
+      )}
+
       {/* Sidebar Navigation */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-950 text-slate-300 flex flex-col transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
@@ -220,7 +228,7 @@ export default function OwnerLayout({ children, title = 'Owner Control Center' }
       </aside>
 
       {/* Main Content Viewport */}
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 pb-20 md:pb-0">
         <header className="bg-white border-b border-slate-200 px-6 py-4 hidden md:flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold text-slate-900">{title}</h1>
@@ -257,6 +265,62 @@ export default function OwnerLayout({ children, title = 'Owner Control Center' }
           {children}
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation for Business Owner */}
+      <nav
+        aria-label="Owner Mobile Navigation"
+        className="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800 text-slate-300 md:hidden px-3 py-2 shadow-2xl"
+      >
+        <div className="flex items-center justify-around max-w-md mx-auto">
+          <Link
+            href="/owner/dashboard"
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/owner/dashboard' ? 'text-amber-400 font-black' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <LayoutDashboard className="w-5 h-5 mb-0.5" />
+            <span>Dashboard</span>
+          </Link>
+
+          <Link
+            href="/owner/rentals"
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/owner/rentals' ? 'text-amber-400 font-black' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Layers className="w-5 h-5 mb-0.5" />
+            <span>Rentals</span>
+          </Link>
+
+          <Link
+            href="/owner/rentals/create"
+            className="flex flex-col items-center justify-center -mt-4"
+          >
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-400 flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/25">
+              <PlusCircle className="w-6 h-6" />
+            </div>
+            <span className="text-[10px] font-black text-amber-400 mt-1">Add Item</span>
+          </Link>
+
+          <Link
+            href="/owner/enquiries"
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/owner/enquiries' ? 'text-amber-400 font-black' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <MessageSquare className="w-5 h-5 mb-0.5" />
+            <span>Enquiries</span>
+          </Link>
+
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-bold text-slate-400 hover:text-white transition"
+          >
+            <Menu className="w-5 h-5 mb-0.5" />
+            <span>Menu</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }

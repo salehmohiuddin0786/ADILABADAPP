@@ -83,6 +83,14 @@ export default function CustomerLayout({ children, title = 'Customer Dashboard' 
         </Link>
       </div>
 
+      {/* Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+        />
+      )}
+
       {/* Sidebar Navigation */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
@@ -175,7 +183,7 @@ export default function CustomerLayout({ children, title = 'Customer Dashboard' 
       </aside>
 
       {/* Main Content Pane */}
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 pb-20 md:pb-0">
         <header className="bg-white border-b border-slate-200 px-6 py-4 hidden md:flex items-center justify-between">
           <h1 className="text-lg font-bold text-slate-900">{title}</h1>
           <div className="flex items-center space-x-4">
@@ -192,6 +200,62 @@ export default function CustomerLayout({ children, title = 'Customer Dashboard' 
           {children}
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation for Customer Portal */}
+      <nav
+        aria-label="Customer Mobile Navigation"
+        className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-200 text-slate-600 md:hidden px-3 py-2 shadow-2xl"
+      >
+        <div className="flex items-center justify-around max-w-md mx-auto">
+          <Link
+            href="/customer/dashboard"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/customer/dashboard' ? 'text-emerald-700 font-black' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <Home className="w-5 h-5 mb-0.5" />
+            <span>Home</span>
+          </Link>
+
+          <Link
+            href="/customer/rentals/requests"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname.startsWith('/customer/rentals') ? 'text-emerald-700 font-black' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <Layers className="w-5 h-5 mb-0.5" />
+            <span>Rentals</span>
+          </Link>
+
+          <Link
+            href="/customer/buy-sell"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/customer/buy-sell' ? 'text-emerald-700 font-black' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <ShoppingBag className="w-5 h-5 mb-0.5" />
+            <span>Buy & Sell</span>
+          </Link>
+
+          <Link
+            href="/customer/services"
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
+              router.pathname === '/customer/services' ? 'text-emerald-700 font-black' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <Wrench className="w-5 h-5 mb-0.5" />
+            <span>Services</span>
+          </Link>
+
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold text-slate-500 hover:text-slate-900 transition"
+          >
+            <Menu className="w-5 h-5 mb-0.5" />
+            <span>Menu</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }

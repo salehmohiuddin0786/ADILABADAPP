@@ -33,6 +33,7 @@ import {
 import AdminLayout from '../../src/components/layout/AdminLayout';
 import { submissionService } from '../../src/shared/services/submissionService';
 import { useToast } from '../../src/context/ToastContext';
+import { handleImageError, getCategoryFallbackImage } from '../../src/utils/imageFallback';
 
 export default function AdminModerationCenter() {
   const { addToast } = useToast();
@@ -280,12 +281,12 @@ export default function AdminModerationCenter() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2 flex-1 max-w-xl">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 max-w-xl">
             {/* Module Filter */}
             <select
               value={selectedModule}
               onChange={(e) => setSelectedModule(e.target.value)}
-              className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-brand-500"
+              className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 sm:py-1.5 text-xs text-slate-300 focus:outline-none focus:border-brand-500"
             >
               <option value="all">All Modules</option>
               <option value="rentals">Rentals & Fleet</option>
@@ -352,7 +353,7 @@ export default function AdminModerationCenter() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
+              <table className="w-full min-w-[780px] text-left text-xs text-slate-300">
                 <thead className="bg-slate-950/90 border-b border-slate-800 text-slate-400 uppercase font-mono font-bold text-[10px]">
                   <tr>
                     <th className="py-3.5 px-4 w-10 text-center">
@@ -389,8 +390,9 @@ export default function AdminModerationCenter() {
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
                           <img
-                            src={item.image_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=100'}
+                            src={item.image_url || getCategoryFallbackImage(item.module || item.category, item.title)}
                             alt={item.title}
+                            onError={(e) => handleImageError(e, item.module || item.category, item.title)}
                             className="w-11 h-11 rounded-xl object-cover bg-slate-800 border border-slate-700 shrink-0"
                           />
                           <div>
@@ -532,8 +534,9 @@ export default function AdminModerationCenter() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <img
-                src={reviewModalItem.image_url || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600'}
+                src={reviewModalItem.image_url || getCategoryFallbackImage(reviewModalItem.module || reviewModalItem.category, reviewModalItem.title)}
                 alt={reviewModalItem.title}
+                onError={(e) => handleImageError(e, reviewModalItem.module || reviewModalItem.category, reviewModalItem.title)}
                 className="w-full h-48 rounded-2xl object-cover bg-slate-950 border border-slate-800"
               />
               <div className="space-y-2 text-xs text-slate-300">
@@ -580,29 +583,29 @@ export default function AdminModerationCenter() {
               </div>
             ) : null}
 
-            <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-800">
               <button
                 onClick={() => handleDelete(reviewModalItem.id)}
-                className="text-xs font-bold text-rose-400 hover:text-rose-300"
+                className="text-xs font-bold text-rose-400 hover:text-rose-300 py-1 text-center sm:text-left"
               >
                 Delete Permanently
               </button>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap sm:flex-nowrap items-center justify-end gap-2">
                 <button
                   onClick={() => setShowChangeDialog(!showChangeDialog)}
-                  className="px-4 py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30 transition"
+                  className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold hover:bg-amber-500/30 transition text-center"
                 >
                   Request Changes
                 </button>
                 <button
                   onClick={() => handleReject(reviewModalItem.id)}
-                  className="px-4 py-2 rounded-xl bg-rose-600/30 text-rose-300 border border-rose-500/50 text-xs font-bold hover:bg-rose-600/50 transition"
+                  className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 rounded-xl bg-rose-600/30 text-rose-300 border border-rose-500/50 text-xs font-bold hover:bg-rose-600/50 transition text-center"
                 >
                   Reject
                 </button>
                 <button
                   onClick={() => handleApprove(reviewModalItem.id)}
-                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg transition flex items-center gap-1.5"
+                  className="w-full sm:w-auto px-5 py-2.5 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg transition flex items-center justify-center gap-1.5"
                 >
                   <Check className="w-4 h-4" />
                   <span>Approve & Publish</span>
