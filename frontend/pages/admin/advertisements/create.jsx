@@ -95,7 +95,7 @@ export default function CreateAdvertisementPage() {
 
       if (res.success && res.urls) {
         // Build full URLs for preview
-        const apiBase = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
+        const apiBase = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5010';
         const fullUrls = res.urls.map((u) => `${apiBase}${u}`);
         setImages((prev) => [...prev, ...fullUrls]);
         addToast(`${res.urls.length} image(s) uploaded successfully!`, 'success');
