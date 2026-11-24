@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace 'in.digitalcrowdtech.adilabad'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId "in.digitalcrowdtech.adilabad"
