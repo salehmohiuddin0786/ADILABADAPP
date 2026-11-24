@@ -136,7 +136,7 @@ export default function PublicHeader({ selectedLocation: propLocation = 'Adilaba
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 transition-colors shadow-xs">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 transition-colors shadow-xs pt-[env(safe-area-inset-top,0px)]">
         {/* 1. TOP UTILITY BAR (Desktop & Tablet only) */}
         <div className="bg-slate-900 text-slate-200 text-xs py-1.5 px-4 hidden md:block">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -227,7 +227,7 @@ export default function PublicHeader({ selectedLocation: propLocation = 'Adilaba
         </div>
 
         {/* 2. MAIN HEADER BAR (Mobile Adaptive & Full Desktop) */}
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-1.5 sm:py-0">
           <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
             
             {/* Logo & City Selector Branding */}

@@ -37,11 +37,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Immersive Native Status & Nav Bar (Slate 900)
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(0xFF0F172A);
-        window.setNavigationBarColor(0xFF0F172A);
+        // Immersive Native Status & Nav Bar (Slate 900) - Never overlap content with notification bar
+        try {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(0xFF0F172A);
+            window.setNavigationBarColor(0xFF0F172A);
+        } catch (Exception ignored) {}
 
         setContentView(R.layout.activity_main);
 
@@ -49,42 +52,46 @@ public class MainActivity extends AppCompatActivity {
         spinner = findViewById(R.id.loading_spinner);
 
         // Register File Chooser Launcher for Image Uploads
-        fileChooserLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (fileUploadCallback != null) {
-                    Uri[] results = null;
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        if (result.getData().getClipData() != null) {
-                            int count = result.getData().getClipData().getItemCount();
-                            results = new Uri[count];
-                            for (int i = 0; i < count; i++) {
-                                results[i] = result.getData().getClipData().getItemAt(i).getUri();
+        try {
+            fileChooserLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (fileUploadCallback != null) {
+                        Uri[] results = null;
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            if (result.getData().getClipData() != null) {
+                                int count = result.getData().getClipData().getItemCount();
+                                results = new Uri[count];
+                                for (int i = 0; i < count; i++) {
+                                    results[i] = result.getData().getClipData().getItemAt(i).getUri();
+                                }
+                            } else if (result.getData().getData() != null) {
+                                results = new Uri[]{result.getData().getData()};
                             }
-                        } else if (result.getData().getData() != null) {
-                            results = new Uri[]{result.getData().getData()};
                         }
+                        fileUploadCallback.onReceiveValue(results);
+                        fileUploadCallback = null;
                     }
-                    fileUploadCallback.onReceiveValue(results);
-                    fileUploadCallback = null;
                 }
-            }
-        );
+            );
+        } catch (Exception ignored) {}
 
         setupWebView();
 
         // Native Back Button Navigation
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (webView != null && webView.canGoBack()) {
-                    webView.goBack();
-                } else {
-                    setEnabled(false);
-                    getOnBackPressedDispatcher().onBackPressed();
+        try {
+            getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    if (webView != null && webView.canGoBack()) {
+                        webView.goBack();
+                    } else {
+                        setEnabled(false);
+                        getOnBackPressedDispatcher().onBackPressed();
+                    }
                 }
-            }
-        });
+            });
+        } catch (Exception ignored) {}
 
         webView.loadUrl(APP_URL);
     }
