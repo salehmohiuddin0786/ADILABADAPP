@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Adilabad App</string>
+    <string name="asset_statements">[{\\\"relation\\\": [\\\"delegate_permission/common.handle_all_urls\\\"], \\\"target\\\": {\\\"namespace\\\": \\\"android_app\\\", \\\"package_name\\\": \\\"in.digitalcrowdtech.adilabad\\\", \\\"sha256_cert_fingerprints\\\": [\\\"82:E7:28:9A:41:3F:77:F4:CD:A4:76:C9:67:FE:94:E7:99:91:D0:F4:27:A0:1D:8F:68:71:33:C0:75:62:91:69\\\"]}}]</string>
+</resources>
