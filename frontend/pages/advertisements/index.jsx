@@ -109,7 +109,7 @@ export default function AdvertisementsPage({ initialData = {}, categories = [], 
           </div>
 
           {/* Quick Category Chips Scroll Bar with NO scrollbar */}
-          <div className="mt-8 pt-5 border-t border-white/10 flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none py-1">
+          <div className="mt-6 md:mt-8 pt-2 md:pt-5 border-t-0 md:border-t border-white/10 flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none py-1">
             <button
               onClick={() => {
                 setSelectedCategory('');

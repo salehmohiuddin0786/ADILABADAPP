@@ -81,7 +81,7 @@ export default function FavoritesPage() {
           ) : (
             <div>
               {/* Tabs */}
-              <div className="flex items-center gap-2 border-b border-slate-200 pb-4 mb-8 overflow-x-auto no-scrollbar scrollbar-none">
+              <div className="flex items-center gap-2 border-b-0 md:border-b border-slate-200 pb-2 md:pb-4 mb-6 md:mb-8 overflow-x-auto no-scrollbar scrollbar-none">
                 <button
                   onClick={() => setActiveTab('advertisements')}
                   className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 shrink-0 ${
