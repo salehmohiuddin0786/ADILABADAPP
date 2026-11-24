@@ -2,11 +2,21 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['images.unsplash.com', 'localhost', '127.0.0.1'],
+    domains: [
+      'images.unsplash.com',
+      'localhost',
+      '127.0.0.1',
+      'adilabad.digitalcrowdtech.in'
+    ],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'adilabad.digitalcrowdtech.in',
+        pathname: '/uploads/**',
       },
       {
         protocol: 'http',
@@ -18,7 +28,7 @@ const nextConfig = {
   },
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api',
-    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3010'
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://adilabad.digitalcrowdtech.in'
   }
 };
 

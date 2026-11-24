@@ -18,6 +18,8 @@ app.use(helmet({
 const allowedOrigins = [
   'http://localhost:3010',
   'http://127.0.0.1:3010',
+  'https://adilabad.digitalcrowdtech.in',
+  'http://adilabad.digitalcrowdtech.in',
   process.env.CLIENT_URL
 ].filter(Boolean);
 

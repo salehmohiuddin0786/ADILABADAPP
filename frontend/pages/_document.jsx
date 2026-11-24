@@ -17,6 +17,17 @@ export default function Document() {
         <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.svg" />
         <link rel="mask-icon" href="/favicon.svg" color="#0284C7" />
 
+        {/* Canonical URL & SEO Domain */}
+        <link rel="canonical" href="https://adilabad.digitalcrowdtech.in/" />
+        <meta property="og:site_name" content="Adilabad App" />
+        <meta property="og:url" content="https://adilabad.digitalcrowdtech.in/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Adilabad App — Discover Adilabad. Discover Local." />
+        <meta property="og:description" content="Find local advertisements, businesses, offers, events, jobs, property and services in Adilabad, Telangana." />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:domain" content="adilabad.digitalcrowdtech.in" />
+        <meta name="twitter:url" content="https://adilabad.digitalcrowdtech.in/" />
+
         {/* Mobile App & OS Colors */}
         <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
         <meta name="theme-color" content="#0284C7" media="(prefers-color-scheme: light)" />
