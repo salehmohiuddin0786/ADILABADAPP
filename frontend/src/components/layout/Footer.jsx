@@ -40,43 +40,43 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* 4 Symmetric Link Columns: Balanced 2 Columns Centered on Mobile, 4 Columns on Desktop */}
+        {/* 4 Symmetric Link Columns: Balanced & Centered in the Middle */}
         <div className="w-full max-w-sm sm:max-w-2xl lg:max-w-none mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pb-10 border-b border-slate-800/80">
           
           {/* Column 1: Marketplace */}
-          <div className="space-y-3 px-1 sm:px-0">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+          <div className="space-y-3 px-1 sm:px-0 flex flex-col items-center text-center">
+            <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center justify-center gap-1.5 w-full">
               <Layers className="w-3.5 h-3.5 text-brand-400 shrink-0" />
               <span>Marketplace</span>
             </h4>
-            <ul className="space-y-2 text-xs sm:text-sm text-slate-400">
+            <ul className="space-y-2 text-xs sm:text-sm text-slate-400 text-center w-full">
               <li>
-                <Link href="/advertisements" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/advertisements" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Advertisements
                 </Link>
               </li>
               <li>
-                <Link href="/rentals" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/rentals" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Rental Fleet
                 </Link>
               </li>
               <li>
-                <Link href="/businesses" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/businesses" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Business Directory
                 </Link>
               </li>
               <li>
-                <Link href="/buy-sell" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/buy-sell" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Buy & Sell Market
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/services" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Local Services
                 </Link>
               </li>
               <li>
-                <Link href="/jobs" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/jobs" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Local Jobs
                 </Link>
               </li>
@@ -84,39 +84,39 @@ export default function Footer() {
           </div>
 
           {/* Column 2: Adilabad Life */}
-          <div className="space-y-3 px-1 sm:px-0">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+          <div className="space-y-3 px-1 sm:px-0 flex flex-col items-center text-center">
+            <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center justify-center gap-1.5 w-full">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>Categories</span>
             </h4>
-            <ul className="space-y-2 text-xs sm:text-sm text-slate-400">
+            <ul className="space-y-2 text-xs sm:text-sm text-slate-400 text-center w-full">
               <li>
-                <Link href="/food" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/food" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Food & Dining
                 </Link>
               </li>
               <li>
-                <Link href="/properties" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/properties" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Property Listings
                 </Link>
               </li>
               <li>
-                <Link href="/events" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/events" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Upcoming Events
                 </Link>
               </li>
               <li>
-                <Link href="/agriculture" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/agriculture" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Agri Equipment
                 </Link>
               </li>
               <li>
-                <Link href="/explore" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/explore" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Explore Adilabad
                 </Link>
               </li>
               <li>
-                <Link href="/categories" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/categories" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   All Categories
                 </Link>
               </li>
@@ -124,39 +124,39 @@ export default function Footer() {
           </div>
 
           {/* Column 3: Portals */}
-          <div className="space-y-3 px-1 sm:px-0">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+          <div className="space-y-3 px-1 sm:px-0 flex flex-col items-center text-center">
+            <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center justify-center gap-1.5 w-full">
               <Building className="w-3.5 h-3.5 text-sky-400 shrink-0" />
               <span>Portals</span>
             </h4>
-            <ul className="space-y-2 text-xs sm:text-sm text-slate-400">
+            <ul className="space-y-2 text-xs sm:text-sm text-slate-400 text-center w-full">
               <li>
-                <Link href="/customer/dashboard" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/customer/dashboard" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Customer Hub
                 </Link>
               </li>
               <li>
-                <Link href="/owner/dashboard" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/owner/dashboard" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Owner Portal
                 </Link>
               </li>
               <li>
-                <Link href="/admin" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/admin" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Admin Center
                 </Link>
               </li>
               <li>
-                <Link href="/staff/dashboard" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/staff/dashboard" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Staff Workspace
                 </Link>
               </li>
               <li>
-                <Link href="/favorites" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/favorites" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Saved Items
                 </Link>
               </li>
               <li>
-                <Link href="/offers" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/offers" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Special Offers
                 </Link>
               </li>
@@ -164,39 +164,39 @@ export default function Footer() {
           </div>
 
           {/* Column 4: Support & Legal */}
-          <div className="space-y-3 px-1 sm:px-0">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+          <div className="space-y-3 px-1 sm:px-0 flex flex-col items-center text-center">
+            <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center justify-center gap-1.5 w-full">
               <HelpCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
               <span>Company</span>
             </h4>
-            <ul className="space-y-2 text-xs sm:text-sm text-slate-400">
+            <ul className="space-y-2 text-xs sm:text-sm text-slate-400 text-center w-full">
               <li>
-                <Link href="/about" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/about" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/contact" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Contact Support
                 </Link>
               </li>
               <li>
-                <Link href="/privacy-policy" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/privacy-policy" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-brand-400 transition-colors block py-0.5">
+                <Link href="/terms" className="hover:text-brand-400 transition-colors block py-0.5 text-center">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <a href="tel:+919440112345" className="hover:text-brand-400 transition-colors block py-0.5 font-mono">
+                <a href="tel:+919440112345" className="hover:text-brand-400 transition-colors block py-0.5 font-mono text-center">
                   +91 94401 12345
                 </a>
               </li>
               <li>
-                <a href="mailto:hello@adilabadapp.com" className="hover:text-brand-400 transition-colors block py-0.5 truncate">
+                <a href="mailto:hello@adilabadapp.com" className="hover:text-brand-400 transition-colors block py-0.5 truncate text-center">
                   hello@adilabadapp.com
                 </a>
               </li>
