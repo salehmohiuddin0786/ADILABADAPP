@@ -1,0 +1,19 @@
+{
+  "appId": "in.digitalcrowdtech.adilabad",
+  "appName": "Adilabad App",
+  "webDir": "public",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://adilabad.digitalcrowdtech.in",
+    "cleartext": true,
+    "allowNavigation": [
+      "adilabad.digitalcrowdtech.in",
+      "*.digitalcrowdtech.in"
+    ]
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  }
+}

@@ -15,11 +15,20 @@ This folder and project contains everything required to publish **Adilabad App**
 ---
 
 ## 📦 Generated Release Files (Ready to Use)
-Both files are already built and signed with your release key:
-1. **Google Play Store Release Bundle (.aab)**:
-   - `playstore-assets/AdilabadApp-v1.0.0.aab` (Upload this file to Google Play Console)
-2. **Direct Android Install Package (.apk)**:
-   - `playstore-assets/AdilabadApp-v1.0.0.apk` (Transfer to any Android phone to install directly)
+
+### ⚡ Capacitor Native Android Build (Recommended):
+* **Play Store Release Bundle (.aab)**:
+  - `playstore-assets/AdilabadApp-Capacitor-v1.0.0.aab` (`3.06 MB`) — **Upload this to Google Play Console**
+* **Direct Install APK (.apk)**:
+  - `playstore-assets/AdilabadApp-Capacitor-v1.0.0.apk` (`3.21 MB`) — **Install directly on any Android phone**
+
+---
+
+### 🌐 TWA Native Android Build:
+* **Play Store Release Bundle (.aab)**:
+  - `playstore-assets/AdilabadApp-v1.0.0.aab` (`4.08 MB`)
+* **Direct Install APK (.apk)**:
+  - `playstore-assets/AdilabadApp-v1.0.0.apk` (`4.69 MB`)
 
 ---
 

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Adilabad App</string>
+    <string name="title_activity_main">Adilabad App</string>
+    <string name="package_name">in.digitalcrowdtech.adilabad</string>
+    <string name="custom_url_scheme">in.digitalcrowdtech.adilabad</string>
+</resources>
