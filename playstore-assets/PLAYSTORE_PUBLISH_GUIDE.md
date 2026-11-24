@@ -14,6 +14,15 @@ This folder and project contains everything required to publish **Adilabad App**
 
 ---
 
+## 📦 Generated Release Files (Ready to Use)
+Both files are already built and signed with your release key:
+1. **Google Play Store Release Bundle (.aab)**:
+   - `playstore-assets/AdilabadApp-v1.0.0.aab` (Upload this file to Google Play Console)
+2. **Direct Android Install Package (.apk)**:
+   - `playstore-assets/AdilabadApp-v1.0.0.apk` (Transfer to any Android phone to install directly)
+
+---
+
 ## 🔐 Release Signing Keystore
 A production release keystore has already been generated in the root directory:
 * **File Path**: `adilabad-release-key.jks`
