@@ -230,25 +230,41 @@ export default function PublicHeader({ selectedLocation: propLocation = 'Adilaba
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
             
-            {/* Logo Branding */}
-            <Link href="/" className="flex items-center space-x-2 sm:space-x-2.5 shrink-0 group">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-emerald-800 to-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-900/20 group-hover:scale-105 transition-transform shrink-0">
-                <span className="font-extrabold text-base sm:text-lg tracking-wider">A</span>
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center space-x-1">
-                  <span className="font-black text-lg sm:text-xl tracking-tight text-slate-900 group-hover:text-emerald-800 transition-colors truncate">
-                    Adilabad<span className="text-amber-500">App</span>
-                  </span>
-                  <span className="bg-emerald-100 text-emerald-800 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.2 rounded-full shrink-0">
-                    SUPER
-                  </span>
+            {/* Logo & City Selector Branding */}
+            <div className="flex items-center space-x-2 shrink-0">
+              <Link href="/" className="flex items-center space-x-2 group">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-emerald-800 to-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-900/20 group-hover:scale-105 transition-transform shrink-0">
+                  <span className="font-extrabold text-base sm:text-lg tracking-wider">A</span>
                 </div>
-                <p className="text-[10px] text-slate-500 font-medium tracking-wide hidden sm:block truncate">
-                  Your City • Your Marketplace
-                </p>
-              </div>
-            </Link>
+                <div className="flex flex-col justify-center">
+                  <div className="flex items-center space-x-1">
+                    <span className="font-black text-lg sm:text-xl tracking-tight text-slate-900 group-hover:text-emerald-800 transition-colors leading-tight">
+                      Adilabad<span className="text-amber-500">App</span>
+                    </span>
+                    <span className="hidden sm:inline-block bg-emerald-100 text-emerald-800 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.2 rounded-full shrink-0">
+                      SUPER
+                    </span>
+                  </div>
+                  {/* Mobile Tap-to-Change Location Subtitle (Zomato / Swiggy style) */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsLocationModalOpen(true);
+                    }}
+                    className="flex lg:hidden items-center text-[11px] font-semibold text-slate-600 hover:text-emerald-700 transition mt-0.5 leading-none"
+                    title="Change Location"
+                  >
+                    <MapPin className="w-3 h-3 text-amber-500 mr-0.5 shrink-0" />
+                    <span className="truncate max-w-[125px]">{currentLoc}</span>
+                    <ChevronDown className="w-3 h-3 ml-0.5 text-slate-400 shrink-0" />
+                  </button>
+                  <p className="text-[10px] text-slate-500 font-medium tracking-wide hidden lg:block truncate leading-none mt-1">
+                    Your City • Your Marketplace
+                  </p>
+                </div>
+              </Link>
+            </div>
 
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center space-x-1 rtl:space-x-reverse">
@@ -311,16 +327,6 @@ export default function PublicHeader({ selectedLocation: propLocation = 'Adilaba
 
             {/* Action CTAs */}
             <div className="flex items-center space-x-1.5 sm:space-x-2 rtl:space-x-reverse shrink-0">
-              {/* Location indicator button on mobile */}
-              <button
-                onClick={() => setIsLocationModalOpen(true)}
-                className="lg:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition max-w-[130px] truncate"
-                title="Change Location"
-              >
-                <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                <span className="truncate">{currentLoc.replace(' Adilabad', '')}</span>
-              </button>
-
               {/* Universal Search (Desktop) */}
               <Link
                 href="/search"
@@ -351,12 +357,12 @@ export default function PublicHeader({ selectedLocation: propLocation = 'Adilaba
                   className="flex items-center space-x-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm hover:bg-emerald-100 transition-colors"
                 >
                   <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="truncate max-w-[70px] sm:max-w-none">{user?.name?.split(' ')[0] || 'Account'}</span>
+                  <span className="truncate max-w-[80px] sm:max-w-none">{user?.name?.split(' ')[0] || 'Account'}</span>
                 </Link>
               ) : (
                 <Link
                   href="/login"
-                  className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-xs transition-all shrink-0"
+                  className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-xs transition-all shrink-0"
                 >
                   Sign In
                 </Link>
@@ -366,7 +372,7 @@ export default function PublicHeader({ selectedLocation: propLocation = 'Adilaba
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle Mobile Menu"
-                className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition active:scale-95"
+                className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition active:scale-95 shrink-0"
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5 text-slate-900" /> : <Menu className="w-5 h-5 text-slate-900" />}
               </button>

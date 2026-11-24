@@ -11,9 +11,9 @@ export default function PublicFooter() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Brand Header Section */}
-        <div className="pb-8 mb-8 border-b border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-3">
-            <div className="flex items-center space-x-2.5 rtl:space-x-reverse">
+        <div className="pb-8 mb-8 border-b border-slate-800/80 flex flex-col items-center text-center md:flex-row md:items-center md:justify-between md:text-left gap-6">
+          <div className="space-y-3 flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start space-x-2.5 rtl:space-x-reverse">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-700 to-emerald-500 flex items-center justify-center text-white font-extrabold text-base shadow-lg shadow-emerald-950 shrink-0">
                 A
               </div>
@@ -26,12 +26,12 @@ export default function PublicFooter() {
                 </span>
               </div>
             </div>
-            <p className="text-xs sm:text-sm text-slate-400 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-400 max-w-xl leading-relaxed text-center md:text-left">
               Adilabad's central hyperlocal marketplace for verified advertisements, rentals, commercial directory, local technicians, and community services.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 shrink-0">
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 text-xs text-slate-400 shrink-0">
             <span className="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800">
               <MapPin className="w-3.5 h-3.5 text-amber-400 mr-1.5 shrink-0" />
               <span>Adilabad District, TS</span>
@@ -43,11 +43,11 @@ export default function PublicFooter() {
           </div>
         </div>
 
-        {/* 4 Symmetric Link Columns: Balanced 2 Columns on Mobile, 4 Columns on Desktop */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pb-10 border-b border-slate-800/80">
+        {/* 4 Symmetric Link Columns: Balanced 2 Columns Centered on Mobile, 4 Columns on Desktop */}
+        <div className="w-full max-w-sm sm:max-w-2xl lg:max-w-none mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 pb-10 border-b border-slate-800/80">
           
           {/* Column 1: Marketplace */}
-          <div className="space-y-3">
+          <div className="space-y-3 px-1 sm:px-0">
             <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span>Marketplace</span>
@@ -87,7 +87,7 @@ export default function PublicFooter() {
           </div>
 
           {/* Column 2: Adilabad Life */}
-          <div className="space-y-3">
+          <div className="space-y-3 px-1 sm:px-0">
             <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>Adilabad Life</span>
@@ -127,7 +127,7 @@ export default function PublicFooter() {
           </div>
 
           {/* Column 3: Portals & Access */}
-          <div className="space-y-3">
+          <div className="space-y-3 px-1 sm:px-0">
             <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
               <Building className="w-3.5 h-3.5 text-sky-400 shrink-0" />
               <span>Portals</span>
@@ -167,7 +167,7 @@ export default function PublicFooter() {
           </div>
 
           {/* Column 4: Help & Support */}
-          <div className="space-y-3">
+          <div className="space-y-3 px-1 sm:px-0">
             <h4 className="text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
               <HelpCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
               <span>Support</span>
