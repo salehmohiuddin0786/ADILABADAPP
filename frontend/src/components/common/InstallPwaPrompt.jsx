@@ -8,14 +8,16 @@ export default function InstallPwaPrompt() {
   const [showIOSGuide, setShowIOSGuide] = useState(false);
 
   useEffect(() => {
-    // Check if already in standalone app mode
+    // Check if already in standalone app mode or running inside native APK
     if (typeof window === 'undefined') return;
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
-      window.navigator.standalone === true;
+      window.navigator.standalone === true ||
+      (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.includes('AdilabadNativeApp')) ||
+      (typeof window !== 'undefined' && (window.Capacitor || window.location.search.includes('source=native_app')));
 
     if (isStandalone) {
-      return; // Already running as an installed PWA
+      return; // Already running as native app, never show install prompt
     }
 
     // Check if user dismissed recently
