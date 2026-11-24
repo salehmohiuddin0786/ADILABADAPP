@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { Store, PlusCircle, Search, Edit, Trash2, Star, MapPin } from 'lucide-react';
+import { Store, PlusCircle, Search, Edit, Trash2, Star, MapPin, UploadCloud, FileSpreadsheet } from 'lucide-react';
 import AdminLayout from '../../../src/components/layout/AdminLayout';
+import BusinessBulkImportModal from '../../../src/components/admin/BusinessBulkImportModal';
 import { apiFetch } from '../../../src/utils/api';
 import { useToast } from '../../../src/context/ToastContext';
 
@@ -11,6 +12,7 @@ export default function AdminBusinessesPage() {
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [importModalOpen, setImportModalOpen] = useState(false);
 
   const fetchBusinesses = async () => {
     setLoading(true);
@@ -66,13 +68,23 @@ export default function AdminBusinessesPage() {
             </p>
           </div>
 
-          <Link
-            href="/admin/businesses/create"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition shrink-0"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Add Business</span>
-          </Link>
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => setImportModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-sm font-bold border border-slate-700 shadow-md transition shrink-0"
+            >
+              <UploadCloud className="w-4 h-4 text-brand-400" />
+              <span>Import Businesses</span>
+            </button>
+
+            <Link
+              href="/admin/businesses/create"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition shrink-0"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Add Business</span>
+            </Link>
+          </div>
         </div>
 
         {/* Search */}
@@ -84,7 +96,7 @@ export default function AdminBusinessesPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && fetchBusinesses()}
-              placeholder="Search business name, phone..."
+              placeholder="Search business name, phone, locality, city..."
               className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
@@ -104,7 +116,8 @@ export default function AdminBusinessesPage() {
                 <tr>
                   <th className="py-4 px-6">Business</th>
                   <th className="py-4 px-4">Category</th>
-                  <th className="py-4 px-4">Locality</th>
+                  <th className="py-4 px-4">Locality / Area</th>
+                  <th className="py-4 px-4">City / District</th>
                   <th className="py-4 px-4">Phone</th>
                   <th className="py-4 px-4">Rating</th>
                   <th className="py-4 px-6 text-right">Actions</th>
@@ -117,10 +130,25 @@ export default function AdminBusinessesPage() {
                       <Link href={`/businesses/${biz.slug}`} target="_blank" className="hover:text-brand-400 transition">
                         {biz.name}
                       </Link>
+                      {biz.subcategory && (
+                        <p className="text-[11px] font-normal text-slate-400">{biz.subcategory}</p>
+                      )}
                     </td>
                     <td className="py-4 px-4 text-xs font-semibold text-slate-300">{biz.category_name}</td>
-                    <td className="py-4 px-4 text-xs text-slate-400">{biz.location_name || 'Adilabad'}</td>
-                    <td className="py-4 px-4 text-xs font-mono text-slate-300">{biz.phone}</td>
+                    <td className="py-4 px-4 text-xs text-slate-400">
+                      {biz.locality || biz.location_name || 'Adilabad'}
+                    </td>
+                    <td className="py-4 px-4 text-xs text-slate-400">
+                      {biz.city || 'Adilabad'}, {biz.district || 'Adilabad'}
+                    </td>
+                    <td className="py-4 px-4 text-xs font-mono text-slate-300">
+                      {biz.phone || '—'}
+                      {biz.alternate_phone && (
+                        <span className="block text-[11px] text-slate-500 font-mono">
+                          Alt: {biz.alternate_phone}
+                        </span>
+                      )}
+                    </td>
                     <td className="py-4 px-4 text-xs font-bold text-amber-400 flex items-center gap-1 mt-3">
                       <Star className="w-3.5 h-3.5 fill-current" />
                       <span>{biz.rating}</span>
@@ -139,6 +167,13 @@ export default function AdminBusinessesPage() {
             </table>
           </div>
         </div>
+
+        {/* Bulk Import Modal */}
+        <BusinessBulkImportModal
+          isOpen={importModalOpen}
+          onClose={() => setImportModalOpen(false)}
+          onImportSuccess={fetchBusinesses}
+        />
       </div>
     </AdminLayout>
   );

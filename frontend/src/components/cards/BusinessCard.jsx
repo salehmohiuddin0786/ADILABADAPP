@@ -18,7 +18,7 @@ export default function BusinessCard({ business }) {
     toggleFavorite('business', business.id);
   };
 
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${business.name}, ${business.address}, Adilabad`)}`;
+  const mapsUrl = business.maps_url || (business.latitude && business.longitude ? `https://www.google.com/maps/search/?api=1&query=${business.latitude},${business.longitude}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${business.name}, ${business.address || ''}, Adilabad`)}`);
 
   return (
     <motion.div
@@ -91,7 +91,7 @@ export default function BusinessCard({ business }) {
 
           <div className="flex items-center gap-1 text-xs text-slate-500 truncate mb-4">
             <MapPin className="w-3.5 h-3.5 text-brand-500 shrink-0" />
-            <span>{business.location_name || 'Adilabad'}, Adilabad</span>
+            <span>{business.locality || business.location_name || 'Adilabad'}, {business.district || 'Adilabad'}</span>
           </div>
         </div>
 

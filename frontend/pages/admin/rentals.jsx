@@ -22,9 +22,11 @@ import {
   List,
   User,
   Sparkles,
-  PlusCircle
+  PlusCircle,
+  FileSpreadsheet
 } from 'lucide-react';
 import AdminLayout from '../../src/components/layout/AdminLayout';
+import UniversalBulkImportModal from '../../src/components/admin/UniversalBulkImportModal';
 import { apiFetch } from '../../src/utils/api';
 import { submissionService } from '../../src/shared/services/submissionService';
 import { useToast } from '../../src/context/ToastContext';
@@ -38,6 +40,7 @@ export default function AdminRentalsManagementPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
+  const [showImportModal, setShowImportModal] = useState(false);
   const [inspectingRental, setInspectingRental] = useState(null);
 
   const loadRentals = async () => {
@@ -169,6 +172,13 @@ export default function AdminRentalsManagementPage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition shrink-0 shadow-sm"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+              <span>Import Rentals</span>
+            </button>
             <button
               onClick={loadRentals}
               className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
@@ -676,6 +686,14 @@ export default function AdminRentalsManagementPage() {
             </div>
           </div>
         )}
+        {/* Universal Bulk Import Modal */}
+        <UniversalBulkImportModal
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          module="rentals"
+          moduleTitle="Rental Equipment & Tools"
+          onImportSuccess={loadRentals}
+        />
       </div>
     </AdminLayout>
   );

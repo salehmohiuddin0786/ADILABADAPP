@@ -65,6 +65,7 @@ app.use('/api/favorites', require('./routes/favoriteRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/bulk-import', require('./routes/universalImportRoutes'));
 
 // Modular v1 Endpoints & Aliases
 app.use('/api/v1/locations', require('./src/modules/locations/locationRoutes'));

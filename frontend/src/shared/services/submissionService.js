@@ -560,6 +560,123 @@ export const submissionService = {
   },
 
   /**
+   * Bulk import submissions for any module
+   */
+  async bulkImportSubmissions({ module, records = [], duplicateStrategy = 'skip' }) {
+    const items = getStoredSubmissions();
+    const moduleLabelMap = {
+      services: 'Service Listing',
+      properties: 'Property Listing',
+      jobs: 'Job Opening',
+      'buy-sell': 'Buy & Sell',
+      rentals: 'Equipment & Rental',
+      offers: 'Offer & Discount',
+      events: 'Local Event',
+      businesses: 'Business Profile'
+    };
+
+    let importedCount = 0;
+    let updatedCount = 0;
+    let skippedCount = 0;
+
+    const newSubmissions = [];
+
+    records.forEach((record, index) => {
+      const data = record.data || record;
+      const title = (data.title || '').trim();
+      if (!title) return;
+
+      const existingIndex = items.findIndex(
+        (i) => i.module === module && i.title.toLowerCase().trim() === title.toLowerCase().trim()
+      );
+
+      if (existingIndex !== -1) {
+        if (duplicateStrategy === 'skip') {
+          skippedCount++;
+          return;
+        } else if (duplicateStrategy === 'update') {
+          items[existingIndex] = {
+            ...items[existingIndex],
+            category: data.category || items[existingIndex].category,
+            pricing: data.pricing || items[existingIndex].pricing,
+            location: data.location || items[existingIndex].location,
+            owner_name: data.owner_name || items[existingIndex].owner_name,
+            owner_phone: data.owner_phone || items[existingIndex].owner_phone,
+            description: data.description || items[existingIndex].description,
+            image_url: data.image_url || items[existingIndex].image_url,
+            status: data.status || items[existingIndex].status,
+            specs: { ...items[existingIndex].specs, ...(data.specs || data) }
+          };
+          updatedCount++;
+          return;
+        }
+      }
+
+      // New submission
+      const subId = `SUB-${Date.now().toString().slice(-6)}${index}`;
+      const newSub = {
+        id: subId,
+        module,
+        moduleLabel: moduleLabelMap[module] || 'Listing',
+        title,
+        category: data.category || 'General',
+        pricing: data.pricing || (data.daily_rate ? `₹${data.daily_rate} / day` : 'Contact for Price'),
+        daily_rate: data.daily_rate ? parseFloat(data.daily_rate) : undefined,
+        security_deposit: data.security_deposit ? parseFloat(data.security_deposit) : 0,
+        location: data.location || data.venue || 'Adilabad',
+        owner_id: 1,
+        owner_name: data.owner_name || data.organizer || 'Adilabad Service Hub',
+        owner_phone: data.owner_phone || data.phone || '+91 98480 22334',
+        status: data.status || 'PUBLISHED',
+        submitted_at: new Date().toISOString(),
+        image_url: data.image_url || data.cover_url || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800',
+        description: data.description || title,
+        specs: data.specs || data
+      };
+
+      newSubmissions.unshift(newSub);
+      importedCount++;
+    });
+
+    const updatedList = [...newSubmissions, ...items];
+    saveSubmissions(updatedList);
+
+    // If rentals, also sync to adilabad_rentals
+    if (module === 'rentals' && typeof window !== 'undefined') {
+      try {
+        const rawRentals = localStorage.getItem(RENTALS_KEY);
+        const rentalList = rawRentals ? JSON.parse(rawRentals) : [];
+        newSubmissions.forEach((s) => {
+          rentalList.unshift({
+            id: Date.now() + Math.random(),
+            submission_id: s.id,
+            title: s.title,
+            slug: s.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString().slice(-4),
+            category_name: s.category,
+            daily_rate: s.daily_rate || 1000,
+            security_deposit: s.security_deposit || 0,
+            location: s.location,
+            pickup_address: s.location,
+            status: s.status,
+            owner_name: s.owner_name,
+            owner_phone: s.owner_phone,
+            image_url: s.image_url,
+            description: s.description
+          });
+        });
+        localStorage.setItem(RENTALS_KEY, JSON.stringify(rentalList));
+      } catch (e) {}
+    }
+
+    return {
+      success: true,
+      importedCount,
+      updatedCount,
+      skippedCount
+    };
+  },
+
+  /**
    * Quick status counts for dashboard summaries
    */
   async getCounts() {

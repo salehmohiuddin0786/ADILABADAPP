@@ -22,6 +22,8 @@ export default function BusinessesPage({ initialData, categories = [], locations
     if (search.trim()) queryParams.set('search', search.trim());
     if (selectedCategory) queryParams.set('category', selectedCategory);
     if (selectedLocation) queryParams.set('location', selectedLocation);
+    if (router.query.district) queryParams.set('district', router.query.district);
+    if (router.query.city) queryParams.set('city', router.query.city);
 
     router.push(`/businesses?${queryParams.toString()}`, undefined, { shallow: true });
 
@@ -234,6 +236,8 @@ export async function getServerSideProps({ query }) {
     if (query.search) params.set('search', query.search);
     if (query.category) params.set('category', query.category);
     if (query.location) params.set('location', query.location);
+    if (query.district) params.set('district', query.district);
+    if (query.city) params.set('city', query.city);
 
     const [bizRes, catRes, locRes] = await Promise.all([
       apiFetch(`/businesses?${params.toString()}`),

@@ -22,9 +22,11 @@ import {
   X,
   ShieldCheck,
   LayoutGrid,
-  List
+  List,
+  FileSpreadsheet
 } from 'lucide-react';
 import AdminLayout from '../../src/components/layout/AdminLayout';
+import UniversalBulkImportModal from '../../src/components/admin/UniversalBulkImportModal';
 import { submissionService } from '../../src/shared/services/submissionService';
 import { useToast } from '../../src/context/ToastContext';
 import { handleImageError, getCategoryFallbackImage } from '../../src/utils/imageFallback';
@@ -37,6 +39,7 @@ export default function AdminBuySellPage() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [viewMode, setViewMode] = useState('grid');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [inspectingItem, setInspectingItem] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -159,6 +162,13 @@ export default function AdminBuySellPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition shrink-0 shadow-sm"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+              <span>Import Buy & Sell</span>
+            </button>
             <button
               onClick={() => setShowAddModal(true)}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow-md shadow-brand-600/20 transition shrink-0"
@@ -756,6 +766,14 @@ export default function AdminBuySellPage() {
             </div>
           </div>
         )}
+        {/* Universal Bulk Import Modal */}
+        <UniversalBulkImportModal
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          module="buy-sell"
+          moduleTitle="Buy & Sell Marketplace"
+          onImportSuccess={loadItems}
+        />
       </div>
     </AdminLayout>
   );

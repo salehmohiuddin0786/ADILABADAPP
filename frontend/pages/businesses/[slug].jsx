@@ -44,8 +44,8 @@ export default function BusinessDetailPage({ business }) {
 
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-  const mapsQuery = `${business.name}, ${business.address}, Adilabad`;
-  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`;
+  const mapsQuery = `${business.name}, ${business.address}, ${business.city || 'Adilabad'}`;
+  const directionsUrl = business.maps_url || (business.latitude && business.longitude ? `https://www.google.com/maps/search/?api=1&query=${business.latitude},${business.longitude}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`);
 
   return (
     <>
@@ -182,6 +182,16 @@ export default function BusinessDetailPage({ business }) {
                     >
                       <Phone className="w-4 h-4" />
                       <span>Call: {business.phone}</span>
+                    </a>
+                  )}
+
+                  {business.alternate_phone && (
+                    <a
+                      href={`tel:${business.alternate_phone}`}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Alt Call: {business.alternate_phone}</span>
                     </a>
                   )}
 

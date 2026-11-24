@@ -1,11 +1,12 @@
 const slugify = require('slugify');
 const { query } = require('../config/db');
 const { logAdminAction } = require('../middleware/auditMiddleware');
+const importService = require('../services/businessImportService');
 
 // PUBLIC: Get businesses
 exports.getBusinesses = async (req, res) => {
   try {
-    const { category, location, search, featured, page = 1, limit = 12 } = req.query;
+    const { category, location, search, featured, district, city, page = 1, limit = 12 } = req.query;
     const offset = (Math.max(1, parseInt(page, 10)) - 1) * parseInt(limit, 10);
     const params = [];
     const whereConditions = ['b.is_active = 1'];
@@ -16,8 +17,18 @@ exports.getBusinesses = async (req, res) => {
     }
 
     if (location) {
-      whereConditions.push('(l.slug = ? OR l.id = ?)');
-      params.push(location, location);
+      whereConditions.push('(l.slug = ? OR l.id = ? OR b.locality = ?)');
+      params.push(location, location, location);
+    }
+
+    if (district && district.trim()) {
+      whereConditions.push('(b.district = ? OR b.district LIKE ?)');
+      params.push(district.trim(), `%${district.trim()}%`);
+    }
+
+    if (city && city.trim()) {
+      whereConditions.push('(b.city = ? OR b.city LIKE ?)');
+      params.push(city.trim(), `%${city.trim()}%`);
     }
 
     if (featured === 'true' || featured === '1') {
@@ -25,9 +36,9 @@ exports.getBusinesses = async (req, res) => {
     }
 
     if (search && search.trim()) {
-      whereConditions.push('(b.name LIKE ? OR b.description LIKE ? OR c.name LIKE ? OR l.name LIKE ?)');
+      whereConditions.push('(b.name LIKE ? OR b.description LIKE ? OR c.name LIKE ? OR l.name LIKE ? OR b.locality LIKE ? OR b.district LIKE ? OR b.city LIKE ? OR b.phone LIKE ?)');
       const term = `%${search.trim()}%`;
-      params.push(term, term, term, term);
+      params.push(term, term, term, term, term, term, term, term);
     }
 
     const whereClause = `WHERE ${whereConditions.join(' AND ')}`;
@@ -43,9 +54,10 @@ exports.getBusinesses = async (req, res) => {
 
     const businesses = await query(
       `SELECT
-        b.id, b.name, b.slug, b.category_id, b.location_id, b.address,
-        b.phone, b.whatsapp, b.email, b.website, b.description,
-        b.logo_url, b.cover_url, b.rating, b.total_reviews, b.is_featured,
+        b.id, b.name, b.slug, b.category_id, b.subcategory, b.location_id, b.address,
+        b.locality, b.city, b.district, b.state, b.pincode, b.latitude, b.longitude, b.maps_url,
+        b.phone, b.alternate_phone, b.whatsapp, b.email, b.website, b.description,
+        b.logo_url, b.cover_url, b.rating, b.total_reviews, b.is_featured, b.status,
         c.name as category_name, c.slug as category_slug,
         l.name as location_name, l.slug as location_slug
        FROM businesses b
@@ -149,23 +161,27 @@ exports.getAdminBusinesses = async (req, res) => {
     }
 
     if (search && search.trim()) {
-      whereConditions.push('(b.name LIKE ? OR b.phone LIKE ?)');
+      whereConditions.push('(b.name LIKE ? OR b.phone LIKE ? OR b.locality LIKE ? OR b.city LIKE ? OR c.name LIKE ?)');
       const term = `%${search.trim()}%`;
-      params.push(term, term);
+      params.push(term, term, term, term, term);
     }
 
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
 
     const countResult = await query(
-      `SELECT COUNT(*) as total FROM businesses b ${whereClause}`,
+      `SELECT COUNT(*) as total FROM businesses b
+       LEFT JOIN categories c ON b.category_id = c.id
+       ${whereClause}`,
       params
     );
     const total = countResult[0]?.total || 0;
 
     const businesses = await query(
       `SELECT
-        b.id, b.name, b.slug, b.category_id, b.location_id, b.address,
-        b.phone, b.whatsapp, b.rating, b.is_featured, b.is_active, b.created_at,
+        b.id, b.name, b.slug, b.category_id, b.subcategory, b.location_id, b.address,
+        b.locality, b.city, b.district, b.state, b.pincode, b.latitude, b.longitude, b.maps_url,
+        b.phone, b.alternate_phone, b.whatsapp, b.email, b.website, b.rating, b.is_featured,
+        b.is_active, b.status, b.created_at,
         c.name as category_name,
         l.name as location_name
        FROM businesses b
@@ -369,5 +385,169 @@ exports.deleteBusiness = async (req, res) => {
   } catch (error) {
     console.error('deleteBusiness error:', error);
     return res.status(500).json({ success: false, message: 'Failed to delete business.' });
+  }
+};
+
+// ==========================================
+// BULK IMPORT CONTROLLERS (ADMIN ONLY)
+// ==========================================
+
+// 1. Download Sample Excel Template
+exports.downloadImportTemplate = async (req, res) => {
+  try {
+    const buffer = importService.generateSampleTemplate();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="Adilabad_Business_Import_Template.xlsx"');
+    res.setHeader('Content-Length', buffer.length);
+    return res.send(buffer);
+  } catch (error) {
+    console.error('downloadImportTemplate error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to generate Excel template.' });
+  }
+};
+
+// 2. Upload and Preview
+exports.previewImport = async (req, res) => {
+  try {
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({
+        success: false,
+        message: 'No spreadsheet file uploaded. Please upload a .xlsx, .xls, or .csv file.'
+      });
+    }
+
+    const previewData = await importService.parseAndPreview(req.file.buffer, req.file.originalname);
+    return res.json({
+      success: true,
+      message: `Parsed ${previewData.totalRecords} records (${previewData.validRecords} valid, ${previewData.duplicateRecords} duplicates, ${previewData.invalidRecords} invalid).`,
+      data: previewData
+    });
+  } catch (error) {
+    console.error('previewImport error:', error);
+    return res.status(400).json({
+      success: false,
+      message: error.message || 'Failed to process Excel file. Please ensure it is a valid spreadsheet.'
+    });
+  }
+};
+
+// 3. Execute Bulk Import
+exports.executeImport = async (req, res) => {
+  try {
+    const { records, duplicateStrategy = 'skip', fileName } = req.body;
+
+    if (!Array.isArray(records) || records.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No records provided for bulk import.'
+      });
+    }
+
+    if (!['skip', 'update', 'import_all'].includes(duplicateStrategy)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid duplicate strategy. Allowed values: "skip", "update", "import_all".'
+      });
+    }
+
+    const result = await importService.executeBulkImport({
+      records,
+      duplicateStrategy,
+      fileName: fileName || 'bulk_import.xlsx',
+      user: req.user
+    });
+
+    await logAdminAction(
+      req.user.id,
+      'Business bulk import executed',
+      'business_import',
+      result.importId,
+      {
+        fileName,
+        total: result.total,
+        imported: result.imported,
+        updated: result.updated,
+        skipped: result.skipped,
+        failed: result.failed
+      },
+      req
+    );
+
+    return res.json({
+      success: true,
+      message: `Import processed successfully: ${result.imported} new imported, ${result.updated} updated, ${result.skipped} skipped duplicates, ${result.failed} failed.`,
+      data: result
+    });
+  } catch (error) {
+    console.error('executeImport error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to execute bulk business import.'
+    });
+  }
+};
+
+// 4. Retrieve Import History
+exports.getImportHistory = async (req, res) => {
+  try {
+    const imports = await query(`
+      SELECT
+        id, file_name, uploaded_by, uploader_name, total_records,
+        successful_records, updated_records, skipped_records, failed_records,
+        status, duplicate_strategy, created_at,
+        CASE WHEN failed_records > 0 THEN 1 ELSE 0 END as has_failures
+      FROM business_imports
+      ORDER BY created_at DESC
+      LIMIT 50
+    `);
+
+    return res.json({
+      success: true,
+      data: imports
+    });
+  } catch (error) {
+    console.error('getImportHistory error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to retrieve import history.' });
+  }
+};
+
+// 5. Download Failed Records Excel
+exports.downloadFailedRecords = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const records = await query(
+      'SELECT id, file_name, failed_data FROM business_imports WHERE id = ? LIMIT 1',
+      [id]
+    );
+
+    if (!records || records.length === 0) {
+      return res.status(404).json({ success: false, message: 'Import history record not found.' });
+    }
+
+    const importRecord = records[0];
+    let failedList = [];
+    if (importRecord.failed_data) {
+      try {
+        failedList = JSON.parse(importRecord.failed_data);
+      } catch (e) {
+        failedList = [];
+      }
+    }
+
+    if (!Array.isArray(failedList) || failedList.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No failed records exist for this import session.'
+      });
+    }
+
+    const buffer = importService.generateFailedRecordsExcel(failedList);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="Failed_Records_Import_${id}.xlsx"`);
+    res.setHeader('Content-Length', buffer.length);
+    return res.send(buffer);
+  } catch (error) {
+    console.error('downloadFailedRecords error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to download failed records Excel.' });
   }
 };

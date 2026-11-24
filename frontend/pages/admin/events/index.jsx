@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { Calendar, PlusCircle, Search, Trash2, MapPin, Sparkles } from 'lucide-react';
+import { Calendar, PlusCircle, Search, Trash2, MapPin, Sparkles, FileSpreadsheet } from 'lucide-react';
 import AdminLayout from '../../../src/components/layout/AdminLayout';
+import UniversalBulkImportModal from '../../../src/components/admin/UniversalBulkImportModal';
 import { apiFetch } from '../../../src/utils/api';
 import { useToast } from '../../../src/context/ToastContext';
 
@@ -11,6 +12,7 @@ export default function AdminEventsPage() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [showImportModal, setShowImportModal] = useState(false);
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -66,13 +68,22 @@ export default function AdminEventsPage() {
             </p>
           </div>
 
-          <Link
-            href="/admin/events/create"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition shrink-0"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Create Event</span>
-          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition shrink-0 shadow-sm"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+              <span>Import Events</span>
+            </button>
+            <Link
+              href="/admin/events/create"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md shadow-brand-600/20 transition shrink-0"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Create Event</span>
+            </Link>
+          </div>
         </div>
 
         {/* Events Table */}
@@ -121,6 +132,15 @@ export default function AdminEventsPage() {
             </table>
           </div>
         </div>
+
+        {/* Universal Bulk Import Modal */}
+        <UniversalBulkImportModal
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          module="events"
+          moduleTitle="Events & Expos"
+          onImportSuccess={fetchEvents}
+        />
       </div>
     </AdminLayout>
   );

@@ -167,6 +167,75 @@ export function getMockResponse(endpoint, options = {}) {
   }
 
   // 5. Businesses
+  if (urlWithoutQuery === '/businesses/admin/import/history') {
+    return {
+      success: true,
+      data: [
+        {
+          id: 1,
+          file_name: 'Adilabad_Retail_Directory_2026.xlsx',
+          uploaded_by: 1,
+          uploader_name: 'Adilabad Admin',
+          total_records: 48,
+          successful_records: 45,
+          updated_records: 0,
+          skipped_records: 3,
+          failed_records: 0,
+          status: 'completed',
+          created_at: new Date(Date.now() - 3600000 * 24).toISOString()
+        }
+      ]
+    };
+  }
+  if (urlWithoutQuery === '/businesses/admin/import/preview') {
+    return {
+      success: true,
+      data: {
+        fileName: 'businesses_upload.xlsx',
+        totalRecords: 12,
+        validRecords: 10,
+        duplicateRecords: 1,
+        invalidRecords: 1,
+        missingRequiredFields: 1,
+        preview: [
+          {
+            rowNumber: 2,
+            status: 'valid',
+            errors: [],
+            data: { name: 'Sri Balaji General Stores', category_name: 'Shopping', locality: 'Cinema Road', phone: '9440112345' }
+          },
+          {
+            rowNumber: 3,
+            status: 'duplicate',
+            errors: [],
+            duplicateInfo: { reason: 'Matches existing business by phone number (9440112345)' },
+            data: { name: 'Balaji Supermart', category_name: 'Shopping', locality: 'Cinema Road', phone: '9440112345' }
+          },
+          {
+            rowNumber: 4,
+            status: 'invalid',
+            errors: ['Missing required field: Category'],
+            data: { name: 'Adilabad Mobile Care', category_name: '', locality: 'Shivaji Chowk', phone: '9848011223' }
+          }
+        ]
+      }
+    };
+  }
+  if (urlWithoutQuery === '/businesses/admin/import/execute') {
+    return {
+      success: true,
+      message: 'Bulk import executed successfully (Demo Mode).',
+      data: {
+        importId: Date.now(),
+        total: 10,
+        imported: 9,
+        updated: 1,
+        skipped: 0,
+        failed: 0,
+        status: 'completed'
+      }
+    };
+  }
   if (urlWithoutQuery === '/businesses' || urlWithoutQuery === '/businesses/admin/list') {
     return filterMockBusinesses(params);
   }
@@ -711,9 +780,9 @@ export async function apiFetch(endpoint, options = {}) {
   const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
   try {
-    // Abort controller with 2500ms timeout for snappy fallback when backend is offline
+    const timeoutMs = options.timeout || (options.body instanceof FormData || endpoint.includes('import') ? 60000 : 4000);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     const response = await fetch(url, {
       ...options,
@@ -724,6 +793,10 @@ export async function apiFetch(endpoint, options = {}) {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
+      const errData = await response.json().catch(() => null);
+      if (errData && errData.message) {
+        throw new Error(errData.message);
+      }
       console.warn(`[Adilabad App API] Response not OK (${response.status}) at ${url}. Switching to fallback dummy data.`);
       return getMockResponse(endpoint, options);
     }
