@@ -1,9 +1,13 @@
 // Adilabad App Progressive Web App Service Worker
-const CACHE_NAME = 'adilabad-cache-v1';
+const CACHE_NAME = 'adilabad-cache-v2';
 const PRECACHE_ASSETS = [
   '/',
   '/manifest.json',
   '/favicon.svg',
+  '/images/icons/icon-192x192.png',
+  '/images/icons/icon-512x512.png',
+  '/images/icons/maskable-icon-512x512.png',
+  '/images/icons/apple-touch-icon.png',
   '/images/icons/icon-192x192.svg',
   '/images/icons/icon-512x512.svg',
   '/images/placeholders/shopping.svg',

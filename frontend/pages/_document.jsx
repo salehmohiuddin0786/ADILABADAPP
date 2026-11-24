@@ -14,8 +14,9 @@ export default function Document() {
         {/* PWA Manifest & App Icons */}
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.svg" />
-        <link rel="mask-icon" href="/favicon.svg" color="#0284C7" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/images/icons/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/images/icons/icon-192x192.png" />
+        <link rel="mask-icon" href="/favicon.svg" color="#047857" />
 
         {/* Canonical URL & SEO Domain */}
         <link rel="canonical" href="https://adilabad.digitalcrowdtech.in/" />
