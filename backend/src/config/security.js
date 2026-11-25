@@ -7,7 +7,7 @@ dotenv.config();
 
 const SECURITY_CONFIG = Object.freeze({
   JWT: {
-    SECRET: process.env.JWT_SECRET || 'adilabad_superapp_jwt_production_secret_2026',
+    SECRET: process.env.JWT_SECRET || '0f216da17059b1b37c196f4a6c2765f0dbcbc1c047f9921514af1c9f7607cf3f',
     EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
     REFRESH_EXPIRES_IN: '30d'
   },

@@ -1,4 +1,9 @@
-const XLSX = require('xlsx');
+let XLSX;
+try {
+  XLSX = require('xlsx');
+} catch (e) {
+  XLSX = null;
+}
 const { query } = require('../config/db');
 
 /**

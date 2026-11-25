@@ -39,8 +39,10 @@ import {
   Key
 } from 'lucide-react';
 import AdminLayout from '../../src/components/layout/AdminLayout';
+import { motion } from 'framer-motion';
 import { apiFetch } from '../../src/utils/api';
 import { submissionService } from '../../src/shared/services/submissionService';
+import { staggerContainer, statWidgetVariants } from '../../src/shared/animations/motionPresets';
 
 const ADILABAD_MANDALS = [
   { id: 'all', name: 'All District (18 Mandals)', count: 86 },
@@ -429,57 +431,69 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* 8 High-Impact KPI Matrix Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {kpis.map((kpi) => {
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer(0.05, 0.05)}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        >
+          {kpis.map((kpi, idx) => {
             const Icon = kpi.icon;
             return (
-              <Link key={kpi.title} href={kpi.href}>
-                <div className="bg-slate-900/80 rounded-2xl p-4 sm:p-5 border border-slate-800 hover:border-slate-700 shadow-lg hover:shadow-xl transition-all group relative overflow-hidden flex flex-col justify-between h-full">
-                  {/* Subtle Accent Glow */}
-                  <div
-                    className={`absolute -right-8 -top-8 w-24 h-24 rounded-full bg-gradient-to-br ${kpi.accent} opacity-10 group-hover:opacity-20 blur-2xl transition`}
-                  />
+              <motion.div
+                key={kpi.title}
+                variants={statWidgetVariants}
+                custom={idx}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              >
+                <Link href={kpi.href} className="block h-full">
+                  <div className="bg-slate-900/80 rounded-2xl p-4 sm:p-5 border border-slate-800 hover:border-slate-700 shadow-lg hover:shadow-xl transition-all group relative overflow-hidden flex flex-col justify-between h-full">
+                    {/* Subtle Accent Glow */}
+                    <div
+                      className={`absolute -right-8 -top-8 w-24 h-24 rounded-full bg-gradient-to-br ${kpi.accent} opacity-10 group-hover:opacity-20 blur-2xl transition`}
+                    />
 
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[11px] font-bold text-slate-400 line-clamp-1">
-                        {kpi.title}
-                      </span>
-                      <div className="w-8 h-8 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-300 group-hover:scale-105 transition shrink-0">
-                        <Icon className="w-4 h-4" />
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-[11px] font-bold text-slate-400 line-clamp-1">
+                          {kpi.title}
+                        </span>
+                        <div className="w-8 h-8 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-300 group-hover:scale-105 transition shrink-0">
+                          <Icon className="w-4 h-4" />
+                        </div>
+                      </div>
+
+                      <div className="flex items-baseline space-x-2">
+                        <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                          {kpi.value}
+                        </p>
+                        <span
+                          className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${kpi.badgeColor}`}
+                        >
+                          {kpi.growth}
+                        </span>
+                      </div>
+
+                      <p className="text-[11px] font-medium text-slate-400 mt-1 line-clamp-1">
+                        {kpi.sub}
+                      </p>
+                    </div>
+
+                    {/* Micro Progress Sparkline Bar */}
+                    <div className="mt-4 pt-3 border-t border-slate-800/80">
+                      <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full bg-gradient-to-r ${kpi.accent}`}
+                          style={{ width: `${kpi.progress}%` }}
+                        />
                       </div>
                     </div>
-
-                    <div className="flex items-baseline space-x-2">
-                      <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                        {kpi.value}
-                      </p>
-                      <span
-                        className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${kpi.badgeColor}`}
-                      >
-                        {kpi.growth}
-                      </span>
-                    </div>
-
-                    <p className="text-[11px] font-medium text-slate-400 mt-1 line-clamp-1">
-                      {kpi.sub}
-                    </p>
                   </div>
-
-                  {/* Micro Progress Sparkline Bar */}
-                  <div className="mt-4 pt-3 border-t border-slate-800/80">
-                    <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full bg-gradient-to-r ${kpi.accent}`}
-                        style={{ width: `${kpi.progress}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
         {/* 3-Column Command & Moderation Center */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

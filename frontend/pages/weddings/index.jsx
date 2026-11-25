@@ -1,61 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { Sparkles, MapPin, Phone, Star, Camera, Music, Utensils, Search, Calendar } from 'lucide-react';
 import PublicLayout from '../../src/panels/public-website/PublicLayout';
+import { apiFetch } from '../../src/utils/api';
 
 export default function WeddingMarketplacePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [vendors, setVendors] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const vendors = [
-    {
-      id: 1,
-      name: 'Adilabad Media Works & Cinematic Films',
-      category: 'Photography & 4K Video',
-      location: 'Cinema Road, Adilabad',
-      startingPrice: '₹35,000 / event',
-      rating: 4.9,
-      reviews: 38,
-      phone: '+91 98480 22334',
-      services: ['Candid Photography', 'Cinematic Drone Shoots', 'Live LED Wall Streaming'],
-      image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800'
-    },
-    {
-      id: 2,
-      name: 'Shadi Mahal AC Function Hall & Convention',
-      category: 'Marriage Hall & Banquet',
-      location: 'Bhuktapur, Adilabad',
-      startingPrice: '₹65,000 / day',
-      rating: 4.8,
-      reviews: 52,
-      phone: '+91 94401 33221',
-      services: ['Capacity 1500+ Guests', 'Central AC & Deluxe Green Rooms', 'Generators Backup'],
-      image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800'
-    },
-    {
-      id: 3,
-      name: 'Royal Shahi Caterers & Dum Biryani Masters',
-      category: 'Wedding Catering & Food',
-      location: 'Shivaji Chowk, Adilabad',
-      startingPrice: '₹420 / plate',
-      rating: 4.9,
-      reviews: 44,
-      phone: '+91 94401 55667',
-      services: ['Authentic Dum Biryani', 'Mughlai & Telangana Thali', 'Desserts & Live Counters'],
-      image: 'https://images.unsplash.com/photo-1555244162-803834f70033?w=800'
+  useEffect(() => {
+    async function loadWeddings() {
+      try {
+        const res = await apiFetch('/weddings');
+        if (res && res.success && Array.isArray(res.data)) {
+          setVendors(res.data);
+        }
+      } catch (e) {
+        console.warn('Weddings fetch error:', e);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+    loadWeddings();
+  }, []);
 
   const filtered = vendors.filter((v) => {
-    if (selectedCategory !== 'all' && !v.category.toLowerCase().includes(selectedCategory.toLowerCase())) return false;
+    const cat = (v.service_type || v.category || '').toLowerCase();
+    if (selectedCategory !== 'all' && !cat.includes(selectedCategory.toLowerCase())) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      return (
-        v.name.toLowerCase().includes(q) ||
-        v.location.toLowerCase().includes(q) ||
-        v.services.some((s) => s.toLowerCase().includes(q))
-      );
+      const name = (v.vendor_name || v.name || '').toLowerCase();
+      const loc = (v.location || '').toLowerCase();
+      return name.includes(q) || loc.includes(q);
     }
     return true;
   });
@@ -119,42 +98,46 @@ export default function WeddingMarketplacePage() {
               className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition"
             >
               <div className="h-48 bg-slate-100 relative">
-                <img src={vendor.image} alt={vendor.name} className="w-full h-full object-cover" />
+                <img src={vendor.image_url || vendor.image || 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800'} alt={vendor.vendor_name || vendor.name} className="w-full h-full object-cover" />
                 <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
-                  {vendor.category}
+                  {vendor.service_type || vendor.category || 'Wedding Service'}
                 </span>
                 <span className="absolute bottom-3 right-3 bg-rose-700 text-white font-black text-xs px-3 py-1 rounded-xl shadow">
-                  From {vendor.startingPrice}
+                  {vendor.price_range || (vendor.startingPrice ? `From ${vendor.startingPrice}` : 'Inquire for Rates')}
                 </span>
               </div>
 
               <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-base leading-snug">{vendor.name}</h3>
+                  <h3 className="font-extrabold text-slate-900 text-base leading-snug">{vendor.vendor_name || vendor.name}</h3>
                   <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1.5">
                     <MapPin className="w-3.5 h-3.5 text-rose-500" />
                     <span>{vendor.location}</span>
                   </div>
 
-                  <div className="mt-3 pt-3 border-t border-slate-100 space-y-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                      Services Included:
-                    </span>
-                    {vendor.services.map((s, i) => (
-                      <span key={i} className="inline-block bg-rose-50 text-rose-800 text-[11px] font-semibold px-2 py-0.5 rounded-md mr-1 mb-1 border border-rose-100">
-                        {s}
+                  <p className="text-xs text-slate-600 mt-2 line-clamp-2">{vendor.description}</p>
+
+                  {Array.isArray(vendor.services) && vendor.services.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-slate-100 space-y-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Services Included:
                       </span>
-                    ))}
-                  </div>
+                      {vendor.services.map((s, i) => (
+                        <span key={i} className="inline-block bg-rose-50 text-rose-800 text-[11px] font-semibold px-2 py-0.5 rounded-md mr-1 mb-1 border border-rose-100">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                   <a
-                    href={`tel:${vendor.phone}`}
+                    href={`tel:${vendor.contact_phone || vendor.phone}`}
                     className="text-xs font-bold text-slate-700 hover:text-rose-600 flex items-center gap-1"
                   >
                     <Phone className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>{vendor.phone}</span>
+                    <span>{vendor.contact_phone || vendor.phone}</span>
                   </a>
                   <Link
                     href={`/contact?subject=Wedding Enquiry: ${encodeURIComponent(vendor.name)}`}

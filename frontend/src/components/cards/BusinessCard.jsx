@@ -10,7 +10,7 @@ export default function BusinessCard({ business }) {
   const favorited = isFavorited('business', business.id);
 
   const defaultCover = getCategoryFallbackImage(business.category_name, business.name);
-  const coverUrl = business.cover_url || defaultCover;
+  const coverUrl = business.cover_url || business.logo_url || defaultCover;
 
   const handleFavoriteClick = (e) => {
     e.preventDefault();

@@ -431,15 +431,15 @@ export default function AdvertisementDetailPage({ ad }) {
         )}
 
         <button
-          onClick={handleToggleFavorite}
+          onClick={() => toggleFavorite('advertisement', ad.id)}
           aria-label="Save to favorites"
           className={`p-3 rounded-xl border transition ${
-            isFav
+            favorited
               ? 'bg-rose-50 border-rose-200 text-rose-600'
               : 'bg-slate-100 border-slate-200 text-slate-600'
           }`}
         >
-          <Bookmark className={`w-4 h-4 ${isFav ? 'fill-current' : ''}`} />
+          <Bookmark className={`w-4 h-4 ${favorited ? 'fill-current' : ''}`} />
         </button>
       </div>
 

@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { MapPin, Phone, MessageCircle, Mail, Clock, Send, CheckCircle2 } from 'lucide-react';
 import MainLayout from '../src/components/layout/MainLayout';
 import { useToast } from '../src/context/ToastContext';
+import { apiFetch } from '../src/utils/api';
 
 export default function ContactPage() {
   const { addToast } = useToast();
@@ -11,11 +12,27 @@ export default function ContactPage() {
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    addToast('Thank you! Your message has been received by our Adilabad team.', 'success');
+    setLoading(true);
+    try {
+      const res = await apiFetch('/contact', {
+        method: 'POST',
+        body: JSON.stringify({ name, email, phone, message })
+      });
+      if (res && res.success) {
+        setSubmitted(true);
+        addToast(res.message || 'Thank you! Your message has been received by our Adilabad team.', 'success');
+      } else {
+        addToast(res?.message || 'Failed to send inquiry.', 'error');
+      }
+    } catch (err) {
+      addToast(err.message || 'Network error. Please try again.', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

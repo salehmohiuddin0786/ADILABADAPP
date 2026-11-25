@@ -274,12 +274,14 @@ function getStoredSubmissions() {
   }
 }
 
-function saveSubmissions(list) {
+function saveSubmissions(list, emitEvent = true) {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-    // Also dispatch custom event for instant cross-component re-rendering
-    window.dispatchEvent(new Event('adilabad_submissions_updated'));
+    // Also dispatch custom event for instant cross-component re-rendering when mutated
+    if (emitEvent) {
+      window.dispatchEvent(new Event('adilabad_submissions_updated'));
+    }
   } catch (e) {
     console.error('Error saving submissions to localStorage:', e);
   }
@@ -290,6 +292,24 @@ export const submissionService = {
    * Get all submissions, optionally filtered by module, status, or search
    */
   async getSubmissions(filters = {}) {
+    // 1. Try fetching live from MySQL backend first
+    try {
+      const queryParams = new URLSearchParams();
+      if (filters.module && filters.module !== 'all') queryParams.append('module', filters.module);
+      if (filters.status && filters.status !== 'all') queryParams.append('status', filters.status);
+      if (filters.owner_id) queryParams.append('owner_id', filters.owner_id);
+      if (filters.q) queryParams.append('q', filters.q);
+
+      const res = await apiFetch(`/submissions?${queryParams.toString()}`);
+      if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+        saveSubmissions(res.data, false);
+        return { success: true, data: res.data, total: res.data.length };
+      }
+    } catch (apiErr) {
+      console.warn('[submissionService] Backend API fetch failed, using local cache:', apiErr);
+    }
+
+    // 2. Fallback to local cache if offline
     let items = getStoredSubmissions();
 
     // Also sync rentals into submissions if any exists in adilabad_rentals
@@ -401,6 +421,25 @@ export const submissionService = {
     items.unshift(newSub);
     saveSubmissions(items);
 
+    // Call backend API for MySQL persistence
+    try {
+      await apiFetch('/submissions', {
+        method: 'POST',
+        body: JSON.stringify({
+          module: newSub.module,
+          title: newSub.title,
+          category: newSub.category,
+          pricing: newSub.pricing,
+          location: newSub.location,
+          image_url: newSub.image_url,
+          description: newSub.description,
+          specs: newSub.specs
+        })
+      });
+    } catch (e) {
+      console.warn('[submissionService] Backend API post failed, fallback to local cache:', e);
+    }
+
     // If it's a rental item, also save to adilabad_rentals so public/owner rental lists see it
     if (payload.module === 'rentals' && typeof window !== 'undefined') {
       try {
@@ -458,6 +497,15 @@ export const submissionService = {
 
     saveSubmissions(updated);
 
+    try {
+      await apiFetch(`/submissions/${id}/moderate`, {
+        method: 'PATCH',
+        body: JSON.stringify({ action: 'APPROVE', comment: notes || 'Approved & Published by Super Admin.' })
+      });
+    } catch (e) {
+      console.warn('[submissionService] Backend API moderate failed:', e);
+    }
+
     // Sync published rental item in adilabad_rentals
     if (target && target.module === 'rentals' && typeof window !== 'undefined') {
       try {
@@ -502,6 +550,15 @@ export const submissionService = {
     });
 
     saveSubmissions(updated);
+
+    try {
+      await apiFetch(`/submissions/${id}/moderate`, {
+        method: 'PATCH',
+        body: JSON.stringify({ action: 'APPROVE', comment: notes || 'Approved & Published by Super Admin.' })
+      });
+    } catch (e) {
+      console.warn('[submissionService] Backend API moderate failed:', e);
+    }
     return {
       success: true,
       message: `Change request sent to owner for "${target?.title || 'Submission'}".`,
@@ -529,6 +586,15 @@ export const submissionService = {
     });
 
     saveSubmissions(updated);
+
+    try {
+      await apiFetch(`/submissions/${id}/moderate`, {
+        method: 'PATCH',
+        body: JSON.stringify({ action: 'APPROVE', comment: notes || 'Approved & Published by Super Admin.' })
+      });
+    } catch (e) {
+      console.warn('[submissionService] Backend API moderate failed:', e);
+    }
     return {
       success: true,
       message: `Submission "${target?.title || 'Submission'}" rejected.`,
@@ -543,6 +609,12 @@ export const submissionService = {
     const items = getStoredSubmissions();
     const filtered = items.filter((item) => item.id !== id);
     saveSubmissions(filtered);
+
+    try {
+      await apiFetch(`/submissions/${id}`, { method: 'DELETE' });
+    } catch (e) {
+      console.warn('[submissionService] Backend API delete failed:', e);
+    }
 
     // Also remove from adilabad_rentals if applicable
     if (typeof window !== 'undefined') {
@@ -680,6 +752,20 @@ export const submissionService = {
    * Quick status counts for dashboard summaries
    */
   async getCounts() {
+    try {
+      const res = await apiFetch('/submissions/counts');
+      if (res && res.success && res.counts) {
+        return {
+          total: res.counts.total,
+          pending: res.counts.pending,
+          published: res.counts.approved,
+          changes_requested: 0,
+          rejected: res.counts.rejected
+        };
+      }
+    } catch (e) {
+      // offline fallback
+    }
     const items = getStoredSubmissions();
     return {
       total: items.length,

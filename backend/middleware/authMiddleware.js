@@ -15,11 +15,21 @@ async function verifyToken(req, res, next) {
       return res.status(401).json({ success: false, message: 'Authentication required. No token provided.' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'adilabad_super_secret_jwt_key_2026_discover_local');
+    // Check if token has been revoked / blacklisted
+    try {
+      const revoked = await query('SELECT id FROM revoked_tokens WHERE token = ? LIMIT 1', [token]);
+      if (revoked && revoked.length > 0) {
+        return res.status(401).json({ success: false, message: 'Session has been invalidated. Please sign in again.' });
+      }
+    } catch (e) {
+      // Table check fallback if DB error
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Retrieve user and role
     const users = await query(
-      `SELECT u.id, u.name, u.email, u.phone, u.avatar_url, u.is_active, r.name as role
+      `SELECT u.id, u.name, u.email, u.phone, u.avatar_url, u.is_active, u.created_at, r.name as role
        FROM users u
        JOIN roles r ON u.role_id = r.id
        WHERE u.id = ? LIMIT 1`,
@@ -36,6 +46,7 @@ async function verifyToken(req, res, next) {
     }
 
     req.user = user;
+    req.token = token;
     next();
   } catch (error) {
     return res.status(401).json({ success: false, message: 'Invalid or expired token.' });
@@ -43,10 +54,32 @@ async function verifyToken(req, res, next) {
 }
 
 function requireAdmin(req, res, next) {
-  if (!req.user || req.user.role !== 'admin') {
+  if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'SUPER_ADMIN')) {
     return res.status(403).json({
       success: false,
-      message: 'Access denied. Administrative privileges required. Only administrators can perform this action.'
+      message: 'Access denied. Administrative privileges required.'
+    });
+  }
+  next();
+}
+
+function requireOwner(req, res, next) {
+  const allowed = ['owner', 'BUSINESS_OWNER', 'INDIVIDUAL_OWNER', 'admin', 'SUPER_ADMIN'];
+  if (!req.user || !allowed.includes(req.user.role)) {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Business Owner privileges required.'
+    });
+  }
+  next();
+}
+
+function requireStaff(req, res, next) {
+  const allowed = ['staff', 'MODERATOR', 'SUPPORT_STAFF', 'admin', 'SUPER_ADMIN'];
+  if (!req.user || !allowed.includes(req.user.role)) {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Staff operational privileges required.'
     });
   }
   next();
@@ -57,7 +90,7 @@ async function optionalToken(req, res, next) {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'adilabad_super_secret_jwt_key_2026_discover_local');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const users = await query(
         `SELECT u.id, u.name, u.email, u.phone, u.avatar_url, u.is_active, r.name as role
          FROM users u
@@ -67,6 +100,7 @@ async function optionalToken(req, res, next) {
       );
       if (users && users.length > 0) {
         req.user = users[0];
+        req.token = token;
       }
     }
   } catch (err) {
@@ -78,5 +112,7 @@ async function optionalToken(req, res, next) {
 module.exports = {
   verifyToken,
   requireAdmin,
+  requireOwner,
+  requireStaff,
   optionalToken
 };

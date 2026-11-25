@@ -777,7 +777,11 @@ export async function apiFetch(endpoint, options = {}) {
     delete headers['Content-Type'];
   }
 
-  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  let normalizedEndpoint = endpoint;
+  if (!endpoint.startsWith('http') && API_BASE.endsWith('/api') && normalizedEndpoint.startsWith('/api/')) {
+    normalizedEndpoint = normalizedEndpoint.slice(4); // remove duplicate '/api' prefix
+  }
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${normalizedEndpoint.startsWith('/') ? normalizedEndpoint : `/${normalizedEndpoint}`}`;
 
   try {
     const timeoutMs = options.timeout || (options.body instanceof FormData || endpoint.includes('import') ? 60000 : 4000);
@@ -794,17 +798,28 @@ export async function apiFetch(endpoint, options = {}) {
 
     if (!response.ok) {
       const errData = await response.json().catch(() => null);
-      if (errData && errData.message) {
-        throw new Error(errData.message);
-      }
-      console.warn(`[Adilabad App API] Response not OK (${response.status}) at ${url}. Switching to fallback dummy data.`);
-      return getMockResponse(endpoint, options);
+      const errMsg = errData?.message || `Request failed with status ${response.status}`;
+      const err = new Error(errMsg);
+      err.status = response.status;
+      err.data = errData;
+      throw err;
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    // Backend offline / connection refused / timed out -> return rich fallback mock data
+    // If the backend actively responded with an HTTP error (401, 403, 400, 409, 500, etc.),
+    // rethrow it immediately. DO NOT mask authentication or authorization failures with mock data!
+    if (error.status) {
+      throw error;
+    }
+
+    // For auth mutations, if network is completely down, fail explicitly instead of auto-logging in as admin
+    if (endpoint.includes('/auth/login') || endpoint.includes('/auth/register') || endpoint.includes('/auth/logout') || endpoint.includes('/auth/password')) {
+      throw error;
+    }
+
+    // Backend offline / network refused -> return rich fallback mock data for read-only preview
     console.info(`[Adilabad App Offline Mode] Backend unreachable at ${url}. Serving fallback dummy data for ${endpoint}.`);
     return getMockResponse(endpoint, options);
   }

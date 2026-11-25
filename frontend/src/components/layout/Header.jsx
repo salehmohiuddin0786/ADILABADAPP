@@ -89,7 +89,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all shadow-sm">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all shadow-sm safe-top-header">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
@@ -292,6 +292,13 @@ export default function Header() {
 
                       <div className="py-1">
                         <Link
+                          href="/profile"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-800 hover:bg-slate-100 transition font-bold"
+                        >
+                          <User className="w-4 h-4 text-brand-600" />
+                          My Profile
+                        </Link>
+                        <Link
                           href="/customer/dashboard"
                           className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-emerald-800 bg-emerald-50/70 hover:bg-emerald-100/70 transition font-bold"
                         >
@@ -396,6 +403,15 @@ export default function Header() {
             ))}
 
             <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
+              {isLoggedIn && (
+                <Link
+                  href="/profile"
+                  className="block px-3 py-2 rounded-xl text-sm font-bold text-slate-900 bg-slate-50 flex items-center gap-2"
+                >
+                  <User className="w-4 h-4 text-brand-600" />
+                  My Profile
+                </Link>
+              )}
               <Link
                 href="/categories"
                 className="block px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50"

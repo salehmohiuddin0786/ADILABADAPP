@@ -4,6 +4,7 @@ color navigation_bar_color
 color primary
 color status_bar_color
 mipmap ic_launcher
+mipmap ic_launcher_foreground
 mipmap ic_launcher_round
 string app_name
 string asset_statements

@@ -7,13 +7,14 @@ import {
   Megaphone,
   Truck,
   Store,
-  Bookmark
+  Bookmark,
+  User
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function MobileBottomNav() {
   const router = useRouter();
-  const { favorites } = useAuth();
+  const { user, isLoggedIn, favorites } = useAuth();
 
   // Hide on admin, owner, customer, staff portals and item detail pages
   const isDetailPage =
@@ -50,17 +51,17 @@ export default function MobileBottomNav() {
       exact: false
     },
     {
-      name: 'Directory',
-      href: '/businesses',
-      icon: Store,
-      exact: false
-    },
-    {
       name: 'Saved',
       href: '/favorites',
       icon: Bookmark,
       exact: false,
       badge: favorites && favorites.length > 0 ? favorites.length : null
+    },
+    {
+      name: isLoggedIn ? 'Profile' : 'Sign In',
+      href: isLoggedIn ? '/profile' : '/login',
+      icon: User,
+      exact: false
     }
   ];
 

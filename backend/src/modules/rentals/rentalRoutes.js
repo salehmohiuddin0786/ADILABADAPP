@@ -7,6 +7,7 @@ const { PERMISSIONS } = require('../../config/permissions');
 
 // Public listing and single item
 router.get('/', optionalAuthenticate, rentalController.getRentals);
+router.get('/categories', rentalController.getCategories);
 router.get('/:slug', optionalAuthenticate, rentalController.getRentalBySlug);
 
 // Create rental listing (Authenticated Owners / Admin)

@@ -18,7 +18,8 @@ import {
   ExternalLink,
   Check,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  X
 } from 'lucide-react';
 import AdminLayout from '../../src/components/layout/AdminLayout';
 import { useToast } from '../../src/context/ToastContext';
@@ -367,7 +368,7 @@ export default function AdminStaffManagementPage() {
                   onClick={() => setInspectingStaff(null)}
                   className="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition"
                 >
-                  ✕
+                  <X className='w-5 h-5' />
                 </button>
               </div>
 
@@ -559,7 +560,7 @@ export default function AdminStaffManagementPage() {
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-slate-800">
                 <h3 className="text-base font-black text-white">Enroll Staff Member</h3>
-                <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white">✕</button>
+                <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white"><X className='w-5 h-5' /></button>
               </div>
 
               <form onSubmit={handleAdd} className="space-y-3.5 text-xs">

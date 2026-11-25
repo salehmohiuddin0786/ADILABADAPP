@@ -44,6 +44,28 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Serve uploaded media
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// General authenticated file upload (Avatars, Business photos, Rental items, etc.)
+const upload = require('./middleware/uploadMiddleware');
+const { verifyToken } = require('./middleware/authMiddleware');
+
+app.post('/api/upload', verifyToken, upload.array('images', 10), (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ success: false, message: 'No images uploaded.' });
+    }
+    const uploadedUrls = req.files.map(file => `/uploads/${file.filename}`);
+    return res.json({
+      success: true,
+      message: `${uploadedUrls.length} file(s) uploaded successfully.`,
+      urls: uploadedUrls,
+      url: uploadedUrls[0]
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    return res.status(500).json({ success: false, message: 'File upload failed.' });
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
@@ -65,6 +87,8 @@ app.use('/api/favorites', require('./routes/favoriteRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/submissions', require('./routes/submissionRoutes'));
+app.use('/api/v1/submissions', require('./routes/submissionRoutes'));
 app.use('/api/bulk-import', require('./routes/universalImportRoutes'));
 
 // Modular v1 Endpoints & Aliases
@@ -75,6 +99,7 @@ app.use('/api/rentals', require('./src/modules/rentals/rentalRoutes'));
 app.use('/api/v1/search', require('./src/modules/search/searchRoutes'));
 app.use('/api/search', require('./src/modules/search/searchRoutes'));
 
+app.use('/api', require('./routes/verticalRoutes'));
 app.use('/api', require('./routes/publicRoutes'));
 
 // 404 handler

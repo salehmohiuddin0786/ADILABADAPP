@@ -17,18 +17,18 @@ exports.getBusinesses = async (req, res) => {
     }
 
     if (location) {
-      whereConditions.push('(l.slug = ? OR l.id = ? OR b.locality = ?)');
-      params.push(location, location, location);
+      whereConditions.push('(l.slug = ? OR l.id = ? OR b.address LIKE ?)');
+      params.push(location, location, `%${location}%`);
     }
 
     if (district && district.trim()) {
-      whereConditions.push('(b.district = ? OR b.district LIKE ?)');
-      params.push(district.trim(), `%${district.trim()}%`);
+      whereConditions.push('(l.name LIKE ? OR b.address LIKE ?)');
+      params.push(`%${district.trim()}%`, `%${district.trim()}%`);
     }
 
     if (city && city.trim()) {
-      whereConditions.push('(b.city = ? OR b.city LIKE ?)');
-      params.push(city.trim(), `%${city.trim()}%`);
+      whereConditions.push('(l.name LIKE ? OR b.address LIKE ?)');
+      params.push(`%${city.trim()}%`, `%${city.trim()}%`);
     }
 
     if (featured === 'true' || featured === '1') {
@@ -36,9 +36,9 @@ exports.getBusinesses = async (req, res) => {
     }
 
     if (search && search.trim()) {
-      whereConditions.push('(b.name LIKE ? OR b.description LIKE ? OR c.name LIKE ? OR l.name LIKE ? OR b.locality LIKE ? OR b.district LIKE ? OR b.city LIKE ? OR b.phone LIKE ?)');
+      whereConditions.push('(b.name LIKE ? OR b.description LIKE ? OR c.name LIKE ? OR l.name LIKE ? OR b.address LIKE ? OR b.phone LIKE ?)');
       const term = `%${search.trim()}%`;
-      params.push(term, term, term, term, term, term, term, term);
+      params.push(term, term, term, term, term, term);
     }
 
     const whereClause = `WHERE ${whereConditions.join(' AND ')}`;
@@ -54,12 +54,12 @@ exports.getBusinesses = async (req, res) => {
 
     const businesses = await query(
       `SELECT
-        b.id, b.name, b.slug, b.category_id, b.subcategory, b.location_id, b.address,
-        b.locality, b.city, b.district, b.state, b.pincode, b.latitude, b.longitude, b.maps_url,
-        b.phone, b.alternate_phone, b.whatsapp, b.email, b.website, b.description,
-        b.logo_url, b.cover_url, b.rating, b.total_reviews, b.is_featured, b.status,
+        b.id, b.name, b.slug, b.category_id, b.location_id, b.address,
+        b.phone, b.whatsapp, b.email, b.website, b.description,
+        b.logo_url, b.cover_url, b.rating, b.total_reviews, b.is_featured, b.is_active,
+        b.display_order, b.created_at,
         c.name as category_name, c.slug as category_slug,
-        l.name as location_name, l.slug as location_slug
+        l.name as location_name, l.slug as location_slug, l.pincode
        FROM businesses b
        LEFT JOIN categories c ON b.category_id = c.id
        LEFT JOIN locations l ON b.location_id = l.id
@@ -161,7 +161,7 @@ exports.getAdminBusinesses = async (req, res) => {
     }
 
     if (search && search.trim()) {
-      whereConditions.push('(b.name LIKE ? OR b.phone LIKE ? OR b.locality LIKE ? OR b.city LIKE ? OR c.name LIKE ?)');
+      whereConditions.push('(b.name LIKE ? OR b.phone LIKE ? OR b.address LIKE ? OR l.name LIKE ? OR c.name LIKE ?)');
       const term = `%${search.trim()}%`;
       params.push(term, term, term, term, term);
     }
@@ -171,6 +171,7 @@ exports.getAdminBusinesses = async (req, res) => {
     const countResult = await query(
       `SELECT COUNT(*) as total FROM businesses b
        LEFT JOIN categories c ON b.category_id = c.id
+       LEFT JOIN locations l ON b.location_id = l.id
        ${whereClause}`,
       params
     );
@@ -178,12 +179,12 @@ exports.getAdminBusinesses = async (req, res) => {
 
     const businesses = await query(
       `SELECT
-        b.id, b.name, b.slug, b.category_id, b.subcategory, b.location_id, b.address,
-        b.locality, b.city, b.district, b.state, b.pincode, b.latitude, b.longitude, b.maps_url,
-        b.phone, b.alternate_phone, b.whatsapp, b.email, b.website, b.rating, b.is_featured,
-        b.is_active, b.status, b.created_at,
+        b.id, b.name, b.slug, b.category_id, b.location_id, b.address,
+        b.phone, b.whatsapp, b.email, b.website, b.description,
+        b.logo_url, b.cover_url, b.rating, b.total_reviews, b.is_featured,
+        b.is_active, b.display_order, b.created_at,
         c.name as category_name,
-        l.name as location_name
+        l.name as location_name, l.pincode
        FROM businesses b
        LEFT JOIN categories c ON b.category_id = c.id
        LEFT JOIN locations l ON b.location_id = l.id

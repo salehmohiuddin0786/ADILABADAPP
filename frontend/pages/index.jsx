@@ -34,6 +34,7 @@ import AdvertisementCard from '../src/components/cards/AdvertisementCard';
 import BusinessCard from '../src/components/cards/BusinessCard';
 import EventCard from '../src/components/cards/EventCard';
 import CategoryCard from '../src/components/cards/CategoryCard';
+import AnimatedSection from '../src/components/common/AnimatedSection';
 import { apiFetch } from '../src/utils/api';
 import {
   MOCK_CATEGORIES,
@@ -628,7 +629,7 @@ export default function HomePage({
       </section>
 
       {/* 3. CATEGORIES SECTION */}
-      <section className="py-14 sm:py-18 bg-slate-50">
+      <AnimatedSection className="py-14 sm:py-18 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
@@ -654,10 +655,10 @@ export default function HomePage({
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* 4. FEATURED ADVERTISEMENTS */}
-      <section className="py-14 sm:py-18 bg-white border-t border-slate-200">
+      <AnimatedSection className="py-14 sm:py-18 bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
@@ -684,7 +685,7 @@ export default function HomePage({
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* 5. PROMOTIONAL BANNERS CAROUSEL & SPOTLIGHT (HAIKEI STYLED) */}
       <section className="py-12 bg-slate-950 text-white relative overflow-hidden">
@@ -766,7 +767,7 @@ export default function HomePage({
       </section>
 
       {/* 6. LATEST ADVERTISEMENTS */}
-      <section className="py-14 sm:py-18 bg-slate-50">
+      <AnimatedSection className="py-14 sm:py-18 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
@@ -792,10 +793,10 @@ export default function HomePage({
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* 7. POPULAR LOCAL BUSINESSES */}
-      <section className="py-14 sm:py-18 bg-white border-t border-slate-200">
+      <AnimatedSection className="py-14 sm:py-18 bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
@@ -821,10 +822,10 @@ export default function HomePage({
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* 8. UPCOMING EVENTS IN ADILABAD */}
-      <section className="py-14 sm:py-18 bg-slate-50 border-t border-slate-200">
+      <AnimatedSection className="py-14 sm:py-18 bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
@@ -850,7 +851,7 @@ export default function HomePage({
             ))}
           </div>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* 9. EXPLORE ADILABAD (LOCAL DISCOVERY SECTION) */}
       <section className="py-16 sm:py-20 bg-white border-t border-slate-200">

@@ -141,14 +141,16 @@ export default function BusinessBulkImportModal({ isOpen, onClose, onImportSucce
   // Download Sample Template
   const handleDownloadTemplate = () => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('adilabad_token') : '';
-    const url = `/api/businesses/admin/import/template${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5010/api';
+    const url = `${apiBase}/businesses/admin/import/template${token ? `?token=${encodeURIComponent(token)}` : ''}`;
     window.open(url, '_blank');
   };
 
   // Download Failed Records Excel
   const handleDownloadFailed = (importId) => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('adilabad_token') : '';
-    const url = `/api/businesses/admin/import/failed/${importId}${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5010/api';
+    const url = `${apiBase}/businesses/admin/import/failed/${importId}${token ? `?token=${encodeURIComponent(token)}` : ''}`;
     window.open(url, '_blank');
   };
 

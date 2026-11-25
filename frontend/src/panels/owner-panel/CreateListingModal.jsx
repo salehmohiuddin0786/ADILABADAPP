@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Sparkles, UploadCloud } from 'lucide-react';
 import { submissionService } from '../../shared/services/submissionService';
 import { useToast } from '../../context/ToastContext';
+import { modalOverlayVariants, modalContentVariants } from '../../shared/animations/motionPresets';
 
 export default function CreateListingModal({
   isOpen,
@@ -25,8 +27,6 @@ export default function CreateListingModal({
     description: '',
     image_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800'
   });
-
-  if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,21 +61,32 @@ export default function CreateListingModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-amber-600 font-bold block">
-              {moduleLabel} Submission
-            </span>
-            <h3 className="text-lg font-black text-slate-900">Add New {moduleLabel}</h3>
-          </div>
-          <button onClick={onClose} className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          variants={modalOverlayVariants}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm"
+        >
+          <motion.div
+            variants={modalContentVariants}
+            className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-amber-600 font-bold block">
+                  {moduleLabel} Submission
+                </span>
+                <h3 className="text-lg font-black text-slate-900">Add New {moduleLabel}</h3>
+              </div>
+              <button onClick={onClose} className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3 text-xs">
+            <form onSubmit={handleSubmit} className="space-y-3 text-xs">
           <div>
             <label className="font-bold text-slate-700 block mb-1">Headline / Listing Title *</label>
             <input
@@ -176,7 +187,9 @@ export default function CreateListingModal({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

@@ -1,58 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { GraduationCap, MapPin, Phone, Mail, Award, BookOpen, Search, ArrowRight } from 'lucide-react';
 import PublicLayout from '../../src/panels/public-website/PublicLayout';
+import { apiFetch } from '../../src/utils/api';
 
 export default function EducationDirectoryPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState('all');
+  const [institutions, setInstitutions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const institutions = [
-    {
-      id: 1,
-      name: 'Adilabad Institute of Technology & Polytech',
-      type: 'Higher Education & Polytechnic',
-      location: 'Utnoor Road, Adilabad',
-      courses: ['Diploma in Civil Engineering', 'Computer Science', 'Electrical'],
-      phone: '+91 94401 22334',
-      rating: 4.8,
-      students: '800+ Students',
-      image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800'
-    },
-    {
-      id: 2,
-      name: 'Kakatiya IIT-JEE & NEET Academy',
-      type: 'Competitive Coaching',
-      location: 'Dwaraka Nagar, Cinema Road',
-      courses: ['NEET Foundation', 'IIT-JEE Mains & Advanced', 'Intermediate Bi.P.C / M.P.C'],
-      phone: '+91 98480 33445',
-      rating: 4.9,
-      students: '450+ Students',
-      image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800'
-    },
-    {
-      id: 3,
-      name: 'St. Joseph English Medium High School',
-      type: 'High School & Secondary',
-      location: 'Teachers Colony, Adilabad',
-      courses: ['LKG to 10th Class SSC / CBSE Curriculum', 'Digital Smart Classrooms'],
-      phone: '+91 94401 55667',
-      rating: 4.7,
-      students: '1200+ Students',
-      image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800'
+  useEffect(() => {
+    async function loadEducation() {
+      try {
+        const res = await apiFetch('/education');
+        if (res && res.success && Array.isArray(res.data)) {
+          setInstitutions(res.data);
+        }
+      } catch (e) {
+        console.warn('Education fetch error:', e);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+    loadEducation();
+  }, []);
 
   const filtered = institutions.filter((inst) => {
-    if (selectedType !== 'all' && !inst.type.toLowerCase().includes(selectedType.toLowerCase())) return false;
+    const type = (inst.category || inst.type || '').toLowerCase();
+    if (selectedType !== 'all' && !type.includes(selectedType.toLowerCase())) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      return (
-        inst.name.toLowerCase().includes(q) ||
-        inst.location.toLowerCase().includes(q) ||
-        inst.courses.some((c) => c.toLowerCase().includes(q))
-      );
+      const name = (inst.name || '').toLowerCase();
+      const addr = (inst.address || inst.location || '').toLowerCase();
+      const courses = (inst.courses_offered || (Array.isArray(inst.courses) ? inst.courses.join(' ') : '')).toLowerCase();
+      return name.includes(q) || addr.includes(q) || courses.includes(q);
     }
     return true;
   });
@@ -116,9 +99,9 @@ export default function EducationDirectoryPage() {
               className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition"
             >
               <div className="h-48 bg-slate-100 relative">
-                <img src={inst.image} alt={inst.name} className="w-full h-full object-cover" />
+                <img src={inst.image_url || inst.image || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800'} alt={inst.name} className="w-full h-full object-cover" />
                 <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
-                  {inst.type}
+                  {inst.category || inst.type || 'Educational Institute'}
                 </span>
               </div>
 
@@ -127,14 +110,14 @@ export default function EducationDirectoryPage() {
                   <h3 className="font-extrabold text-slate-900 text-base leading-snug">{inst.name}</h3>
                   <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1.5">
                     <MapPin className="w-3.5 h-3.5 text-amber-500" />
-                    <span>{inst.location}</span>
+                    <span>{inst.address || inst.location}</span>
                   </div>
 
                   <div className="mt-3 pt-3 border-t border-slate-100 space-y-1">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                       Featured Courses:
                     </span>
-                    {inst.courses.map((c, i) => (
+                    {(Array.isArray(inst.courses) ? inst.courses : (inst.courses_offered ? inst.courses_offered.split(',').map(c => c.trim()) : ['General Academics'])).map((c, i) => (
                       <span key={i} className="inline-block bg-slate-100 text-slate-700 text-[11px] font-semibold px-2 py-0.5 rounded-md mr-1 mb-1">
                         {c}
                       </span>

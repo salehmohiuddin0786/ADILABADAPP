@@ -23,7 +23,8 @@ import {
   Tag,
   LayoutGrid,
   List,
-  RefreshCw
+  RefreshCw,
+  Star
 } from 'lucide-react';
 import AdminLayout from '../../../src/components/layout/AdminLayout';
 import { apiFetch } from '../../../src/utils/api';
@@ -326,8 +327,9 @@ export default function AdminAdvertisementsPage() {
                     </div>
                     <div className="absolute top-3 right-3 flex items-center gap-1.5">
                       {ad.is_featured === 1 && (
-                        <span className="px-2 py-0.5 rounded-full bg-amber-950/90 text-amber-300 border border-amber-700 text-[10px] font-bold">
-                          ★ Featured
+                        <span className="px-2 py-0.5 rounded-full bg-amber-950/90 text-amber-300 border border-amber-700 text-[10px] font-bold inline-flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-current" />
+                          <span>Featured</span>
                         </span>
                       )}
                       <span
@@ -625,8 +627,9 @@ export default function AdminAdvertisementsPage() {
                       {inspectingAd.status}
                     </span>
                     {inspectingAd.is_featured === 1 && (
-                      <span className="px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800 text-[10px] font-bold">
-                        ★ Featured Ad
+                      <span className="px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800 text-[10px] font-bold inline-flex items-center gap-1">
+                        <Star className="w-3 h-3 fill-current" />
+                        <span>Featured Ad</span>
                       </span>
                     )}
                   </div>

@@ -1,50 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { Building, MapPin, IndianRupee, Phone, CheckCircle2 } from 'lucide-react';
 import PublicLayout from '../../src/panels/public-website/PublicLayout';
+import { apiFetch } from '../../src/utils/api';
 
 export default function PropertiesPage() {
-  const [properties] = useState([
-    {
-      id: 1,
-      title: 'Spacious 2 BHK Independent House with Car Parking',
-      type: 'Independent House',
-      rent: 9500,
-      deposit: 20000,
-      bedrooms: 2,
-      bathrooms: 2,
-      area: '1,200 sqft',
-      location: 'Subhash Nagar, Adilabad',
-      phone: '9848022334',
-      image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600'
-    },
-    {
-      id: 2,
-      title: 'Prime Commercial Ground Floor Shop on Main Road',
-      type: 'Commercial Shop',
-      rent: 22000,
-      deposit: 60000,
-      bedrooms: 0,
-      bathrooms: 1,
-      area: '450 sqft',
-      location: 'Cinema Road, Adilabad',
-      phone: '9440192834',
-      image: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?w=600'
-    },
-    {
-      id: 3,
-      title: '3 BHK Deluxe Flat in Gated Apartment Complex',
-      type: 'Apartment',
-      rent: 14000,
-      deposit: 30100,
-      bedrooms: 3,
-      bathrooms: 3,
-      area: '1,550 sqft',
-      location: 'Near Collectorate, Adilabad',
-      phone: '9876543210',
-      image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600'
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProperties() {
+      try {
+        const res = await apiFetch('/properties');
+        if (res && res.success && Array.isArray(res.data)) {
+          setProperties(res.data);
+        }
+      } catch (e) {
+        console.warn('Properties fetch error:', e);
+      } finally {
+        setLoading(false);
+      }
     }
-  ]);
+    loadProperties();
+  }, []);
 
   return (
     <PublicLayout>
@@ -69,12 +47,12 @@ export default function PropertiesPage() {
           {properties.map((p) => (
             <div key={p.id} className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm flex flex-col justify-between">
               <div className="h-48 bg-slate-100 overflow-hidden relative">
-                <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+                <img src={p.image_url || p.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600'} alt={p.title} className="w-full h-full object-cover" />
                 <span className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">
-                  {p.type}
+                  {p.property_type || p.type || 'Property'}
                 </span>
                 <span className="absolute bottom-3 right-3 bg-emerald-800 text-white text-xs font-black px-3 py-1 rounded-xl">
-                  ₹{p.rent.toLocaleString()}/month
+                  ₹{Number(p.monthly_rent || p.rent || 0).toLocaleString('en-IN')}/month
                 </span>
               </div>
               <div className="p-6 space-y-3">
@@ -84,12 +62,12 @@ export default function PropertiesPage() {
                   <span>{p.location}</span>
                 </div>
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between text-xs text-slate-600">
-                  <span>Size: <strong>{p.area}</strong></span>
-                  <span>Deposit: <strong>₹{p.deposit.toLocaleString()}</strong></span>
+                  <span>Size: <strong>{p.carpet_area_sqft ? `${Number(p.carpet_area_sqft).toLocaleString('en-IN')} sqft` : (p.area || '1,200 sqft')}</strong></span>
+                  <span>Deposit: <strong>₹{Number(p.deposit_amount || p.deposit || 0).toLocaleString('en-IN')}</strong></span>
                 </div>
                 <div className="pt-3 border-t border-slate-100">
                   <a
-                    href={`tel:${p.phone}`}
+                    href={`tel:${p.contact_phone || p.phone}`}
                     className="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs py-2 rounded-xl flex items-center justify-center space-x-1.5 transition-colors"
                   >
                     <Phone className="w-3.5 h-3.5" />

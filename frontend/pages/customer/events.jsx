@@ -44,19 +44,24 @@ export default function CustomerEventsPage() {
 
   useEffect(() => {
     // Also load any published events from submissionService
-    const subs = submissionService.getSubmissions({ module: 'events', status: 'PUBLISHED' });
-    if (subs && subs.length > 0) {
-      const extraEvents = subs.map((s) => ({
-        id: s.id,
-        title: s.title,
-        date: s.date || 'Upcoming 2026',
-        time: s.time || 'All Day',
-        venue: s.location || 'Adilabad Town',
-        organizer: s.submittedBy || 'Community Organizer',
-        badge: s.category || 'Event'
-      }));
-      setAvailableEvents((prev) => [...prev, ...extraEvents]);
-    }
+    (async () => {
+      try {
+        const res = await submissionService.getSubmissions({ module: 'events', status: 'PUBLISHED' });
+        const subs = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+        if (subs.length > 0) {
+          const extraEvents = subs.map((s) => ({
+            id: s.id,
+            title: s.title,
+            date: s.date || 'Upcoming 2026',
+            time: s.time || 'All Day',
+            venue: s.location || 'Adilabad Town',
+            organizer: s.submittedBy || 'Community Organizer',
+            badge: s.category || 'Event'
+          }));
+          setAvailableEvents((prev) => [...prev, ...extraEvents]);
+        }
+      } catch (e) {}
+    })();
   }, []);
 
   const handleRegister = (evt) => {

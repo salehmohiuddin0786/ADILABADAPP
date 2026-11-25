@@ -245,7 +245,7 @@ export default function AdminBuySellPage() {
                 onClick={() => setSearchQuery('')}
                 className="absolute right-3 top-3 text-slate-400 hover:text-white text-xs"
               >
-                ✕
+                <X className='w-5 h-5' />
               </button>
             )}
           </div>
@@ -664,7 +664,7 @@ export default function AdminBuySellPage() {
             <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between pb-3 border-b border-slate-800">
                 <h3 className="text-base font-black text-white">Add Buy & Sell Marketplace Item</h3>
-                <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white">✕</button>
+                <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white"><X className='w-5 h-5' /></button>
               </div>
 
               <form onSubmit={handleCreate} className="space-y-3.5 text-xs">

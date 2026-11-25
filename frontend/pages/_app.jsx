@@ -1,13 +1,43 @@
 import React, { useEffect } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import '../styles/globals.css';
 import { AuthProvider } from '../src/context/AuthContext';
 import { ToastProvider } from '../src/context/ToastContext';
 import { LanguageProvider } from '../src/shared/contexts/LanguageContext';
 import InstallPwaPrompt from '../src/components/common/InstallPwaPrompt';
+import RouteProgressBar from '../src/components/common/RouteProgressBar';
 
 export default function App({ Component, pageProps }) {
+  const router = useRouter();
   const getLayout = Component.getLayout || ((page) => page);
+
+  useEffect(() => {
+    const scrollToTop = () => {
+      if (typeof window === 'undefined') return;
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      } catch (e) {
+        window.scrollTo(0, 0);
+      }
+      if (document.documentElement) document.documentElement.scrollTop = 0;
+      if (document.body) document.body.scrollTop = 0;
+      const mainEl = document.querySelector('main');
+      if (mainEl && mainEl.scrollTop > 0) mainEl.scrollTop = 0;
+    };
+
+    const handleRouteDone = (url, { shallow }) => {
+      if (!shallow) {
+        scrollToTop();
+        requestAnimationFrame(scrollToTop);
+        setTimeout(scrollToTop, 60);
+      }
+    };
+    router.events.on('routeChangeComplete', handleRouteDone);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteDone);
+    };
+  }, [router]);
 
   useEffect(() => {
     // Register Service Worker for PWA
@@ -34,6 +64,7 @@ export default function App({ Component, pageProps }) {
         <link rel="icon" href="/favicon.svg" />
       </Head>
       <LanguageProvider>
+        <RouteProgressBar />
         <ToastProvider>
           <AuthProvider>
             {getLayout(<Component {...pageProps} />)}

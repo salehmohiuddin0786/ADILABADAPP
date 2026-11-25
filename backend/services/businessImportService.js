@@ -1,4 +1,9 @@
-const xlsx = require('xlsx');
+let xlsx;
+try {
+  xlsx = require('xlsx');
+} catch (e) {
+  xlsx = null;
+}
 const slugify = require('slugify');
 const { query, pool } = require('../config/db');
 
@@ -207,7 +212,7 @@ async function getLookupData() {
  */
 async function getExistingBusinesses() {
   return await query(`
-    SELECT id, name, slug, phone, alternate_phone, address, locality, city, district
+    SELECT id, name, slug, phone, address
     FROM businesses
   `);
 }
@@ -589,47 +594,25 @@ async function executeBulkImport({ records, duplicateStrategy = 'skip', fileName
                 `UPDATE businesses SET
                   name = COALESCE(?, name),
                   category_id = COALESCE(?, category_id),
-                  subcategory = COALESCE(?, subcategory),
                   location_id = COALESCE(?, location_id),
                   address = COALESCE(?, address),
-                  locality = COALESCE(?, locality),
-                  city = COALESCE(?, city),
-                  district = COALESCE(?, district),
-                  state = COALESCE(?, state),
-                  pincode = COALESCE(?, pincode),
-                  latitude = COALESCE(?, latitude),
-                  longitude = COALESCE(?, longitude),
-                  maps_url = COALESCE(?, maps_url),
                   phone = COALESCE(?, phone),
-                  alternate_phone = COALESCE(?, alternate_phone),
                   email = COALESCE(?, email),
                   website = COALESCE(?, website),
                   description = COALESCE(?, description),
                   logo_url = COALESCE(?, logo_url),
-                  status = COALESCE(?, status),
                   is_active = ?
                  WHERE id = ?`,
                 [
                   bData.name,
                   bData.category_id,
-                  bData.subcategory,
                   bData.location_id,
-                  bData.address,
-                  bData.locality,
-                  bData.city,
-                  bData.district,
-                  bData.state,
-                  bData.pincode,
-                  bData.latitude,
-                  bData.longitude,
-                  bData.maps_url,
+                  [bData.address, bData.locality, bData.city, bData.district, bData.state, bData.pincode].filter(Boolean).join(', ') || null,
                   bData.phone,
-                  bData.alternate_phone,
                   bData.email,
                   bData.website,
                   bData.description,
                   bData.logo_url,
-                  bData.status,
                   bData.is_active,
                   dupCheck.matchedId
                 ]
@@ -643,39 +626,27 @@ async function executeBulkImport({ records, duplicateStrategy = 'skip', fileName
           // Insert new business
           const bData = validated.data;
           const slug = await generateUniqueSlug(bData.name, connection);
+          const fullAddress = [bData.address, bData.locality, bData.city, bData.district, bData.state, bData.pincode].filter(Boolean).join(', ') || null;
 
           await connection.query(
             `INSERT INTO businesses (
-              name, slug, category_id, subcategory, location_id,
-              address, locality, city, district, state, pincode,
-              latitude, longitude, maps_url,
-              phone, alternate_phone, email, website,
+              name, slug, category_id, location_id,
+              address, phone, email, website,
               description, logo_url, rating, total_reviews,
-              is_featured, is_active, status, display_order
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 4.8, 0, 0, ?, ?, 0)`,
+              is_featured, is_active, display_order
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 4.8, 0, 0, ?, 0)`,
             [
               bData.name,
               slug,
               bData.category_id,
-              bData.subcategory,
               bData.location_id,
-              bData.address,
-              bData.locality,
-              bData.city,
-              bData.district,
-              bData.state,
-              bData.pincode,
-              bData.latitude,
-              bData.longitude,
-              bData.maps_url,
+              fullAddress,
               bData.phone,
-              bData.alternate_phone,
               bData.email,
               bData.website,
               bData.description,
               bData.logo_url,
-              bData.is_active,
-              bData.status
+              bData.is_active
             ]
           );
 

@@ -18,6 +18,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { submissionService } from '../../shared/services/submissionService';
+import { staggerContainer, statWidgetVariants } from '../../shared/animations/motionPresets';
 
 export default function OwnerDashboard() {
   const { user } = useAuth();
@@ -109,51 +110,64 @@ export default function OwnerDashboard() {
       </div>
 
       {/* KPI Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase">Listed Items</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center">
-              <Layers className="w-4 h-4" />
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={staggerContainer(0.06, 0.05)}
+        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+        <motion.div variants={statWidgetVariants} custom={0} whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm h-full hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 uppercase">Listed Items</span>
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                <Layers className="w-4 h-4" />
+              </div>
             </div>
+            <p className="text-2xl font-black text-slate-900 mt-2">{totalRentals}</p>
+            <span className="text-[11px] text-emerald-600 font-semibold mt-1 block">Active on Marketplace</span>
           </div>
-          <p className="text-2xl font-black text-slate-900 mt-2">{totalRentals}</p>
-          <span className="text-[11px] text-emerald-600 font-semibold mt-1 block">Active on Marketplace</span>
-        </div>
+        </motion.div>
 
-        <Link href="/owner/rentals" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-amber-300 transition block">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase">Pending Approvals</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-              <Inbox className="w-4 h-4" />
+        <motion.div variants={statWidgetVariants} custom={1} whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+          <Link href="/owner/rentals" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-amber-300 hover:shadow-md transition block h-full">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 uppercase">Pending Approvals</span>
+              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                <Inbox className="w-4 h-4" />
+              </div>
             </div>
-          </div>
-          <p className="text-2xl font-black text-slate-900 mt-2">{subCounts.pending}</p>
-          <span className="text-[11px] text-amber-600 font-semibold mt-1 block">In Super Admin Queue →</span>
-        </Link>
+            <p className="text-2xl font-black text-slate-900 mt-2">{subCounts.pending}</p>
+            <span className="text-[11px] text-amber-600 font-semibold mt-1 block">In Super Admin Queue →</span>
+          </Link>
+        </motion.div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase">Active Rentals</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Clock className="w-4 h-4" />
+        <motion.div variants={statWidgetVariants} custom={2} whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm h-full hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 uppercase">Active Rentals</span>
+              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
+                <Clock className="w-4 h-4" />
+              </div>
             </div>
+            <p className="text-2xl font-black text-slate-900 mt-2">4</p>
+            <span className="text-[11px] text-blue-600 font-semibold mt-1 block">With Customers</span>
           </div>
-          <p className="text-2xl font-black text-slate-900 mt-2">4</p>
-          <span className="text-[11px] text-blue-600 font-semibold mt-1 block">With Customers</span>
-        </div>
+        </motion.div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase">Security Deposits</span>
-            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4" />
+        <motion.div variants={statWidgetVariants} custom={3} whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm h-full hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 uppercase">Security Deposits</span>
+              <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center">
+                <TrendingUp className="w-4 h-4" />
+              </div>
             </div>
+            <p className="text-2xl font-black text-slate-900 mt-2">₹32,000</p>
+            <span className="text-[11px] text-purple-600 font-semibold mt-1 block">Held Safe Offline</span>
           </div>
-          <p className="text-2xl font-black text-slate-900 mt-2">₹32,000</p>
-          <span className="text-[11px] text-purple-600 font-semibold mt-1 block">Held Safe Offline</span>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Incoming Rental Proposals Queue */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">

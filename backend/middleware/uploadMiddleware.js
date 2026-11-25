@@ -21,15 +21,16 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
-  const allowedExts = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg'];
+  // SVG removed to prevent Stored XSS attacks via embedded scripts
+  const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  const allowedExts = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
 
   const ext = path.extname(file.originalname).toLowerCase();
 
   if (allowedMimes.includes(file.mimetype) && allowedExts.includes(ext)) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file format. Only JPEG, PNG, WEBP, GIF, and SVG images are permitted.'), false);
+    cb(new Error('Invalid file format. Only JPEG, PNG, WEBP, and GIF images are permitted for security.'), false);
   }
 };
 

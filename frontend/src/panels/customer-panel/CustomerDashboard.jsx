@@ -21,6 +21,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../utils/api';
 import { submissionService } from '../../shared/services/submissionService';
+import { fadeInUp, staggerContainer, statWidgetVariants } from '../../shared/animations/motionPresets';
 
 export default function CustomerDashboard() {
   const { user } = useAuth();
@@ -34,22 +35,27 @@ export default function CustomerDashboard() {
     savedFavorites: 4
   });
 
-  const loadData = () => {
-    const all = submissionService.getSubmissions();
-    setMySubmissions(all);
+  const loadData = async () => {
+    try {
+      const res = await submissionService.getSubmissions();
+      const all = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
+      setMySubmissions(all);
 
-    const buySell = all.filter((s) => s.module === 'buy-sell');
-    const servs = all.filter((s) => s.module === 'services');
-    const jobs = all.filter((s) => s.module === 'jobs');
-    const rentals = all.filter((s) => s.module === 'rentals');
+      const buySell = all.filter((s) => s.module === 'buy-sell');
+      const servs = all.filter((s) => s.module === 'services');
+      const jobs = all.filter((s) => s.module === 'jobs');
+      const rentals = all.filter((s) => s.module === 'rentals');
 
-    setStats({
-      activeRentals: rentals.length > 0 ? rentals.length : 2,
-      buySellListings: buySell.length,
-      servicesCount: servs.length,
-      jobApplications: jobs.length > 0 ? jobs.length : 1,
-      savedFavorites: 4
-    });
+      setStats({
+        activeRentals: rentals.length > 0 ? rentals.length : 2,
+        buySellListings: buySell.length,
+        servicesCount: servs.length,
+        jobApplications: jobs.length > 0 ? jobs.length : 1,
+        savedFavorites: 4
+      });
+    } catch (e) {
+      setMySubmissions([]);
+    }
   };
 
   useEffect(() => {
@@ -147,62 +153,77 @@ export default function CustomerDashboard() {
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <Link href="/customer/rentals/active" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-emerald-500 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase">Rentals</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <Layers className="w-4 h-4" />
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={staggerContainer(0.06, 0.05)}
+        className="grid grid-cols-2 lg:grid-cols-5 gap-4"
+      >
+        <motion.div variants={statWidgetVariants} custom={0} whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+          <Link href="/customer/rentals/active" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-emerald-500 hover:shadow-md transition-all block h-full">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 uppercase">Rentals</span>
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                <Layers className="w-4 h-4" />
+              </div>
             </div>
-          </div>
-          <p className="text-2xl font-black text-slate-900 mt-2">{stats.activeRentals}</p>
-          <span className="text-[11px] text-emerald-600 font-semibold mt-1 block">Active Bookings</span>
-        </Link>
+            <p className="text-2xl font-black text-slate-900 mt-2">{stats.activeRentals}</p>
+            <span className="text-[11px] text-emerald-600 font-semibold mt-1 block">Active Bookings</span>
+          </Link>
+        </motion.div>
 
-        <Link href="/customer/buy-sell" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-amber-500 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase">Sell Items</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
-              <Tag className="w-4 h-4" />
+        <motion.div variants={statWidgetVariants} custom={1} whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+          <Link href="/customer/buy-sell" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-amber-500 hover:shadow-md transition-all block h-full">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 uppercase">Sell Items</span>
+              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
+                <Tag className="w-4 h-4" />
+              </div>
             </div>
-          </div>
-          <p className="text-2xl font-black text-slate-900 mt-2">{stats.buySellListings}</p>
-          <span className="text-[11px] text-amber-600 font-semibold mt-1 block">My Listings</span>
-        </Link>
+            <p className="text-2xl font-black text-slate-900 mt-2">{stats.buySellListings}</p>
+            <span className="text-[11px] text-amber-600 font-semibold mt-1 block">My Listings</span>
+          </Link>
+        </motion.div>
 
-        <Link href="/customer/services" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-blue-500 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase">Services</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Wrench className="w-4 h-4" />
+        <motion.div variants={statWidgetVariants} custom={2} whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+          <Link href="/customer/services" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-blue-500 hover:shadow-md transition-all block h-full">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 uppercase">Services</span>
+              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
+                <Wrench className="w-4 h-4" />
+              </div>
             </div>
-          </div>
-          <p className="text-2xl font-black text-slate-900 mt-2">{stats.servicesCount}</p>
-          <span className="text-[11px] text-blue-600 font-semibold mt-1 block">Listings & Requests</span>
-        </Link>
+            <p className="text-2xl font-black text-slate-900 mt-2">{stats.servicesCount}</p>
+            <span className="text-[11px] text-blue-600 font-semibold mt-1 block">Listings & Requests</span>
+          </Link>
+        </motion.div>
 
-        <Link href="/customer/jobs" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-purple-500 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase">Jobs</span>
-            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center">
-              <Briefcase className="w-4 h-4" />
+        <motion.div variants={statWidgetVariants} custom={3} whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+          <Link href="/customer/jobs" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-purple-500 hover:shadow-md transition-all block h-full">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 uppercase">Jobs</span>
+              <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center">
+                <Briefcase className="w-4 h-4" />
+              </div>
             </div>
-          </div>
-          <p className="text-2xl font-black text-slate-900 mt-2">{stats.jobApplications}</p>
-          <span className="text-[11px] text-purple-600 font-semibold mt-1 block">Applications</span>
-        </Link>
+            <p className="text-2xl font-black text-slate-900 mt-2">{stats.jobApplications}</p>
+            <span className="text-[11px] text-purple-600 font-semibold mt-1 block">Applications</span>
+          </Link>
+        </motion.div>
 
-        <Link href="/customer/favorites" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-rose-500 transition-all col-span-2 lg:col-span-1">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase">Saved</span>
-            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
-              <Heart className="w-4 h-4" />
+        <motion.div variants={statWidgetVariants} custom={4} whileHover={{ y: -4, transition: { duration: 0.2 } }} className="col-span-2 lg:col-span-1">
+          <Link href="/customer/favorites" className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-rose-500 hover:shadow-md transition-all block h-full">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 uppercase">Saved</span>
+              <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+                <Heart className="w-4 h-4" />
+              </div>
             </div>
-          </div>
-          <p className="text-2xl font-black text-slate-900 mt-2">{stats.savedFavorites}</p>
-          <span className="text-[11px] text-rose-600 font-semibold mt-1 block">Shortlisted</span>
-        </Link>
-      </div>
+            <p className="text-2xl font-black text-slate-900 mt-2">{stats.savedFavorites}</p>
+            <span className="text-[11px] text-rose-600 font-semibold mt-1 block">Shortlisted</span>
+          </Link>
+        </motion.div>
+      </motion.div>
 
       {/* Customer's Posted Items & Submissions across all modules */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">

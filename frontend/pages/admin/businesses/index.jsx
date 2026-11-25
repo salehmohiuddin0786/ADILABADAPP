@@ -12,17 +12,29 @@ export default function AdminBusinessesPage() {
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
   const [importModalOpen, setImportModalOpen] = useState(false);
 
-  const fetchBusinesses = async () => {
+  const fetchBusinesses = async (targetPage = page, targetLimit = limit) => {
     setLoading(true);
     try {
-      const q = search ? `?search=${encodeURIComponent(search)}` : '';
-      const res = await apiFetch(`/businesses/admin/list${q}`);
+      const params = new URLSearchParams();
+      params.set('page', String(targetPage));
+      params.set('limit', String(targetLimit));
+      if (search.trim()) params.set('search', search.trim());
+      const res = await apiFetch(`/businesses/admin/list?${params.toString()}`);
       if (res && res.success && Array.isArray(res.data)) {
         setBusinesses(res.data);
+        if (res.pagination) {
+          setPagination(res.pagination);
+        } else {
+          setPagination({ page: targetPage, limit: targetLimit, total: res.data.length, totalPages: 1 });
+        }
       } else if (res && Array.isArray(res)) {
         setBusinesses(res);
+        setPagination({ page: 1, limit: targetLimit, total: res.length, totalPages: 1 });
       } else {
         setBusinesses([]);
       }
@@ -35,8 +47,19 @@ export default function AdminBusinessesPage() {
   };
 
   useEffect(() => {
-    fetchBusinesses();
-  }, []);
+    fetchBusinesses(page, limit);
+    if (typeof window !== 'undefined') {
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      } catch (e) {
+        window.scrollTo(0, 0);
+      }
+      if (document.documentElement) document.documentElement.scrollTop = 0;
+      if (document.body) document.body.scrollTop = 0;
+      const mainEl = document.querySelector('main');
+      if (mainEl && mainEl.scrollTop > 0) mainEl.scrollTop = 0;
+    }
+  }, [page, limit]);
 
   const handleDelete = async (id, name) => {
     if (!confirm(`Permanently delete business "${name}"?`)) return;
@@ -61,7 +84,7 @@ export default function AdminBusinessesPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-6 rounded-3xl shadow-xl">
           <div>
             <h2 className="text-xl font-black text-white tracking-tight">
-              Businesses ({businesses.length})
+              Businesses ({pagination.total || businesses.length})
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
               Verified local retail shops, clinics, restaurants, and commercial institutions in Adilabad.
@@ -95,13 +118,21 @@ export default function AdminBusinessesPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && fetchBusinesses()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  setPage(1);
+                  fetchBusinesses(1, limit);
+                }
+              }}
               placeholder="Search business name, phone, locality, city..."
               className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <button
-            onClick={fetchBusinesses}
+            onClick={() => {
+              setPage(1);
+              fetchBusinesses(1, limit);
+            }}
             className="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-sm transition"
           >
             Search
@@ -166,13 +197,76 @@ export default function AdminBusinessesPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Footer */}
+          {pagination.total > 0 && (
+            <div className="px-6 py-4 bg-slate-950/60 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+              <div className="flex items-center gap-3">
+                <span>
+                  Showing{' '}
+                  <strong className="text-white">
+                    {(page - 1) * limit + 1}–{Math.min(page * limit, pagination.total)}
+                  </strong>{' '}
+                  of <strong className="text-white">{pagination.total}</strong> businesses
+                </span>
+                <select
+                  value={limit}
+                  onChange={(e) => {
+                    const nextLimit = Number(e.target.value);
+                    setLimit(nextLimit);
+                    setPage(1);
+                  }}
+                  className="bg-slate-900 border border-slate-700 text-slate-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500"
+                >
+                  <option value={20}>20 / page</option>
+                  <option value={50}>50 / page</option>
+                  <option value={100}>100 / page</option>
+                </select>
+              </div>
+
+              {pagination.totalPages > 1 && (
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <button
+                    disabled={page <= 1 || loading}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold disabled:opacity-40 transition"
+                  >
+                    ← Prev
+                  </button>
+
+                  {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pNum) => (
+                    <button
+                      key={pNum}
+                      disabled={loading}
+                      onClick={() => setPage(pNum)}
+                      className={`w-8 h-8 rounded-lg font-bold transition ${
+                        page === pNum
+                          ? 'bg-brand-600 text-white shadow-sm'
+                          : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                      }`}
+                    >
+                      {pNum}
+                    </button>
+                  ))}
+
+                  <button
+                    disabled={page >= pagination.totalPages || loading}
+                    onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold disabled:opacity-40 transition"
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Bulk Import Modal */}
         <BusinessBulkImportModal
           isOpen={importModalOpen}
           onClose={() => setImportModalOpen(false)}
-          onImportSuccess={fetchBusinesses}
+          onImportSuccess={() => fetchBusinesses(1, limit)}
         />
       </div>
     </AdminLayout>

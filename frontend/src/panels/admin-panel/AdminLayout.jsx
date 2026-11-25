@@ -31,16 +31,26 @@ import {
   Building2,
   Briefcase,
   Tag,
-  Truck
+  Truck,
+  User,
+  Shield
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { submissionService } from '../../shared/services/submissionService';
+import PageTransition from '../../components/common/PageTransition';
 
 export default function AdminLayout({ children, title = 'Super Admin Command Center' }) {
   const router = useRouter();
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, loading, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
+
+  // Authentication & Authorization Guard
+  useEffect(() => {
+    if (!loading && (!user || !isAdmin)) {
+      router.replace(`/admin/login?redirect=${encodeURIComponent(router.asPath)}`);
+    }
+  }, [user, isAdmin, loading, router]);
 
   const updatePendingCount = async () => {
     try {
@@ -60,17 +70,6 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
     }
   }, []);
 
-  // Seamless fallback to Super Admin root session if viewing in preview/demo mode
-  const activeAdmin = (user && isAdmin) ? user : {
-    id: 1,
-    name: 'Adilabad Super Admin',
-    email: 'admin@adilabadapp.com',
-    role: 'SUPER_ADMIN',
-    primary_role: 'SUPER_ADMIN',
-    roles: ['SUPER_ADMIN', 'ADMIN'],
-    is_demo: !user || !isAdmin
-  };
-
   const navSections = [
     {
       heading: 'COMMAND & CONTROL',
@@ -81,7 +80,8 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
           href: '/admin/moderation',
           icon: Inbox,
           badge: pendingCount > 0 ? `${pendingCount} Pending` : null
-        }
+        },
+        { name: 'Admin Profile', href: '/admin/profile', icon: User }
       ]
     },
     {
@@ -124,14 +124,37 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
     return router.pathname === href || router.pathname.startsWith(`${href}/`);
   };
 
+  // If loading authentication or user is not authorized, show protective administrative skeleton
+  if (loading || !user || !isAdmin) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
+        <div className="max-w-md w-full text-center space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mx-auto text-brand-400 animate-pulse">
+            <Shield className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-bold tracking-tight text-white">Verifying Administrative Authority</h2>
+          <p className="text-sm text-slate-400">
+            Validating encrypted session and access permissions for Adilabad App Super Admin Center...
+          </p>
+          <div className="w-48 h-1.5 bg-slate-800 rounded-full mx-auto overflow-hidden">
+            <div className="w-1/2 h-full bg-brand-500 rounded-full animate-indeterminate" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const activeAdmin = user;
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col lg:flex-row antialiased">
-      {/* Mobile Header Bar */}
-      <div className="lg:hidden bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+      {/* Mobile Header Bar with Safe Notification Clearance */}
+      <div className="lg:hidden bg-slate-900 border-b border-slate-800 px-4 py-3 safe-top-header flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center space-x-2.5">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="p-1.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white"
+            aria-label="Toggle navigation menu"
           >
             {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -139,20 +162,31 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
             <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white font-black text-xs shadow-md">
               A
             </div>
-            <span className="font-black text-base tracking-tight text-white">
+            <span className="font-black text-sm tracking-tight text-white">
               Super<span className="text-brand-400">Admin</span>
             </span>
           </div>
         </div>
-        <Link
-          href="/"
-          className="text-xs font-bold text-brand-400 bg-brand-950/60 border border-brand-800/80 px-2.5 py-1 rounded-full"
-        >
-          Website &rarr;
-        </Link>
+
+        <div className="flex items-center space-x-2">
+          <Link
+            href="/admin/profile"
+            className="p-1.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white"
+            title="Admin Profile"
+          >
+            <User className="w-5 h-5" />
+          </Link>
+          <button
+            onClick={() => logout('/admin/login')}
+            className="p-1.5 rounded-xl bg-rose-950/60 text-rose-400 hover:text-rose-300 border border-rose-900/50"
+            title="Sign Out"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Backdrop */}
+      {/* Backdrop for Mobile */}
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
@@ -160,53 +194,54 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
         />
       )}
 
-      {/* Super Admin Executive Sidebar */}
+      {/* Persistent Sidebar Navigation */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-72 bg-slate-900/95 backdrop-blur-2xl border-r border-slate-800/90 text-slate-300 flex flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-950 border-r border-slate-800/80 flex flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand Header */}
         <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">
           <Link href="/admin" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 via-brand-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
-              <ShieldCheck className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-500 flex items-center justify-center text-white font-black text-base shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+              A
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center space-x-1.5">
                 <span className="font-black text-base tracking-tight text-white">Adilabad</span>
-                <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-black uppercase tracking-wider">
-                  Root
+                <span className="text-[10px] font-black uppercase px-1.5 py-0.5 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30">
+                  ROOT
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                Super Admin Center
-              </p>
+              <p className="text-[11px] text-slate-400 font-medium">Command & Control</p>
             </div>
           </Link>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-slate-400 hover:text-white"
-          >
-            <X className="w-5 h-5" />
-          </button>
         </div>
 
-        {/* Super Admin Identity Badge */}
-        <div className="p-3.5 mx-3 my-3 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center space-x-3 shadow-inner">
+        {/* Authenticated Admin Identity Badge -> Links to Admin Profile */}
+        <Link
+          href="/admin/profile"
+          onClick={() => setSidebarOpen(false)}
+          className="mx-3 mt-3 p-3 rounded-2xl bg-slate-900/90 border border-slate-800/80 hover:border-brand-500/50 flex items-center space-x-3 transition group"
+        >
           <div className="relative">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-600 flex items-center justify-center text-white font-black text-sm shadow">
-              {activeAdmin.name ? activeAdmin.name.charAt(0).toUpperCase() : 'A'}
+            <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-white font-black text-sm overflow-hidden group-hover:border-brand-400 transition">
+              {activeAdmin.avatar_url ? (
+                <img src={activeAdmin.avatar_url} alt={activeAdmin.name} className="w-full h-full object-cover" />
+              ) : (
+                activeAdmin.name ? activeAdmin.name.charAt(0).toUpperCase() : 'A'
+              )}
             </div>
             <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-950 ring-1 ring-emerald-400/50" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-white truncate">{activeAdmin.name}</p>
+            <p className="text-xs font-bold text-white truncate group-hover:text-brand-300 transition">{activeAdmin.name}</p>
             <span className="inline-flex items-center text-[10px] text-amber-400 font-mono font-bold tracking-tight">
-              SUPER_ADMIN • Tier 1
+              {activeAdmin.role?.toUpperCase()} • Profile
             </span>
           </div>
-        </div>
+          <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-brand-400 transition" />
+        </Link>
 
         {/* Navigation Sections */}
         <div className="flex-1 overflow-y-auto px-3 py-2 space-y-5 custom-scrollbar">
@@ -216,7 +251,7 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
                 {sec.heading}
               </span>
               <div className="space-y-0.5">
-                {navSections.items ? null : sec.items.map((item) => {
+                {sec.items.map((item) => {
                   const Icon = item.icon;
                   const active = isActive(item.href);
                   return (
@@ -266,7 +301,7 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
           </div>
 
           <button
-            onClick={logout}
+            onClick={() => logout('/admin/login')}
             className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-xl text-rose-400 hover:bg-rose-950/40 text-xs font-bold transition"
           >
             <LogOut className="w-3.5 h-3.5" />
@@ -296,6 +331,13 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
 
           <div className="flex items-center space-x-3">
             <Link
+              href="/admin/profile"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs px-3 py-2 rounded-xl border border-slate-700 transition flex items-center gap-1.5"
+            >
+              <User className="w-3.5 h-3.5 text-brand-400" />
+              <span>Admin Profile</span>
+            </Link>
+            <Link
               href="/admin/advertisements/create"
               className="bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-lg shadow-brand-600/20 transition flex items-center gap-1.5"
             >
@@ -314,23 +356,10 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
 
         {/* Content Container */}
         <div className="p-4 sm:p-6 lg:p-8 flex-1 max-w-[1600px] w-full mx-auto space-y-6">
-          {activeAdmin.is_demo && (
-            <div className="p-3.5 px-4 rounded-2xl bg-brand-950/60 border border-brand-500/40 text-brand-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-              <span className="font-semibold flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-brand-400 shrink-0" />
-                Viewing Super Admin Center in <strong>Full Administrative Preview Mode</strong>.
-              </span>
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/admin/login"
-                  className="px-3 py-1.5 rounded-lg bg-brand-500 hover:bg-brand-400 text-slate-950 font-black transition shadow-sm shrink-0"
-                >
-                  Authenticate Admin Account
-                </Link>
-              </div>
-            </div>
-          )}
-          {children}
+          {/* Live Page Content */}
+          <PageTransition pageKey={router.asPath}>
+            {children}
+          </PageTransition>
         </div>
       </main>
 
@@ -377,13 +406,13 @@ export default function AdminLayout({ children, title = 'Super Admin Command Cen
           </Link>
 
           <Link
-            href="/admin/users"
+            href="/admin/profile"
             className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-bold transition ${
-              router.pathname === '/admin/users' ? 'text-brand-400 font-black' : 'text-slate-400 hover:text-white'
+              router.pathname === '/admin/profile' ? 'text-brand-400 font-black' : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Users className="w-5 h-5 mb-0.5" />
-            <span>Users</span>
+            <User className="w-5 h-5 mb-0.5" />
+            <span>Profile</span>
           </Link>
 
           <button

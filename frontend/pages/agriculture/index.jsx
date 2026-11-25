@@ -1,58 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { Sprout, MapPin, Phone, Truck, Search, ShoppingBag, ShieldCheck } from 'lucide-react';
 import PublicLayout from '../../src/panels/public-website/PublicLayout';
+import { apiFetch } from '../../src/utils/api';
 
 export default function AgricultureMarketplacePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [agriListings, setAgriListings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const agriListings = [
-    {
-      id: 1,
-      title: 'Certified BT Cotton Seeds & Bio-Fertilizers',
-      vendor: 'Kisan Seva Kendra & Agri Inputs',
-      category: 'Seeds & Fertilizers',
-      location: 'Market Yard Road, Adilabad',
-      price: '₹850 / packet',
-      phone: '+91 94401 88990',
-      description: 'Government certified drought-tolerant BT cotton seeds, organic neem cake, and bio-nutrients for Telangana black soils.',
-      image: 'https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=800'
-    },
-    {
-      id: 2,
-      title: 'Solar Agricultural Water Pump Set (5HP & 7.5HP)',
-      vendor: 'Telangana Solar Energy Hub',
-      category: 'Solar & Irrigation',
-      location: 'Utnoor Road, Adilabad',
-      price: '₹1,45,000 (Subsidy Available)',
-      phone: '+91 98480 11223',
-      description: 'MNRE approved solar submersible pump with 5-year warranty and free installation across Adilabad district.',
-      image: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800'
-    },
-    {
-      id: 3,
-      title: 'Multi-Crop Harvester & Thresher on Daily Rent',
-      vendor: 'Adilabad Agro Machine Cooperative',
-      category: 'Farm Machinery',
-      location: 'Bela Road, Adilabad',
-      price: '₹2,200 / hour',
-      phone: '+91 94401 77665',
-      description: 'High-speed soybean, wheat, and chana crop harvester with operator and diesel inclusive package.',
-      image: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=800'
+  useEffect(() => {
+    async function loadAgri() {
+      try {
+        const res = await apiFetch('/agriculture');
+        if (res && res.success && Array.isArray(res.data)) {
+          setAgriListings(res.data);
+        }
+      } catch (e) {
+        console.warn('Agri fetch error:', e);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+    loadAgri();
+  }, []);
 
   const filtered = agriListings.filter((item) => {
-    if (selectedCategory !== 'all' && !item.category.toLowerCase().includes(selectedCategory.toLowerCase())) return false;
+    const cat = item.listing_type || item.category || '';
+    if (selectedCategory !== 'all' && !cat.toLowerCase().includes(selectedCategory.toLowerCase())) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      return (
-        item.title.toLowerCase().includes(q) ||
-        item.vendor.toLowerCase().includes(q) ||
-        item.location.toLowerCase().includes(q)
-      );
+      const title = (item.title || '').toLowerCase();
+      const vendor = (item.vendor_name || item.vendor || '').toLowerCase();
+      const loc = (item.location || '').toLowerCase();
+      return title.includes(q) || vendor.includes(q) || loc.includes(q);
     }
     return true;
   });
@@ -116,12 +99,12 @@ export default function AgricultureMarketplacePage() {
               className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition"
             >
               <div className="h-48 bg-slate-100 relative">
-                <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                <img src={item.image_url || item.image || 'https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=800'} alt={item.title} className="w-full h-full object-cover" />
                 <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
-                  {item.category}
+                  {item.listing_type || item.category || 'Agricultural'}
                 </span>
                 <span className="absolute bottom-3 right-3 bg-emerald-800 text-white font-black text-xs px-3 py-1 rounded-xl shadow">
-                  {item.price}
+                  {item.price || (item.rate_or_price ? `₹${Number(item.rate_or_price).toLocaleString('en-IN')} ${item.rate_unit || ''}` : 'Contact for Price')}
                 </span>
               </div>
 
@@ -130,7 +113,7 @@ export default function AgricultureMarketplacePage() {
                   <h3 className="font-extrabold text-slate-900 text-base leading-snug">{item.title}</h3>
                   <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
                     <Sprout className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="font-bold text-slate-700">{item.vendor}</span>
+                    <span className="font-bold text-slate-700">{item.vendor_name || item.vendor}</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
                     <MapPin className="w-3.5 h-3.5 text-amber-500" />
@@ -141,11 +124,11 @@ export default function AgricultureMarketplacePage() {
 
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                   <a
-                    href={`tel:${item.phone}`}
+                    href={`tel:${item.contact_phone || item.phone}`}
                     className="text-xs font-bold text-slate-700 hover:text-emerald-700 flex items-center gap-1"
                   >
                     <Phone className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>{item.phone}</span>
+                    <span>{item.contact_phone || item.phone}</span>
                   </a>
                   <Link
                     href={`/contact?subject=Agri Enquiry: ${encodeURIComponent(item.title)}`}

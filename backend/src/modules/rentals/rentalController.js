@@ -444,9 +444,27 @@ async function updateBookingStatus(req, res) {
   }
 }
 
+// GET /api/v1/rentals/categories
+async function getCategories(req, res) {
+  try {
+    const categories = await query(
+      'SELECT id, name, slug, icon, display_order FROM rental_categories ORDER BY display_order ASC, name ASC'
+    );
+    res.json({
+      success: true,
+      count: categories.length,
+      data: categories
+    });
+  } catch (error) {
+    console.error('getCategories Error:', error);
+    res.status(500).json({ success: false, message: 'Failed to retrieve rental categories.' });
+  }
+}
+
 module.exports = {
   getRentals,
   getRentalBySlug,
+  getCategories,
   createRentalListing,
   requestRentalBooking,
   updateBookingStatus

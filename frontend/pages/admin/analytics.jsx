@@ -13,7 +13,10 @@ import {
   Tag
 } from 'lucide-react';
 import AdminLayout from '../../src/components/layout/AdminLayout';
+import { motion } from 'framer-motion';
 import { apiFetch } from '../../src/utils/api';
+import { StatSkeleton } from '../../src/components/common/SkeletonLoader';
+import { fadeInUp, staggerContainer, statWidgetVariants } from '../../src/shared/animations/motionPresets';
 
 export default function AdminAnalyticsPage() {
   const [stats, setStats] = useState(null);
@@ -31,7 +34,11 @@ export default function AdminAnalyticsPage() {
   if (loading || !stats) {
     return (
       <AdminLayout title="Analytics & Reports">
-        <div className="py-20 text-center">Loading analytics data...</div>
+        <div className="space-y-6 max-w-7xl mx-auto py-6">
+          <div className="h-6 bg-slate-800 rounded w-48 animate-pulse" />
+          <StatSkeleton count={4} />
+          <div className="h-64 bg-slate-900/80 rounded-3xl border border-slate-800 animate-pulse" />
+        </div>
       </AdminLayout>
     );
   }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Tag, Store, Calendar, X, ArrowRight } from 'lucide-react';
 import MainLayout from '../src/components/layout/MainLayout';
 import AdvertisementCard from '../src/components/cards/AdvertisementCard';
@@ -8,6 +9,7 @@ import BusinessCard from '../src/components/cards/BusinessCard';
 import EventCard from '../src/components/cards/EventCard';
 import CategoryCard from '../src/components/cards/CategoryCard';
 import EmptyState from '../src/components/common/EmptyState';
+import { CardSkeleton } from '../src/components/common/SkeletonLoader';
 import { apiFetch } from '../src/utils/api';
 
 export default function SearchPage() {
@@ -157,9 +159,14 @@ export default function SearchPage() {
 
           {/* Search Results Display */}
           {loading ? (
-            <div className="py-16 text-center flex flex-col items-center gap-3">
-              <div className="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm font-semibold text-slate-500">Searching all local records in Adilabad...</p>
+            <div className="space-y-4">
+              <div className="py-4 text-center flex items-center justify-center gap-3">
+                <div className="w-6 h-6 border-3 border-brand-500 border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm font-semibold text-slate-500">Searching all local records in Adilabad...</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <CardSkeleton count={6} />
+              </div>
             </div>
           ) : results ? (
             <div>

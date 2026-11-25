@@ -16,12 +16,19 @@ export default function BusinessesPage({ initialData, categories = [], locations
   const [selectedCategory, setSelectedCategory] = useState(initialQuery.category || '');
   const [selectedLocation, setSelectedLocation] = useState(initialQuery.location || '');
 
-  const applyFilters = async () => {
+  const applyFilters = async (overrides = {}) => {
     setLoading(true);
+    const nextSearch = overrides.search !== undefined ? overrides.search : search;
+    const nextCategory = overrides.category !== undefined ? overrides.category : selectedCategory;
+    const nextLocation = overrides.location !== undefined ? overrides.location : selectedLocation;
+    const nextPage = overrides.page !== undefined ? overrides.page : 1;
+
     const queryParams = new URLSearchParams();
-    if (search.trim()) queryParams.set('search', search.trim());
-    if (selectedCategory) queryParams.set('category', selectedCategory);
-    if (selectedLocation) queryParams.set('location', selectedLocation);
+    queryParams.set('limit', '24');
+    if (nextPage > 1) queryParams.set('page', String(nextPage));
+    if (nextSearch.trim()) queryParams.set('search', nextSearch.trim());
+    if (nextCategory) queryParams.set('category', nextCategory);
+    if (nextLocation) queryParams.set('location', nextLocation);
     if (router.query.district) queryParams.set('district', router.query.district);
     if (router.query.city) queryParams.set('city', router.query.city);
 
@@ -31,6 +38,15 @@ export default function BusinessesPage({ initialData, categories = [], locations
       const res = await apiFetch(`/businesses?${queryParams.toString()}`);
       if (res.success) {
         setData(res);
+        if (overrides.page !== undefined && typeof window !== 'undefined') {
+          try {
+            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+          } catch (e) {
+            window.scrollTo(0, 0);
+          }
+          if (document.documentElement) document.documentElement.scrollTop = 0;
+          if (document.body) document.body.scrollTop = 0;
+        }
       }
     } catch (err) {
       console.error(err);
@@ -45,7 +61,7 @@ export default function BusinessesPage({ initialData, categories = [], locations
     setSelectedLocation('');
     router.push('/businesses', undefined, { shallow: true });
     setLoading(true);
-    apiFetch('/businesses')
+    apiFetch('/businesses?limit=24')
       .then((res) => setData(res))
       .finally(() => setLoading(false));
   };
@@ -91,7 +107,7 @@ export default function BusinessesPage({ initialData, categories = [], locations
             <button
               onClick={() => {
                 setSelectedCategory('');
-                applyFilters();
+                applyFilters({ category: '', page: 1 });
               }}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 ${
                 !selectedCategory
@@ -108,7 +124,7 @@ export default function BusinessesPage({ initialData, categories = [], locations
                   key={c.id}
                   onClick={() => {
                     setSelectedCategory(c.slug);
-                    applyFilters();
+                    applyFilters({ category: c.slug, page: 1 });
                   }}
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 ${
                     isSelected
@@ -175,7 +191,7 @@ export default function BusinessesPage({ initialData, categories = [], locations
 
               <div className="md:col-span-2 flex items-center gap-2">
                 <button
-                  onClick={applyFilters}
+                  onClick={() => applyFilters({ page: 1 })}
                   className="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-sm transition hover:scale-[1.02] active:scale-[0.98]"
                 >
                   {loading ? 'Searching...' : 'Search'}
@@ -205,11 +221,49 @@ export default function BusinessesPage({ initialData, categories = [], locations
               ))}
             </div>
           ) : businesses.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {(Array.isArray(businesses) ? businesses : []).map((biz) => (
-                <BusinessCard key={biz.id} business={biz} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {(Array.isArray(businesses) ? businesses : []).map((biz) => (
+                  <BusinessCard key={biz.id} business={biz} />
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              {pagination.totalPages > 1 && (
+                <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
+                  <button
+                    disabled={(pagination.page || 1) <= 1 || loading}
+                    onClick={() => applyFilters({ page: (pagination.page || 1) - 1 })}
+                    className="px-4 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 transition shadow-sm"
+                  >
+                    ← Previous
+                  </button>
+
+                  {Array.from({ length: pagination.totalPages }, (_, idx) => idx + 1).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      disabled={loading}
+                      onClick={() => applyFilters({ page: pageNum })}
+                      className={`w-9 h-9 rounded-xl text-xs font-bold transition shadow-sm ${
+                        (pagination.page || 1) === pageNum
+                          ? 'bg-brand-600 text-white shadow-brand-600/30'
+                          : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+
+                  <button
+                    disabled={(pagination.page || 1) >= pagination.totalPages || loading}
+                    onClick={() => applyFilters({ page: (pagination.page || 1) + 1 })}
+                    className="px-4 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 transition shadow-sm"
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="bg-white rounded-3xl p-8 border border-slate-200 text-center">
               <EmptyState
@@ -233,6 +287,8 @@ BusinessesPage.getLayout = function getLayout(page) {
 export async function getServerSideProps({ query }) {
   try {
     const params = new URLSearchParams();
+    params.set('limit', '24');
+    if (query.page) params.set('page', query.page);
     if (query.search) params.set('search', query.search);
     if (query.category) params.set('category', query.category);
     if (query.location) params.set('location', query.location);

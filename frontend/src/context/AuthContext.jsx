@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/router';
 import { apiFetch } from '../utils/api';
 import { useToast } from './ToastContext';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState([]);
@@ -31,10 +33,14 @@ export function AuthProvider({ children }) {
         } catch (e) {
           // ignore favorites error
         }
+      } else {
+        localStorage.removeItem('adilabad_token');
+        setUser(null);
       }
     } catch (error) {
       console.warn('Session expired or invalid token:', error.message);
       localStorage.removeItem('adilabad_token');
+      localStorage.removeItem('adilabad_mock_user');
       setUser(null);
     } finally {
       setLoading(false);
@@ -61,8 +67,9 @@ export function AuthProvider({ children }) {
       }
       return { success: false, message: res.message || 'Login failed' };
     } catch (error) {
-      addToast(error.message || 'Failed to login', 'error');
-      return { success: false, message: error.message };
+      const msg = error.message || 'Failed to login';
+      addToast(msg, 'error');
+      return { success: false, message: msg };
     }
   };
 
@@ -82,16 +89,101 @@ export function AuthProvider({ children }) {
       }
       return { success: false, message: res.message || 'Registration failed' };
     } catch (error) {
-      addToast(error.message || 'Failed to register', 'error');
-      return { success: false, message: error.message };
+      const msg = error.message || 'Failed to register';
+      addToast(msg, 'error');
+      return { success: false, message: msg };
     }
   };
 
-  const logout = () => {
+  const logout = async (customRedirect) => {
+    try {
+      // Invalidate on backend
+      await apiFetch('/auth/logout', { method: 'POST' }).catch(() => {});
+    } catch (e) {
+      // Proceed with client side cleanup regardless
+    }
+
     localStorage.removeItem('adilabad_token');
+    localStorage.removeItem('adilabad_mock_user');
+    sessionStorage.clear();
     setUser(null);
     setFavorites([]);
-    addToast('Logged out successfully', 'info');
+    addToast('You have been logged out securely.', 'info');
+
+    // Determine target redirect page
+    let target = customRedirect;
+    if (!target) {
+      const currentPath = router.pathname;
+      if (currentPath.startsWith('/admin')) {
+        target = '/admin/login';
+      } else if (currentPath.startsWith('/owner')) {
+        target = '/owner/login';
+      } else if (currentPath.startsWith('/staff') || currentPath.startsWith('/customer')) {
+        target = '/login';
+      } else {
+        target = '/login';
+      }
+    }
+
+    router.replace(target);
+  };
+
+  const updateProfile = async (profileData) => {
+    try {
+      const res = await apiFetch('/auth/profile', {
+        method: 'PUT',
+        body: JSON.stringify(profileData)
+      });
+      if (res.success) {
+        setUser((prev) => ({ ...prev, ...res.user }));
+        addToast('Profile updated successfully!', 'success');
+        return { success: true, user: res.user };
+      }
+      return { success: false, message: res.message };
+    } catch (error) {
+      const msg = error.message || 'Failed to update profile';
+      addToast(msg, 'error');
+      return { success: false, message: msg };
+    }
+  };
+
+  const changePassword = async (current_password, new_password) => {
+    try {
+      const res = await apiFetch('/auth/password', {
+        method: 'PUT',
+        body: JSON.stringify({ current_password, new_password })
+      });
+      if (res.success) {
+        addToast('Password changed successfully!', 'success');
+        return { success: true, message: res.message };
+      }
+      return { success: false, message: res.message };
+    } catch (error) {
+      const msg = error.message || 'Failed to change password';
+      addToast(msg, 'error');
+      return { success: false, message: msg };
+    }
+  };
+
+  const uploadAvatar = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      const res = await apiFetch('/auth/avatar', {
+        method: 'POST',
+        body: formData
+      });
+      if (res.success && res.avatar_url) {
+        setUser((prev) => ({ ...prev, avatar_url: res.avatar_url }));
+        addToast('Avatar updated successfully!', 'success');
+        return { success: true, avatar_url: res.avatar_url };
+      }
+      return { success: false, message: res.message };
+    } catch (error) {
+      const msg = error.message || 'Failed to upload avatar';
+      addToast(msg, 'error');
+      return { success: false, message: msg };
+    }
   };
 
   const toggleFavorite = async (item_type, item_id) => {
@@ -173,12 +265,16 @@ export function AuthProvider({ children }) {
         user,
         loading,
         isLoggedIn: !!user,
+        isAuthenticated: !!user,
         isAdmin,
         isOwner,
         isStaff,
         login,
         register,
         logout,
+        updateProfile,
+        changePassword,
+        uploadAvatar,
         refreshUser: fetchProfile,
         favorites,
         toggleFavorite,

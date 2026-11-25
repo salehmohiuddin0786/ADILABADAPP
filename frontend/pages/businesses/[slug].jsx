@@ -21,6 +21,7 @@ import AdvertisementCard from '../../src/components/cards/AdvertisementCard';
 import ShareModal from '../../src/components/modals/ShareModal';
 import { useAuth } from '../../src/context/AuthContext';
 import { apiFetch } from '../../src/utils/api';
+import { handleImageError, getCategoryFallbackImage } from '../../src/utils/imageFallback';
 import { MOCK_BUSINESSES } from '../../src/data/mockData';
 
 export default function BusinessDetailPage({ business }) {
@@ -69,8 +70,9 @@ export default function BusinessDetailPage({ business }) {
           <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden mb-8">
             <div className="relative aspect-[21/9] sm:aspect-[21/7] bg-slate-900 overflow-hidden">
               <img
-                src={business.cover_url || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80'}
+                src={business.cover_url || business.logo_url || getCategoryFallbackImage(business.category_name, business.name)}
                 alt={business.name}
+                onError={(e) => handleImageError(e, business.category_name, business.name)}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
@@ -80,8 +82,9 @@ export default function BusinessDetailPage({ business }) {
               <div className="flex items-end gap-5">
                 <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white border-4 border-white shadow-xl overflow-hidden shrink-0">
                   <img
-                    src={business.logo_url || 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=300&q=80'}
+                    src={business.logo_url || business.cover_url || getCategoryFallbackImage(business.category_name, business.name)}
                     alt="Logo"
+                    onError={(e) => handleImageError(e, business.category_name, business.name)}
                     className="w-full h-full object-cover"
                   />
                 </div>

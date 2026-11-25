@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
+import { motion, AnimatePresence } from 'framer-motion';
 import StaffLayout from '../../src/panels/staff-panel/StaffLayout';
 import { ShieldAlert, CheckCircle, XCircle, Clock, AlertTriangle, Eye } from 'lucide-react';
 import { useToast } from '../../src/context/ToastContext';
@@ -67,32 +68,40 @@ export default function StaffDashboardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {(Array.isArray(queue) ? queue : []).map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/70">
-                  <td className="px-6 py-4 font-mono font-bold text-slate-500">#{item.id}</td>
-                  <td className="px-6 py-4">
-                    <span className="bg-slate-100 text-slate-800 font-bold px-2 py-0.5 rounded text-[10px]">
-                      {item.type}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 font-semibold text-slate-900">{item.title}</td>
-                  <td className="px-6 py-4 text-slate-500">{item.submitter}</td>
-                  <td className="px-6 py-4 text-right space-x-2">
-                    <button
-                      onClick={() => handleModeration(item.id, 'APPROVED')}
-                      className="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 py-1.5 rounded-lg font-bold"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => handleModeration(item.id, 'REJECTED')}
-                      className="bg-rose-100 hover:bg-rose-200 text-rose-800 px-3 py-1.5 rounded-lg font-bold"
-                    >
-                      Reject
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              <AnimatePresence>
+                {(Array.isArray(queue) ? queue : []).map((item) => (
+                  <motion.tr
+                    key={item.id}
+                    initial={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="hover:bg-slate-50/70"
+                  >
+                    <td className="px-6 py-4 font-mono font-bold text-slate-500">#{item.id}</td>
+                    <td className="px-6 py-4">
+                      <span className="bg-slate-100 text-slate-800 font-bold px-2 py-0.5 rounded text-[10px]">
+                        {item.type}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-slate-900">{item.title}</td>
+                    <td className="px-6 py-4 text-slate-500">{item.submitter}</td>
+                    <td className="px-6 py-4 text-right space-x-2">
+                      <button
+                        onClick={() => handleModeration(item.id, 'APPROVED')}
+                        className="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 py-1.5 rounded-lg font-bold transition hover:scale-105 active:scale-95"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleModeration(item.id, 'REJECTED')}
+                        className="bg-rose-100 hover:bg-rose-200 text-rose-800 px-3 py-1.5 rounded-lg font-bold transition hover:scale-105 active:scale-95"
+                      >
+                        Reject
+                      </button>
+                    </td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
               {queue.length === 0 && (
                 <tr>
                   <td colSpan="5" className="px-6 py-10 text-center text-slate-400 font-medium">

@@ -1,41 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { Briefcase, MapPin, IndianRupee, Clock, Building, ArrowRight } from 'lucide-react';
 import PublicLayout from '../../src/panels/public-website/PublicLayout';
+import { apiFetch } from '../../src/utils/api';
 
 export default function JobsPage() {
-  const [jobs] = useState([
-    {
-      id: 1,
-      title: 'Branch Accountant & Tally Operator',
-      company: 'Adilabad Cotton Ginning Mills',
-      type: 'Full Time',
-      salary: '₹22,000 - ₹28,000 / month',
-      qualification: 'B.Com / M.Com + 2 Yrs Exp',
-      location: 'Industrial Area, Mavala, Adilabad',
-      deadline: '2026-11-30'
-    },
-    {
-      id: 2,
-      title: 'Showroom Sales Executive (Electronics & Mobiles)',
-      company: 'Sri Balaji Digital Showroom',
-      type: 'Full Time',
-      salary: '₹15,000 - ₹20,000 + Incentives',
-      qualification: 'Intermediate / Any Graduate',
-      location: 'Cinema Road, Adilabad',
-      deadline: '2026-11-25'
-    },
-    {
-      id: 3,
-      title: 'Senior High School Mathematics Teacher',
-      company: 'Kakatiya High School',
-      type: 'Full Time',
-      salary: '₹25,000 - ₹35,000 / month',
-      qualification: 'B.Sc / M.Sc B.Ed',
-      location: 'Vidya Nagar, Adilabad',
-      deadline: '2026-12-05'
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchJobs() {
+      try {
+        const res = await apiFetch('/jobs');
+        if (res && res.success && Array.isArray(res.data)) {
+          setJobs(res.data);
+        }
+      } catch (err) {
+        console.warn('Jobs fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
     }
-  ]);
+    fetchJobs();
+  }, []);
 
   return (
     <PublicLayout>
@@ -65,23 +52,24 @@ export default function JobsPage() {
               <div className="space-y-1.5">
                 <div className="flex items-center space-x-2">
                   <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded-full">
-                    {job.type}
+                    {job.job_type || job.type || 'Full Time'}
                   </span>
-                  <span className="text-xs text-slate-400">Deadline: {job.deadline}</span>
+                  <span className="text-xs text-slate-400">Deadline: {job.deadline || 'Ongoing'}</span>
                 </div>
                 <h3 className="font-extrabold text-slate-900 text-lg">{job.title}</h3>
                 <p className="text-xs font-bold text-slate-600 flex items-center">
                   <Building className="w-3.5 h-3.5 text-emerald-700 mr-1.5" />
-                  <span>{job.company}</span>
+                  <span>{job.company_name || job.company}</span>
                 </p>
                 <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 pt-1">
                   <span className="flex items-center font-bold text-emerald-800">
-                    <IndianRupee className="w-3.5 h-3.5 mr-0.5" /> {job.salary}
+                    <IndianRupee className="w-3.5 h-3.5 mr-0.5" />
+                    {job.salary || (job.min_salary ? `₹${Number(job.min_salary).toLocaleString('en-IN')} - ₹${Number(job.max_salary).toLocaleString('en-IN')} / mo` : 'Competitive')}
                   </span>
                   <span className="flex items-center">
                     <MapPin className="w-3.5 h-3.5 mr-0.5 text-amber-500" /> {job.location}
                   </span>
-                  <span>Qualification: <strong>{job.qualification}</strong></span>
+                  <span>Qualification: <strong>{job.qualification || 'Graduate'}</strong></span>
                 </div>
               </div>
 

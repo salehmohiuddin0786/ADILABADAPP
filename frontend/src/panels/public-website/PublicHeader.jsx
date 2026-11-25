@@ -32,11 +32,12 @@ import { useAuth } from '../../context/AuthContext';
 export default function PublicHeader({ selectedLocation: propLocation = 'Adilabad', onSelectLocation }) {
   const router = useRouter();
   const { t, currentLanguage, changeLanguage, supportedLanguages } = useLanguage();
-  const { user, isAuthenticated, logout, favorites = [] } = useAuth();
+  const { user, isLoggedIn, isAdmin, isOwner, isStaff, logout, favorites = [] } = useAuth();
 
   const [currentLoc, setCurrentLoc] = useState(propLocation);
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [locationSearch, setLocationSearch] = useState('');
@@ -60,6 +61,7 @@ export default function PublicHeader({ selectedLocation: propLocation = 'Adilaba
     setIsLocationModalOpen(false);
     setIsLangOpen(false);
     setIsMoreOpen(false);
+    setIsUserMenuOpen(false);
   }, [router.asPath]);
 
   // Lock body scroll when mobile menu or modal is open
@@ -136,7 +138,7 @@ export default function PublicHeader({ selectedLocation: propLocation = 'Adilaba
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 transition-colors shadow-xs pt-[env(safe-area-inset-top,0px)]">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 transition-colors shadow-xs pt-[max(env(safe-area-inset-top,0px),12px)] md:pt-0">
         {/* 1. TOP UTILITY BAR (Desktop & Tablet only) */}
         <div className="bg-slate-900 text-slate-200 text-xs py-1.5 px-4 hidden md:block">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -197,15 +199,20 @@ export default function PublicHeader({ selectedLocation: propLocation = 'Adilaba
               </div>
 
               {/* Quick Portal Switch links */}
-              {isAuthenticated ? (
+              {isLoggedIn ? (
                 <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                  <Link href="/profile" className="hover:text-emerald-300 font-semibold transition-colors">
+                    My Profile
+                  </Link>
                   <Link href="/customer/dashboard" className="hover:text-amber-300 transition-colors">
                     Customer Hub
                   </Link>
-                  <Link href="/owner/dashboard" className="text-amber-400 hover:text-amber-300 font-semibold transition-colors">
-                    Owner Portal
-                  </Link>
-                  {user?.role === 'admin' && (
+                  {isOwner && (
+                    <Link href="/owner/dashboard" className="text-amber-400 hover:text-amber-300 font-semibold transition-colors">
+                      Owner Portal
+                    </Link>
+                  )}
+                  {isAdmin && (
                     <Link href="/admin" className="text-emerald-400 hover:text-emerald-300 font-bold transition-colors">
                       Admin Center
                     </Link>
@@ -350,15 +357,114 @@ export default function PublicHeader({ selectedLocation: propLocation = 'Adilaba
                 )}
               </Link>
 
-              {/* Authentication Button */}
-              {isAuthenticated ? (
-                <Link
-                  href="/customer/dashboard"
-                  className="flex items-center space-x-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm hover:bg-emerald-100 transition-colors"
-                >
-                  <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="truncate max-w-[80px] sm:max-w-none">{user?.name?.split(' ')[0] || 'Account'}</span>
-                </Link>
+              {/* Authentication Button / User Profile Dropdown */}
+              {isLoggedIn ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    className="flex items-center space-x-1.5 bg-emerald-50 text-emerald-900 border border-emerald-200 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm hover:bg-emerald-100 transition-colors"
+                  >
+                    <div className="w-6 h-6 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-black text-[11px] uppercase overflow-hidden shrink-0">
+                      {user?.avatar_url ? (
+                        <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        user?.name?.charAt(0) || 'U'
+                      )}
+                    </div>
+                    <span className="truncate max-w-[80px] sm:max-w-[110px]">{user?.name?.split(' ')[0] || 'Profile'}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                  </button>
+
+                  <AnimatePresence>
+                    {isUserMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-2xl border border-slate-200 p-2 z-50 text-sm"
+                      >
+                        <div className="p-3 border-b border-slate-100">
+                          <p className="font-bold text-slate-900 truncate">{user?.name}</p>
+                          <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+                          <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase">
+                            {user?.role || 'Member'}
+                          </span>
+                        </div>
+
+                        <div className="py-1 space-y-0.5">
+                          <Link
+                            href="/profile"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-900 hover:bg-emerald-50 hover:text-emerald-800 transition font-bold"
+                          >
+                            <User className="w-4 h-4 text-emerald-700" />
+                            <span>My Profile</span>
+                          </Link>
+                          <Link
+                            href="/customer/dashboard"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition text-xs font-semibold"
+                          >
+                            <Layers className="w-4 h-4 text-emerald-600" />
+                            <span>Customer Hub</span>
+                          </Link>
+                          {isOwner && (
+                            <Link
+                              href="/owner/dashboard"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-amber-800 hover:bg-amber-50 transition text-xs font-bold"
+                            >
+                              <Store className="w-4 h-4 text-amber-600" />
+                              <span>Owner Portal</span>
+                            </Link>
+                          )}
+                          {isStaff && (
+                            <Link
+                              href="/staff/dashboard"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-blue-800 hover:bg-blue-50 transition text-xs font-bold"
+                            >
+                              <Briefcase className="w-4 h-4 text-blue-600" />
+                              <span>Staff Workspace</span>
+                            </Link>
+                          )}
+                          {isAdmin && (
+                            <Link
+                              href="/admin"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-900 bg-slate-100 hover:bg-slate-200 transition text-xs font-bold"
+                            >
+                              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                              <span>Admin Center</span>
+                            </Link>
+                          )}
+                          <Link
+                            href="/favorites"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 transition text-xs font-medium"
+                          >
+                            <Bookmark className="w-4 h-4 text-slate-400" />
+                            <span>Saved Favorites ({favorites.length})</span>
+                          </Link>
+                        </div>
+
+                        <div className="pt-1 border-t border-slate-100">
+                          <button
+                            onClick={() => {
+                              setIsUserMenuOpen(false);
+                              logout('/login');
+                            }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 transition text-xs font-bold text-left"
+                          >
+                            <LogOut className="w-4 h-4 text-rose-500" />
+                            <span>Sign Out</span>
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               ) : (
                 <Link
                   href="/login"
@@ -557,17 +663,27 @@ export default function PublicHeader({ selectedLocation: propLocation = 'Adilaba
 
               {/* Drawer Footer Actions */}
               <div className="p-4 border-t border-slate-200 bg-slate-50 space-y-2">
-                {isAuthenticated ? (
-                  <button
-                    onClick={() => {
-                      logout();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full py-2.5 px-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition flex items-center justify-center gap-2"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Sign Out ({user?.name?.split(' ')[0]})</span>
-                  </button>
+                {isLoggedIn ? (
+                  <div className="space-y-2">
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full py-2.5 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs transition flex items-center justify-center gap-2 border border-emerald-200"
+                    >
+                      <User className="w-4 h-4" />
+                      <span>My Profile ({user?.name?.split(' ')[0]})</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout('/login');
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full py-2.5 px-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition flex items-center justify-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out ({user?.name?.split(' ')[0]})</span>
+                    </button>
+                  </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-2">
                     <Link
